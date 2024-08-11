@@ -1,0 +1,7 @@
+app/.env.dev
+
+.venv/
+
+__pycache__/
+
+.idea/
