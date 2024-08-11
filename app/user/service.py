@@ -12,7 +12,7 @@ class UserService(BaseService):
         user = await self.transaction.get_one(model=Users, filter={Users.email: email})
         return user
 
-    async def create_user(self, user: UserCreate):
+    async def create_user_account(self, user: UserCreate):
         new_user = await self.transaction.create(
             model=Users,
             email=user.email,
@@ -21,5 +21,5 @@ class UserService(BaseService):
         )
         return new_user
 
-    async def delete_user(self, user_instance: Users):
+    async def delete_user_account(self, user_instance: Users):
         await self.transaction.delete(model_instance=user_instance)

@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr
 from enum import Enum
 
 
-class UserIn(BaseModel):
+class UserAccountIn(BaseModel):
     email: EmailStr
     password: str
 
@@ -12,11 +12,11 @@ class UserRoleEnum(Enum):
     user = "user"
 
 
-class UserCreate(UserIn):
+class UserAccountCreate(UserIn):
     role: UserRoleEnum
 
 
-class UserOut(BaseModel):
+class UserAccountOut(BaseModel):
     id: int
     email: EmailStr
     role: UserRoleEnum

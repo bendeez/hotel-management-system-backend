@@ -29,15 +29,14 @@ class HashService:
 
 
 class AuthService(BaseService):
-    def __init__(self, transaction=Depends(DatabaseTransactionService)):
-        super().__init__()
+    def __init__(self, transaction: DatabaseTransactionService = Depends(DatabaseTransactionService)):
+        super().__init__(transaction=transaction)
         self.JWT_SECRET_KEY = settings.JWT_SECRET_KEY
         self.JWT_ALGORITHM = settings.JWT_ALGORITHM
         self.ACCESS_TOKEN_EXPIRE = settings.ACCESS_TOKEN_EXPIRE
         self.REFRESH_TOKEN_EXPIRE = settings.REFRESH_TOKEN_EXPIRE
         self.hash_service = HashService()
-        self.transaction = transaction
-        self.user_service = UserService(transaction=transaction)
+        self.user_service = UserService(transaction=self.transaction)
 
     def encode(self, to_encode: dict):
         return jwt.encode(to_encode, self.JWT_SECRET_KEY, algorithm=self.JWT_ALGORITHM)
@@ -51,6 +50,16 @@ class AuthService(BaseService):
 
     def decode(self, token):
         return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
+
+    def verify_token_and_type(self, token: str, _token_type: str) -> int:
+        payload = self.decode(token=token)
+        token_type = payload.get("token_type")
+        if token_type != _token_type:
+            raise AdminUnauthorized()
+        user_id = payload.get("user_id")
+        if user_id is None:
+            raise AdminUnauthorized()
+        return user_id
 
     async def verify_user(self, user: UserIn) -> TokenCreate:
         existing_user = await self.user_service.get_user_by_email(email=user.email)
@@ -73,13 +82,8 @@ class AuthService(BaseService):
 
     def get_new_access_token(self, refresh_token: str):
         try:
-            payload = self.decode(token=refresh_token)
-            token_type = payload.get("token_type")
-            if token_type != "refresh_token":
-                raise InvalidRefreshToken()
-            user_id = payload.get("user_id")
-            if user_id is None:
-                raise InvalidRefreshToken()
+            user_id = self.verify_token_and_type(token=refresh_token,
+                                                 _token_type="refresh_token")
             access_token = self.create_token(
                 data={"user_id": user_id, "token_type": "access_token"},
                 expire_minutes=self.ACCESS_TOKEN_EXPIRE,
@@ -90,13 +94,8 @@ class AuthService(BaseService):
 
     async def decode_access_token(self, access_token: str) -> Users:
         try:
-            payload = self.decode(token=access_token)
-            token_type = payload.get("token_type")
-            if token_type != "access_token":
-                raise AdminUnauthorized()
-            user_id = payload.get("user_id")
-            if user_id is None:
-                raise AdminUnauthorized()
+            user_id = self.verify_token_and_type(token=access_token,
+                                                _token_type="access_token")
             user = await self.user_service.get_user_by_id(user_id=user_id)
             if user is None:
                 raise AdminUnauthorized()

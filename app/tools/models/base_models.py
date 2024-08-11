@@ -3,13 +3,7 @@ from sqlalchemy.orm import (
     mapped_column,
     declared_attr,
     as_declarative,
-    DeclarativeBase,
 )
-
-
-class Base(DeclarativeBase):
-    pass
-
 
 @as_declarative()
 class BaseMixin:

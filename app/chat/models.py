@@ -1,22 +1,20 @@
-from app.tools.models.base_models import Base
+from app.tools.models.base_models import BaseMixin
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Text, String
+from sqlalchemy import Text, String, ForeignKey
 from datetime import datetime
-from typing import Optional
 
 
-class Chats(Base):
-    __tablename__ = "chats"
-    message_id: Mapped[str] = mapped_column(String(45), primary_key=True)
-    session_id: Mapped[str] = mapped_column(String(45))
-    chat_id: Mapped[str] = mapped_column(String(45))
+class Chat_Messages(BaseMixin):
+    session_id: Mapped[str] = mapped_column(ForeignKey("chat_sessions.id"))
     message: Mapped[str] = mapped_column(Text)
-    messenger: Mapped[str] = mapped_column(String(45))
-    message_time: Mapped[datetime] = mapped_column(default=datetime.now())
-    environment: Mapped[Optional[str]] = mapped_column(String(45))
+    messenger_id: Mapped[int] = mapped_column(ForeignKey("chat_messenger.id"))
+    date: Mapped[datetime] = mapped_column(default=datetime.now())
 
+class Chat_Messenger(BaseMixin):
+    ip_address: Mapped[str] = mapped_column(String(45))
+    user_agent: Mapped[str] = mapped_column(String(45))
 
-class Sessions(Base):
-    __tablename__ = "sessions"
-    session_id: Mapped[str] = mapped_column(String(45), primary_key=True)
-    expiry: Mapped[datetime]
+class Chat_Sessions(BaseMixin):
+    business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))
+    start_time: Mapped[datetime]
+    end_time: Mapped[datetime]
