@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr
+from typing import Literal
 from enum import Enum
 
 
@@ -12,7 +13,8 @@ class UserRoleEnum(Enum):
     user = "user"
 
 
-class UserAccountCreate(UserIn):
+class UserAccountCreate(UserAccountIn):
+    account_type: Literal["user"]
     role: UserRoleEnum
 
 

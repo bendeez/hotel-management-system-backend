@@ -7,5 +7,5 @@ from app.user.models import Users
 
 class Accounts(BaseMixin):
     account_type: Mapped[str] = mapped_column(String(45))
-    business_accounts: Mapped[list["Business"]] = relationship(back_populates="account_type")
-    user_accounts: Mapped[list["Users"]] = relationship(back_populates="account_type")
+    business_accounts: Mapped[list["Business"]] = relationship()
+    user_accounts: Mapped[list["Users"]] = relationship()
