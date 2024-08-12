@@ -11,11 +11,9 @@ class DatabaseTransactionService:
     def __init__(self, db: AsyncSession = Depends(get_db)):
         self.db = db
 
-    async def create(self, model, relationship: Optional[dict[str,Any]] = {},
+    async def create(self, model,
                      **attributes):
         model_instance = model(**attributes)
-        for rel_attribute, model in relationship.items():
-            setattr(model_instance, rel_attribute, model)
         self.db.add(model_instance)
         await self.db.commit()
         await self.db.refresh(model_instance)

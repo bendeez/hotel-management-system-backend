@@ -1,14 +1,21 @@
 from app.tools.models.base_models import BaseMixin
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, ForeignKey, Text
+from app.accounts.models import Accounts
 
 
-class Business(BaseMixin):
+class Business(Accounts):
+    id: Mapped[int] = mapped_column(ForeignKey("accounts.id"), primary_key=True)
     email: Mapped[str] = mapped_column(String(45),unique=True)
+    email_verified: Mapped[bool] = mapped_column(default=False)
     name: Mapped[str] = String(45)
     subscription_id: Mapped[int] = mapped_column(default=1) # for development purposes
-    location: Mapped[str] = String(45)
-    account_type: Mapped[str] = mapped_column(ForeignKey("accounts.account_type"))
+    location: Mapped[str] = mapped_column(String(45))
+    master_password: Mapped[str] = mapped_column(String(500))
+
+    __mapper_args__ = {
+        "polymorphic_identity": "business",
+    }
 
 
 class Business_Data(BaseMixin):

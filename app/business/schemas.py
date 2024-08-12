@@ -1,9 +1,14 @@
 from pydantic import BaseModel, EmailStr
-from typing import Literal
 
 
 class BusinessAccountCreate(BaseModel):
-    account_type: Literal["business"]
+    email: EmailStr
+    master_password: str
+    name: str
+    location: str
+
+class BusinessAccountOut(BaseModel):
+    id: int
     email: EmailStr
     name: str
     location: str

@@ -1,11 +1,12 @@
 from app.tools.models.base_models import BaseMixin
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
-from app.business.models import Business
-from app.user.models import Users
 
 
 class Accounts(BaseMixin):
-    account_type: Mapped[str] = mapped_column(String(45))
-    business_accounts: Mapped[list["Business"]] = relationship()
-    user_accounts: Mapped[list["Users"]] = relationship()
+    type: Mapped[str] = mapped_column(String(45))
+
+    __mapper_args__ = {
+        "polymorphic_identity": "employee",
+        "polymorphic_on": "type",
+    }
