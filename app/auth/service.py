@@ -46,9 +46,7 @@ class AuthService(BaseService):
     def decode(self, token):
         return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
 
-    def verify_token_and_type_for_payload(
-        self, token: str, _token_type: str
-    ) -> dict:
+    def verify_token_and_type_for_payload(self, token: str, _token_type: str) -> dict:
         payload = self.decode(token=token)
         token_type = payload.get("token_type")
         if token_type != _token_type:
@@ -129,31 +127,25 @@ class AuthService(BaseService):
             raise AdminUnauthorized()
         return tokens
 
-    def get_new_access_token_with_refresh(
-        self, refresh_token: str, type: AccountType
-    ):
+    def get_new_access_token_with_refresh(self, refresh_token: str, type: AccountType):
         try:
             payload = self.verify_token_and_type_for_payload(
-                token=refresh_token,
-                _token_type="refresh_token"
+                token=refresh_token, _token_type="refresh_token"
             )
             account_id = self.extract_account_id_from_payload(payload=payload)
             type = type.value
             access_token = self.create_token(
-                data={"id": account_id, "token_type": "access_token","type":type},
+                data={"id": account_id, "token_type": "access_token", "type": type},
                 expire_minutes=self.ACCESS_TOKEN_EXPIRE,
             )
             return AccessToken(access_token=access_token)
         except jwt.PyJWTError:
             raise InvalidRefreshToken()
 
-    async def decode_access_token_for_account(
-        self, access_token: str
-    ) -> Users:
+    async def decode_access_token_for_account(self, access_token: str) -> Users:
         try:
             payload = self.verify_token_and_type_for_payload(
-                token=access_token,
-                _token_type="access_token"
+                token=access_token, _token_type="access_token"
             )
             account_id = self.extract_account_id_from_payload(payload=payload)
             type = payload.get("type")
@@ -175,9 +167,10 @@ class AuthService(BaseService):
         except jwt.PyJWTError:
             raise AdminUnauthorized()
 
-async def get_account(token: str = Depends(oauth2_scheme),
-                      auth_service: AuthService = Depends(AuthService)):
-    account = await auth_service.decode_access_token_for_account(
-        access_token=token
-    )
+
+async def get_account(
+    token: str = Depends(oauth2_scheme),
+    auth_service: AuthService = Depends(AuthService),
+):
+    account = await auth_service.decode_access_token_for_account(access_token=token)
     return account

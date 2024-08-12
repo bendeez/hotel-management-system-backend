@@ -9,6 +9,4 @@ class Users(Accounts):
     email_verified: Mapped[bool] = mapped_column(default=False)
     password: Mapped[str] = mapped_column(String(500))
 
-    __mapper_args__ = {
-        "polymorphic_identity": "users"
-    }
+    __mapper_args__ = {"polymorphic_identity": "users"}

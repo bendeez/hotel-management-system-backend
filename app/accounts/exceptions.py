@@ -9,6 +9,7 @@ class BusinessForbidden(AdminError):
     ) -> None:
         super().__init__(message, status_code)
 
+
 class NotABusiness(AdminError):
     def __init__(
         self,

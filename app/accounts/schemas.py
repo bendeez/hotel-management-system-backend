@@ -17,17 +17,19 @@ from typing import Literal
 class BusinessUserAccountOut(BaseModel):
     username: str
 
+
 class BusinessUserAccountCreate(BaseModel):
     username: str
     password: str
     business_id: int
 
+
 class BusinessUserAccountIn(BusinessUserAccountCreate):
     type: Literal["business_users"] = "business_users"
 
 
-
-
-AccountCreate = Annotated[Union[BusinessAccountCreate,UserAccountCreate],Field(...,discriminator="type")]
+AccountCreate = Annotated[
+    Union[BusinessAccountCreate, UserAccountCreate], Field(..., discriminator="type")
+]
 
 Account = Union[Business, Business_Users, Users]

@@ -14,7 +14,6 @@ async def login(
     return tokens
 
 
-
 @auth_router.post(
     "/refresh", response_model=AccessToken, status_code=status.HTTP_201_CREATED
 )

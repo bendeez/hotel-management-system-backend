@@ -35,8 +35,6 @@ def downgrade() -> None:
         sa.Column("type", mysql.INTEGER(), autoincrement=False, nullable=False),
     )
     op.drop_constraint(None, "users", type_="foreignkey")
-    op.create_foreign_key(
-        "users_ibfk_2", "users", "types", ["type"], ["id"]
-    )
+    op.create_foreign_key("users_ibfk_2", "users", "types", ["type"], ["id"])
     op.drop_column("users", "type_id")
     # ### end Alembic commands ###

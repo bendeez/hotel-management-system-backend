@@ -16,4 +16,8 @@ class AccessToken(BaseModel):
 class TokenCreate(AccessToken):
     refresh_token: str
 
-LoginInfo = Annotated[Union[UserAccountIn,BusinessAccountIn,BusinessUserAccountIn],Field(...,discriminator="type")]
+
+LoginInfo = Annotated[
+    Union[UserAccountIn, BusinessAccountIn, BusinessUserAccountIn],
+    Field(..., discriminator="type"),
+]
