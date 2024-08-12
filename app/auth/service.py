@@ -105,7 +105,7 @@ class AuthService(BaseService):
         )
         tokens = await self.verify_account_for_token(
             input_password=business.password,
-            account_type=AccountType.BUSINESS_USERS,
+            account_type=AccountType.BUSINESS,
             account=existing_business,
         )
         return tokens
@@ -114,7 +114,7 @@ class AuthService(BaseService):
         existing_user = await self.account_service.get_user_by_email(email=user.email)
         tokens = self.verify_account_for_token(
             input_password=user.password,
-            account_type=AccountType.BUSINESS_USERS,
+            account_type=AccountType.USERS,
             account=existing_user,
         )
         return tokens
