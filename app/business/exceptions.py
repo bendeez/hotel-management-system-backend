@@ -1,7 +1,6 @@
 from app.exceptions import AdminError
 
 
-
 class BusinessEmailAlreadyExists(AdminError):
     def __init__(
         self,

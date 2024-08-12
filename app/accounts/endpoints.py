@@ -6,7 +6,7 @@ from app.accounts.schemas import (
     BusinessUserAccountCreate,
     BusinessAccountOut,
     UserAccountOut,
-    BusinessUserAccountOut
+    BusinessUserAccountOut,
 )
 
 account_router = APIRouter(prefix="/account")

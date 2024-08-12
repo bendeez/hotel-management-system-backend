@@ -21,7 +21,9 @@ class AccountsService(BusinessService, UserService):
     ):
         if business.id != business_user.business_id:
             raise BusinessForbidden()
-        existing_business_user = await self.get_business_user_by_username(username=business_user.username)
+        existing_business_user = await self.get_business_user_by_username(
+            username=business_user.username
+        )
         if existing_business_user is not None:
             raise BusinessUserUsernameAlreadyExists()
         business_user.password = self.hash_service.hash(business_user.password)

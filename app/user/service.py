@@ -28,7 +28,5 @@ class UserService(BaseService):
         if existing_user is not None:
             raise UserEmailAlreadyExists()
         user.password = self.hash_service.hash(user.password)
-        user_account = await self.transaction.create(
-            model=Users, **user.model_dump()
-        )
+        user_account = await self.transaction.create(model=Users, **user.model_dump())
         return user_account
