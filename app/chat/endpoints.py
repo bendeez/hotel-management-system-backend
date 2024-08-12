@@ -4,8 +4,6 @@ from app.chat.enums import ChatsAttributes, SessionAttributes
 from app.tools.enums import DatabaseQueryOrder
 from app.chat.schemas import ChatLogsOut, SessionsOut
 from typing import List
-from app.auth.service import get_admin_user
-from app.user.models import Users
 
 chat_logs_router = APIRouter(prefix="/chat")
 
@@ -15,9 +13,8 @@ async def get_all_chat_logs(
     limit: int = 100,
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-    order_by: ChatsAttributes = ChatsAttributes.message_time,
+    order_by: ChatsAttributes = ChatsAttributes.date,
     chat: ChatService = Depends(ChatService),
-    admin_user: Users = Depends(get_admin_user),
 ):
     chat_logs = await chat.get_all_chat_logs(
         order=order, order_by=order_by, limit=limit, offset=offset
@@ -31,9 +28,8 @@ async def get_chat_logs_by_session_id(
     limit: int = 100,
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-    order_by: ChatsAttributes = ChatsAttributes.message_time,
+    order_by: ChatsAttributes = ChatsAttributes.date,
     chat: ChatService = Depends(ChatService),
-    admin_user: Users = Depends(get_admin_user),
 ):
     chat_logs = await chat.get_chat_logs_by_session_id(
         order=order,
@@ -52,7 +48,6 @@ async def get_chat_sessions(
     order_by: SessionAttributes = SessionAttributes.expiry,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
     chat_logs_service: ChatService = Depends(ChatService),
-    admin_user: Users = Depends(get_admin_user),
 ):
     chat_sessions = await chat_logs_service.get_chat_sessions(
         limit=limit, offset=offset, order=order, order_by=order_by

@@ -1,5 +1,5 @@
 from app.tools.base_service import BaseService
-from app.chat.models import Chats, Sessions
+from app.chat.models import Chat_Messages, Chat_Sessions
 from app.chat.enums import ChatsAttributes, SessionAttributes
 from app.tools.enums import DatabaseQueryOrder
 
@@ -13,8 +13,8 @@ class ChatService(BaseService):
         offset: int = 0,
     ):
         chat_logs = await self.transaction.get_all(
-            model=Chats,
-            order_by=getattr(Chats, order_by.value),
+            model=Chat_Messages,
+            order_by=getattr(Chat_Messages, order_by.value),
             order=order,
             offset=offset,
             limit=limit,
@@ -29,10 +29,10 @@ class ChatService(BaseService):
         offset: int = 0,
     ):
         chat_sessions = await self.transaction.get_all(
-            model=Sessions,
+            model=Chat_Sessions,
             limit=limit,
             offset=offset,
-            order_by=getattr(Sessions, order_by.value),
+            order_by=getattr(Chat_Sessions, order_by.value),
             order=order,
         )
         return chat_sessions
@@ -46,11 +46,11 @@ class ChatService(BaseService):
         offset: int = 0,
     ):
         chat_logs = await self.transaction.get_all(
-            model=Chats,
-            order_by=getattr(Chats, order_by.value),
+            model=Chat_Messages,
+            order_by=getattr(Chat_Messages, order_by.value),
             order=order,
             limit=limit,
             offset=offset,
-            filter={Chats.session_id: session_id},
+            filter={Chat_Messages.session_id: session_id},
         )
         return chat_logs

@@ -4,6 +4,7 @@ from app.facilities.endpoints import facilities_router
 from app.chat.endpoints import chat_logs_router
 from app.auth.endpoints import auth_router
 from app.user.endpoints import user_router
+from app.accounts.endpoints import account_router
 from app.exception_handlers import add_exception_handlers
 
 
@@ -21,3 +22,4 @@ app.include_router(facilities_router)
 app.include_router(chat_logs_router)
 app.include_router(auth_router)
 app.include_router(user_router)
+app.include_router(account_router)

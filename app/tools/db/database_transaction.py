@@ -11,8 +11,7 @@ class DatabaseTransactionService:
     def __init__(self, db: AsyncSession = Depends(get_db)):
         self.db = db
 
-    async def create(self, model,
-                     **attributes):
+    async def create(self, model, **attributes):
         model_instance = model(**attributes)
         self.db.add(model_instance)
         await self.db.commit()
@@ -34,8 +33,12 @@ class DatabaseTransactionService:
         offset: int = 100,
     ):
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
-        stmt = select(model).order_by(order_by).limit(limit).offset(offset).where(
-            *[attribute == value for attribute, value in filter.items()]
+        stmt = (
+            select(model)
+            .order_by(order_by)
+            .limit(limit)
+            .offset(offset)
+            .where(*[attribute == value for attribute, value in filter.items()])
         )
         models = await self.db.execute(stmt)
         return models.scalars().all()

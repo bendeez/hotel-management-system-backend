@@ -1,11 +1,15 @@
 from pydantic import BaseModel, EmailStr
 
 
-class BusinessAccountCreate(BaseModel):
+class BusinessAccountIn(BaseModel):
     email: EmailStr
-    master_password: str
+    password: str
+
+
+class BusinessAccountCreate(BusinessAccountIn):
     name: str
     location: str
+
 
 class BusinessAccountOut(BaseModel):
     id: int

@@ -10,9 +10,11 @@ class Chat_Messages(BaseMixin):
     messenger_id: Mapped[int] = mapped_column(ForeignKey("chat_messenger.id"))
     date: Mapped[datetime] = mapped_column(default=datetime.now())
 
+
 class Chat_Messenger(BaseMixin):
     ip_address: Mapped[str] = mapped_column(String(45))
     user_agent: Mapped[str] = mapped_column(String(45))
+
 
 class Chat_Sessions(BaseMixin):
     business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))

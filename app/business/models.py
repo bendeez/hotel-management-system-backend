@@ -6,12 +6,12 @@ from app.accounts.models import Accounts
 
 class Business(Accounts):
     id: Mapped[int] = mapped_column(ForeignKey("accounts.id"), primary_key=True)
-    email: Mapped[str] = mapped_column(String(45),unique=True)
+    email: Mapped[str] = mapped_column(String(45), unique=True)
     email_verified: Mapped[bool] = mapped_column(default=False)
     name: Mapped[str] = String(45)
-    subscription_id: Mapped[int] = mapped_column(default=1) # for development purposes
+    subscription_id: Mapped[int] = mapped_column(default=1)  # for development purposes
     location: Mapped[str] = mapped_column(String(45))
-    master_password: Mapped[str] = mapped_column(String(500))
+    password: Mapped[str] = mapped_column(String(500))
 
     __mapper_args__ = {
         "polymorphic_identity": "business",
@@ -23,6 +23,7 @@ class Business_Data(BaseMixin):
     category_id: Mapped[int] = mapped_column(ForeignKey("data_categories.id"))
     data: Mapped[str] = mapped_column(Text)
     keywords: Mapped[str] = mapped_column(String(45))
+
 
 class Data_Categories(BaseMixin):
     name: Mapped[str] = mapped_column(String(45))

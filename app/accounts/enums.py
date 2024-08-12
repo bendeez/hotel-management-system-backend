@@ -3,4 +3,5 @@ from enum import Enum
 
 class AccountType(Enum):
     BUSINESS = "business"
-    USER = "user"
+    BUSINESS_USERS = "business_users"
+    USERS = "users"

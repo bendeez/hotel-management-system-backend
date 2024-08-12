@@ -7,7 +7,7 @@ class ChatsAttributes(Enum):
     chat_id = "chat_id"
     message = "message"
     messenger = "messenger"
-    message_time = "message_time"
+    date = "date"
     environment = "environment"
 
 

@@ -1,13 +1,15 @@
 from pydantic import BaseModel
+from app.accounts.enums import AccountType
 
 
-class RefreshToken(BaseModel):
+class TokenRequest(BaseModel):
     refresh_token: str
+    account_type: AccountType
 
 
 class AccessToken(BaseModel):
     access_token: str
 
 
-class TokenCreate(RefreshToken, AccessToken):
-    pass
+class TokenCreate(AccessToken):
+    refresh_token: str

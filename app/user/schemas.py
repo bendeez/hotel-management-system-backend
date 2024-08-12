@@ -7,10 +7,9 @@ class UserAccountIn(BaseModel):
 
 
 class UserAccountCreate(UserAccountIn):
-    role_id: int
+    pass
 
 
 class UserAccountOut(BaseModel):
     id: int
     email: EmailStr
-    role_id: int
