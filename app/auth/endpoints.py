@@ -1,35 +1,18 @@
 from fastapi import APIRouter, Depends, status
-from app.auth.schemas import TokenCreate, AccessToken, TokenRequest
-from app.accounts.schemas import UserAccountIn, BusinessAccountIn, BusinessUserAccountIn
+from app.auth.schemas import TokenCreate, AccessToken, TokenRequest, LoginInfo
 from app.auth.service import AuthService
 
 
-auth_router = APIRouter(prefix="/login")
+auth_router = APIRouter()
 
 
-@auth_router.post("/user", response_model=TokenCreate)
-async def login_user(
-    user: UserAccountIn, auth_service: AuthService = Depends(AuthService)
+@auth_router.post("/login", response_model=TokenCreate)
+async def login(
+    login_info: LoginInfo, auth_service: AuthService = Depends(AuthService)
 ):
-    token = await auth_service.verify_user(user=user)
-    return token
+    tokens = await auth_service.verify_account(login_info=login_info)
+    return tokens
 
-
-@auth_router.post("/business", response_model=TokenCreate)
-async def login_business(
-    business: BusinessAccountIn, auth_service: AuthService = Depends(AuthService)
-):
-    token = await auth_service.verify_business(business=business)
-    return token
-
-
-@auth_router.post("/business-user", response_model=TokenCreate)
-async def login_business(
-    business_user: BusinessUserAccountIn,
-    auth_service: AuthService = Depends(AuthService),
-):
-    token = await auth_service.verify_business_user(business_user=business_user)
-    return token
 
 
 @auth_router.post(
@@ -40,6 +23,6 @@ def refresh(
 ):
     access_token = auth_service.get_new_access_token_with_refresh(
         refresh_token=token_request.refresh_token,
-        account_type=token_request.account_type,
+        type=token_request.type,
     )
     return access_token

@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr
+from typing import Literal
 
 
 class BusinessAccountIn(BaseModel):
+    type: Literal["business"] = "business"
     email: EmailStr
     password: str
 

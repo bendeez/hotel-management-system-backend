@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr
+from typing import Literal
 
 
 class UserAccountIn(BaseModel):
+    type: Literal["users"] = "users"
     email: EmailStr
     password: str
 

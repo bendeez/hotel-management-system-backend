@@ -10,5 +10,5 @@ class Users(Accounts):
     password: Mapped[str] = mapped_column(String(500))
 
     __mapper_args__ = {
-        "polymorphic_identity": "users",
+        "polymorphic_identity": "users"
     }

@@ -19,7 +19,7 @@ class BusinessService(BaseService):
         existing_business = await self.get_business_by_email(email=business.email)
         if existing_business is not None:
             raise BusinessEmailAlreadyExists()
-        business.master_password = self.hash_service.hash(business.master_password)
+        business.password = self.hash_service.hash(business.password)
         business_account = await self.transaction.create(
             model=Business, **business.model_dump()
         )

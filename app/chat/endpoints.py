@@ -45,7 +45,7 @@ async def get_chat_logs_by_session_id(
 async def get_chat_sessions(
     limit: int = 100,
     offset: int = 0,
-    order_by: SessionAttributes = SessionAttributes.expiry,
+    order_by: SessionAttributes = SessionAttributes.end_time,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
     chat_logs_service: ChatService = Depends(ChatService),
 ):

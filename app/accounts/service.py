@@ -2,10 +2,10 @@ from fastapi import Depends
 from app.business.service import BusinessService
 from app.user.service import UserService
 from app.tools.db.database_transaction import DatabaseTransactionService
-from app.accounts.exceptions import BusinessForbidden
-from app.accounts.schemas import BusinessUserAccountCreate
+from app.accounts.exceptions import BusinessForbidden, NotABusiness
+from app.accounts.schemas import BusinessUserAccountCreate, AccountCreate
 from app.accounts.models import Business_Users
-from app.business.models import Business
+from app.accounts.schemas import Account
 from app.accounts.exceptions import BusinessUserUsernameAlreadyExists
 
 
@@ -17,9 +17,11 @@ class AccountsService(BusinessService, UserService):
         super().__init__(transaction=transaction)
 
     async def create_business_user_account(
-        self, business: Business, business_user: BusinessUserAccountCreate
+        self, account: Account, business_user: BusinessUserAccountCreate
     ):
-        if business.id != business_user.business_id:
+        if account.type != "business":
+            raise NotABusiness()
+        if account.id != business_user.business_id:
             raise BusinessForbidden()
         existing_business_user = await self.get_business_user_by_username(
             username=business_user.username
@@ -43,3 +45,12 @@ class AccountsService(BusinessService, UserService):
             model=Business_Users, filter={Business_Users.id: business_user_id}
         )
         return business_user
+
+    async def create_account(self, account: AccountCreate):
+        if account.type == "users":
+            account = await self.create_user_account(user=account)
+        elif account.type == "business":
+            account = await self.create_business_account(business=account)
+        else:
+            raise ValueError("invalid account type")
+        return account

@@ -13,4 +13,5 @@ class ChatsAttributes(Enum):
 
 class SessionAttributes(Enum):
     session_id = "session_id"
-    expiry = "expiry"
+    start_time = "start_time"
+    end_time = "end_time"

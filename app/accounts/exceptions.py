@@ -9,6 +9,14 @@ class BusinessForbidden(AdminError):
     ) -> None:
         super().__init__(message, status_code)
 
+class NotABusiness(AdminError):
+    def __init__(
+        self,
+        message: str = "You are not business",
+        status_code: int = 403,
+    ) -> None:
+        super().__init__(message, status_code)
+
 
 class BusinessUserUsernameAlreadyExists(AdminError):
     def __init__(
