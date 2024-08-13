@@ -15,6 +15,7 @@ from app.accounts.enums import AccountType
 from app.accounts.models import Business_Users
 from app.user.models import Users
 from app.business.models import Business
+from app.auth.enums import TokenType
 from typing import Union
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -46,10 +47,10 @@ class AuthService(BaseService):
     def decode(self, token):
         return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
 
-    def verify_token_and_type_for_payload(self, token: str, _token_type: str) -> dict:
+    def verify_token_and_type_for_payload(self, token: str, _token_type: TokenType) -> dict:
         payload = self.decode(token=token)
         token_type = payload.get("token_type")
-        if token_type != _token_type:
+        if token_type != _token_type.value:
             raise AdminUnauthorized()
         return payload
 
@@ -72,11 +73,11 @@ class AuthService(BaseService):
             raise AdminUnauthorized()
         type = type.value
         access_token = self.create_token(
-            data={"id": account.id, "token_type": "access_token", "type": type},
+            data={"id": account.id, "token_type": TokenType.ACCESS_TOKEN.value, "type": type},
             expire_minutes=self.ACCESS_TOKEN_EXPIRE,
         )
         refresh_token = self.create_token(
-            data={"id": account.id, "token_type": "refresh_token", "type": type},
+            data={"id": account.id, "token_type": TokenType.REFRESH_TOKEN.value, "type": type},
             expire_minutes=self.REFRESH_TOKEN_EXPIRE,
         )
         return TokenCreate(access_token=access_token, refresh_token=refresh_token)
@@ -130,12 +131,12 @@ class AuthService(BaseService):
     def get_new_access_token_with_refresh(self, refresh_token: str, type: AccountType):
         try:
             payload = self.verify_token_and_type_for_payload(
-                token=refresh_token, _token_type="refresh_token"
+                token=refresh_token, _token_type=TokenType.REFRESH_TOKEN.value
             )
             account_id = self.extract_account_id_from_payload(payload=payload)
             type = type.value
             access_token = self.create_token(
-                data={"id": account_id, "token_type": "access_token", "type": type},
+                data={"id": account_id, "token_type": TokenType.ACCESS_TOKEN.value, "type": type},
                 expire_minutes=self.ACCESS_TOKEN_EXPIRE,
             )
             return AccessToken(access_token=access_token)
@@ -145,17 +146,17 @@ class AuthService(BaseService):
     async def decode_access_token_for_account(self, access_token: str) -> Users:
         try:
             payload = self.verify_token_and_type_for_payload(
-                token=access_token, _token_type="access_token"
+                token=access_token, _token_type=TokenType.ACCESS_TOKEN.value
             )
             account_id = self.extract_account_id_from_payload(payload=payload)
             type = payload.get("type")
-            if type == "users":
+            if type == AccountType.USERS.value:
                 account = await self.account_service.get_user_by_id(user_id=account_id)
-            elif type == "business":
+            elif type == AccountType.BUSINESS.value:
                 account = await self.account_service.get_business_by_id(
                     business_id=account_id
                 )
-            elif type == "business_users":
+            elif type == AccountType.BUSINESS_USERS.value:
                 account = await self.account_service.get_business_user_by_id(
                     business_user_id=account_id
                 )

@@ -8,6 +8,7 @@ class Chat_Messages(BaseMixin):
     session_id: Mapped[str] = mapped_column(ForeignKey("chat_sessions.id"))
     message: Mapped[str] = mapped_column(Text)
     messenger_id: Mapped[int] = mapped_column(ForeignKey("chat_messenger.id"))
+    chat_id: Mapped[int]
     date: Mapped[datetime] = mapped_column(default=datetime.now())
 
 

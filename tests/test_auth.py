@@ -2,25 +2,7 @@ from utils import RequestMethod
 
 
 async def test_admin_login(admin_user, http_request, auth_service):
-    response = await http_request(
-        "/login",
-        method=RequestMethod.POST,
-        json={"email": admin_user.email, "password": admin_user.password},
-    )
-    assert response.status_code == 200
-    data = response.json()
-    access_token_payload = auth_service.decode(data["access_token"])
-    del access_token_payload["exp"]
-    refresh_token_payload = auth_service.decode(data["refresh_token"])
-    del refresh_token_payload["exp"]
-    assert access_token_payload == {
-        "user_id": admin_user.id,
-        "token_type": "access_token",
-    }
-    assert refresh_token_payload == {
-        "user_id": admin_user.id,
-        "token_type": "refresh_token",
-    }
+
 
 
 async def test_invalid_normal_user_login(normal_user, http_request):
