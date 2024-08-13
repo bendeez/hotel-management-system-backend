@@ -13,9 +13,28 @@ class Chat_Messages(BaseMixin):
 
 
 class Chat_Messenger(BaseMixin):
+    type: Mapped[str] = mapped_column(String(45))
+    __mapper_args__ = {
+        "polymorphic_identity": "chat_messenger",
+        "polymorphic_on": "type",
+    }
+
+
+class Chat_User(Chat_Messenger):
+    id: Mapped[int] = mapped_column(ForeignKey("chat_messenger.id"), primary_key=True)
     ip_address: Mapped[str] = mapped_column(String(45))
     user_agent: Mapped[str] = mapped_column(String(45))
 
+    __mapper_args__ = {
+        "polymorphic_identity": "chat_user",
+    }
+
+class Chat_Agent(Chat_Messenger):
+    id: Mapped[int] = mapped_column(ForeignKey("chat_messenger.id"), primary_key=True)
+
+    __mapper_args__ = {
+        "polymorphic_identity": "chat_agent",
+    }
 
 class Chat_Sessions(BaseMixin):
     business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))
