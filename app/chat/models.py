@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.tools.models.base_models import BaseMixin
 from typing import Optional
+from uuid import uuid4
 
 
 
@@ -44,6 +45,7 @@ class Chat_Agent(Chat_Messenger):
     }
 
 class Chat_Sessions(BaseMixin):
+    id: Mapped[str] = mapped_column(String(45), default=str(uuid4()), primary_key=True)
     account_id: Mapped[Optional[int]] = mapped_column(ForeignKey("accounts.id"))
     start_time: Mapped[datetime] = mapped_column(default=datetime.now())
     end_time: Mapped[Optional[datetime]]
