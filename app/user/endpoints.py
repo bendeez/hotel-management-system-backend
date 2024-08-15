@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Depends
-from app.user.schemas import UserAccountOut
-from app.user.models import Users
+from fastapi import APIRouter
 
 
 user_router = APIRouter(prefix="/user")

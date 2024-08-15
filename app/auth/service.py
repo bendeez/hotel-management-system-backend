@@ -10,13 +10,9 @@ from app.auth.schemas import AccessToken
 from app.tools.base_service import BaseService
 from app.utils.service import HashService
 from app.accounts.service import AccountsService
-from app.accounts.schemas import UserAccountIn, BusinessAccountIn, BusinessUserAccountIn
 from app.accounts.enums import AccountType
-from app.accounts.models import Business_Users
 from app.user.models import Users
-from app.business.models import Business
 from app.auth.enums import TokenType
-from typing import Union
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
@@ -41,8 +37,8 @@ class AuthService(BaseService):
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
         to_encode.update({"exp": expire})
-        access_token = self.encode(to_encode=to_encode)
-        return access_token
+        token = self.encode(to_encode=to_encode)
+        return token
 
     def decode(self, token):
         return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
@@ -54,24 +50,27 @@ class AuthService(BaseService):
             raise AdminUnauthorized()
         return payload
 
-    def extract_account_id_from_payload(self, payload: dict):
-        account_id = payload.get("id")
-        if account_id is None:
+    async def verify_account(self, login_info: LoginInfo):
+        if login_info.type == "users":
+            account = await self.account_service.get_user_by_email(email=login_info.email)
+            type = AccountType.USERS.value
+        elif login_info.type == "business":
+            account = await self.account_service.get_business_by_email(
+                email=login_info.email
+            )
+            type = AccountType.BUSINESS.value
+        elif login_info.type == "business_users":
+            account = await self.account_service.get_business_user_by_username(
+                username=login_info.username
+            )
+            type = AccountType.BUSINESS_USERS.value
+        else:
             raise AdminUnauthorized()
-        return account_id
-
-    def verify_account_for_token(
-        self,
-        input_password: str,
-        type: AccountType,
-        account: Union[Business_Users, Business, Users, None] = None,
-    ) -> TokenCreate:
         if account is None:
             raise AdminUnauthorized()
-        verify = self.hash_service.verify(input_password, account.password)
+        verify = self.hash_service.verify(login_info.password, account.password)
         if not verify:
             raise AdminUnauthorized()
-        type = type.value
         access_token = self.create_token(
             data={"id": account.id, "token_type": TokenType.ACCESS_TOKEN.value, "type": type},
             expire_minutes=self.ACCESS_TOKEN_EXPIRE,
@@ -82,58 +81,14 @@ class AuthService(BaseService):
         )
         return TokenCreate(access_token=access_token, refresh_token=refresh_token)
 
-    async def verify_business_user(
-        self, business_user: BusinessUserAccountIn
-    ) -> TokenCreate:
-        existing_business_user = (
-            await self.account_service.get_business_user_by_username(
-                username=business_user.username
-            )
-        )
-        tokens = await self.verify_account_for_token(
-            input_password=business_user.password,
-            type=AccountType.BUSINESS_USERS,
-            account=existing_business_user,
-        )
-        return tokens
-
-    async def verify_business(self, business: BusinessAccountIn) -> TokenCreate:
-        existing_business = await self.account_service.get_business_by_email(
-            email=business.email
-        )
-        tokens = self.verify_account_for_token(
-            input_password=business.password,
-            type=AccountType.BUSINESS,
-            account=existing_business,
-        )
-        return tokens
-
-    async def verify_user(self, user: UserAccountIn) -> TokenCreate:
-        existing_user = await self.account_service.get_user_by_email(email=user.email)
-        tokens = self.verify_account_for_token(
-            input_password=user.password,
-            type=AccountType.USERS,
-            account=existing_user,
-        )
-        return tokens
-
-    async def verify_account(self, login_info: LoginInfo):
-        if login_info.type == "users":
-            tokens = await self.verify_user(user=login_info)
-        elif login_info.type == "business":
-            tokens = await self.verify_business(business=login_info)
-        elif login_info.type == "business_users":
-            tokens = await self.verify_business_user(business_user=login_info)
-        else:
-            raise AdminUnauthorized()
-        return tokens
-
     def get_new_access_token_with_refresh(self, refresh_token: str, type: AccountType):
         try:
             payload = self.verify_token_and_type_for_payload(
                 token=refresh_token, _token_type=TokenType.REFRESH_TOKEN.value
             )
-            account_id = self.extract_account_id_from_payload(payload=payload)
+            account_id = payload.get("id")
+            if account_id is None:
+                raise AdminUnauthorized()
             type = type.value
             access_token = self.create_token(
                 data={"id": account_id, "token_type": TokenType.ACCESS_TOKEN.value, "type": type},
@@ -148,7 +103,9 @@ class AuthService(BaseService):
             payload = self.verify_token_and_type_for_payload(
                 token=access_token, _token_type=TokenType.ACCESS_TOKEN.value
             )
-            account_id = self.extract_account_id_from_payload(payload=payload)
+            account_id = payload.get("id")
+            if account_id is None:
+                raise AdminUnauthorized()
             type = payload.get("type")
             if type == AccountType.USERS.value:
                 account = await self.account_service.get_user_by_id(user_id=account_id)
