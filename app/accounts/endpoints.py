@@ -5,6 +5,7 @@ from app.accounts.schemas import (
     UserAccountOut,
     BusinessAccountOut,
     BusinessUserAccountCreate,
+    BusinessUserAccountOut
 )
 from typing import Union
 from app.auth.service import get_account
@@ -20,7 +21,7 @@ async def create_user_account(
     return account
 
 
-@account_router.post("/add")
+@account_router.post("/add", response_model=BusinessUserAccountOut)
 async def add_account_to_business(
     business_user: BusinessUserAccountCreate,
     account: Account = Depends(get_account),

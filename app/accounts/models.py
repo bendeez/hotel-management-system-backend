@@ -17,19 +17,8 @@ class Business_Users(Accounts):
     username: Mapped[str] = mapped_column(String(45))
     password: Mapped[str] = mapped_column(String(500))
     business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))
-    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
+    role_name: Mapped[str] = mapped_column(String(45))
 
     __mapper_args__ = {"polymorphic_identity": "business_users"}
 
 
-class Roles(BaseMixin):
-    name: Mapped[str] = mapped_column(String(45))
-
-
-class Role_Permissions(BaseMixin):
-    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
-
-
-class Permissions(BaseMixin):
-    name: Mapped[str] = mapped_column(String(45))
-    slug_value: Mapped[str] = mapped_column(String(45))

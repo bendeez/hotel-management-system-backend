@@ -16,16 +16,19 @@ from typing import Literal
 
 class BusinessUserAccountOut(BaseModel):
     username: str
+    business_id: int
+    role_name: str
 
 
-class BusinessUserAccountCreate(BaseModel):
+
+class BusinessUserAccountCreate(BusinessUserAccountOut):
+    password: str
+
+
+class BusinessUserAccountIn(BaseModel):
+    type: Literal["business_users"] = "business_users"
     username: str
     password: str
-    business_id: int
-
-
-class BusinessUserAccountIn(BusinessUserAccountCreate):
-    type: Literal["business_users"] = "business_users"
 
 
 AccountCreate = Annotated[

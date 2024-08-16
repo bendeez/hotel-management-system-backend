@@ -3,7 +3,7 @@ from fastapi import Depends
 from app.tools.db.database import get_db
 from app.tools.enums import DatabaseQueryOrder
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc, desc
+from sqlalchemy import select, asc, desc, inspect
 from typing import Optional, Any
 
 
@@ -30,8 +30,10 @@ class DatabaseTransactionService:
         order_by: Optional[InstrumentedAttribute] = None,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
         limit: int = 100,
-        offset: int = 100,
+        offset: int = 0,
     ):
+        if order_by is None:
+            order_by = inspect(model).primary_key[0]
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
         stmt = (
             select(model)

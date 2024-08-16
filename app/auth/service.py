@@ -84,7 +84,7 @@ class AuthService(BaseService):
     def get_new_access_token_with_refresh(self, refresh_token: str, type: AccountType):
         try:
             payload = self.verify_token_and_type_for_payload(
-                token=refresh_token, _token_type=TokenType.REFRESH_TOKEN.value
+                token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
             )
             account_id = payload.get("id")
             if account_id is None:
@@ -101,7 +101,7 @@ class AuthService(BaseService):
     async def decode_access_token_for_account(self, access_token: str) -> Users:
         try:
             payload = self.verify_token_and_type_for_payload(
-                token=access_token, _token_type=TokenType.ACCESS_TOKEN.value
+                token=access_token, _token_type=TokenType.ACCESS_TOKEN
             )
             account_id = payload.get("id")
             if account_id is None:
