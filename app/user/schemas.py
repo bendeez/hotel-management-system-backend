@@ -1,9 +1,10 @@
 from pydantic import BaseModel, EmailStr
 from typing import Literal
+from app.accounts.enums import AccountType
 
 
 class UserAccountIn(BaseModel):
-    type: Literal["users"] = "users"
+    type: Literal[AccountType.USERS] = AccountType.USERS
     email: EmailStr
     password: str
 

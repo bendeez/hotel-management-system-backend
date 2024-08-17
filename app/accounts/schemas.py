@@ -12,10 +12,11 @@ from app.user.models import Users
 from app.business.models import Business
 from app.accounts.models import Business_Users
 from typing import Literal
+from app.accounts.enums import AccountType
 
 
 class BusinessUserAccountOut(BaseModel):
-    username: str
+    email: str
     business_id: int
     role_name: str
 
@@ -26,8 +27,8 @@ class BusinessUserAccountCreate(BusinessUserAccountOut):
 
 
 class BusinessUserAccountIn(BaseModel):
-    type: Literal["business_users"] = "business_users"
-    username: str
+    type: Literal[AccountType.BUSINESS_USERS] = AccountType.BUSINESS_USERS
+    email: str
     password: str
 
 

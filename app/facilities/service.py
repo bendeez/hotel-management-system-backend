@@ -1,6 +1,7 @@
 from app.tools.base_service import BaseService
 from app.facilities.models import Facility
 from app.facilities.schemas import FacilityIn
+from app.tools.chroma.service import ChromaService
 
 
 class FacilitiesService(BaseService):

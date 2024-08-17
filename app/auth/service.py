@@ -13,6 +13,7 @@ from app.accounts.service import AccountsService
 from app.accounts.enums import AccountType
 from app.user.models import Users
 from app.auth.enums import TokenType
+from app.tools.enums import get_enum_by_value
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
@@ -45,53 +46,36 @@ class AuthService(BaseService):
 
     def verify_token_and_type_for_payload(self, token: str, _token_type: TokenType) -> dict:
         payload = self.decode(token=token)
-        token_type = payload.get("token_type")
+        token_type = payload["token_type"]
         if token_type != _token_type.value:
             raise AdminUnauthorized()
         return payload
 
     async def verify_account(self, login_info: LoginInfo):
-        if login_info.type == "users":
-            account = await self.account_service.get_user_by_email(email=login_info.email)
-            type = AccountType.USERS.value
-        elif login_info.type == "business":
-            account = await self.account_service.get_business_by_email(
-                email=login_info.email
-            )
-            type = AccountType.BUSINESS.value
-        elif login_info.type == "business_users":
-            account = await self.account_service.get_business_user_by_username(
-                username=login_info.username
-            )
-            type = AccountType.BUSINESS_USERS.value
-        else:
-            raise AdminUnauthorized()
+        account = await self.account_service.get_account_by_email(account_type=login_info.type, email=login_info.email)
         if account is None:
             raise AdminUnauthorized()
         verify = self.hash_service.verify(login_info.password, account.password)
         if not verify:
             raise AdminUnauthorized()
         access_token = self.create_token(
-            data={"id": account.id, "token_type": TokenType.ACCESS_TOKEN.value, "type": type},
+            data={"id": account.id, "token_type": TokenType.ACCESS_TOKEN.value, "type": login_info.type.value},
             expire_minutes=self.ACCESS_TOKEN_EXPIRE,
         )
         refresh_token = self.create_token(
-            data={"id": account.id, "token_type": TokenType.REFRESH_TOKEN.value, "type": type},
+            data={"id": account.id, "token_type": TokenType.REFRESH_TOKEN.value, "type": login_info.type.value},
             expire_minutes=self.REFRESH_TOKEN_EXPIRE,
         )
         return TokenCreate(access_token=access_token, refresh_token=refresh_token)
 
-    def get_new_access_token_with_refresh(self, refresh_token: str, type: AccountType):
+    def get_new_access_token_with_refresh_token(self, refresh_token: str, account_type: AccountType):
         try:
             payload = self.verify_token_and_type_for_payload(
                 token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
             )
-            account_id = payload.get("id")
-            if account_id is None:
-                raise AdminUnauthorized()
-            type = type.value
+            account_id = payload["id"]
             access_token = self.create_token(
-                data={"id": account_id, "token_type": TokenType.ACCESS_TOKEN.value, "type": type},
+                data={"id": account_id, "token_type": TokenType.ACCESS_TOKEN.value, "type": account_type.value},
                 expire_minutes=self.ACCESS_TOKEN_EXPIRE,
             )
             return AccessToken(access_token=access_token)
@@ -103,22 +87,9 @@ class AuthService(BaseService):
             payload = self.verify_token_and_type_for_payload(
                 token=access_token, _token_type=TokenType.ACCESS_TOKEN
             )
-            account_id = payload.get("id")
-            if account_id is None:
-                raise AdminUnauthorized()
-            type = payload.get("type")
-            if type == AccountType.USERS.value:
-                account = await self.account_service.get_user_by_id(user_id=account_id)
-            elif type == AccountType.BUSINESS.value:
-                account = await self.account_service.get_business_by_id(
-                    business_id=account_id
-                )
-            elif type == AccountType.BUSINESS_USERS.value:
-                account = await self.account_service.get_business_user_by_id(
-                    business_user_id=account_id
-                )
-            else:
-                raise AdminUnauthorized()
+            account_id = payload["id"]
+            account_type = get_enum_by_value(enum=AccountType, value=payload["type"])
+            account = await self.account_service.get_account_by_id(account_type=account_type, id=account_id)
             if account is None:
                 raise AdminUnauthorized()
             return account

@@ -20,8 +20,8 @@ async def login(
 def refresh(
     token_request: TokenRequest, auth_service: AuthService = Depends(AuthService)
 ):
-    access_token = auth_service.get_new_access_token_with_refresh(
+    access_token = auth_service.get_new_access_token_with_refresh_token(
         refresh_token=token_request.refresh_token,
-        type=token_request.type,
+        account_type=token_request.type,
     )
     return access_token

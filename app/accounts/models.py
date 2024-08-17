@@ -14,7 +14,7 @@ class Accounts(BaseMixin):
 
 class Business_Users(Accounts):
     id: Mapped[int] = mapped_column(ForeignKey("accounts.id"), primary_key=True)
-    username: Mapped[str] = mapped_column(String(45))
+    email: Mapped[str] = mapped_column(String(45), unique=True)
     password: Mapped[str] = mapped_column(String(500))
     business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))
     role_name: Mapped[str] = mapped_column(String(45))
