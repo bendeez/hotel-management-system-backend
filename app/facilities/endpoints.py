@@ -24,5 +24,3 @@ async def get_facilities(
 ):
     facilities = await facilities_service.get_all_facilities()
     return facilities
-
-

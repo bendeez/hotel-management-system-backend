@@ -44,7 +44,9 @@ class AuthService(BaseService):
     def decode(self, token):
         return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
 
-    def verify_token_and_type_for_payload(self, token: str, _token_type: TokenType) -> dict:
+    def verify_token_and_type_for_payload(
+        self, token: str, _token_type: TokenType
+    ) -> dict:
         payload = self.decode(token=token)
         token_type = payload["token_type"]
         if token_type != _token_type.value:
@@ -52,30 +54,46 @@ class AuthService(BaseService):
         return payload
 
     async def verify_account(self, login_info: LoginInfo):
-        account = await self.account_service.get_account_by_email(account_type=login_info.type, email=login_info.email)
+        account = await self.account_service.get_account_by_email(
+            account_type=login_info.type, email=login_info.email
+        )
         if account is None:
             raise AdminUnauthorized()
         verify = self.hash_service.verify(login_info.password, account.password)
         if not verify:
             raise AdminUnauthorized()
         access_token = self.create_token(
-            data={"id": account.id, "token_type": TokenType.ACCESS_TOKEN.value, "type": login_info.type.value},
+            data={
+                "id": account.id,
+                "token_type": TokenType.ACCESS_TOKEN.value,
+                "type": login_info.type.value,
+            },
             expire_minutes=self.ACCESS_TOKEN_EXPIRE,
         )
         refresh_token = self.create_token(
-            data={"id": account.id, "token_type": TokenType.REFRESH_TOKEN.value, "type": login_info.type.value},
+            data={
+                "id": account.id,
+                "token_type": TokenType.REFRESH_TOKEN.value,
+                "type": login_info.type.value,
+            },
             expire_minutes=self.REFRESH_TOKEN_EXPIRE,
         )
         return TokenCreate(access_token=access_token, refresh_token=refresh_token)
 
-    def get_new_access_token_with_refresh_token(self, refresh_token: str, account_type: AccountType):
+    def get_new_access_token_with_refresh_token(
+        self, refresh_token: str, account_type: AccountType
+    ):
         try:
             payload = self.verify_token_and_type_for_payload(
                 token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
             )
             account_id = payload["id"]
             access_token = self.create_token(
-                data={"id": account_id, "token_type": TokenType.ACCESS_TOKEN.value, "type": account_type.value},
+                data={
+                    "id": account_id,
+                    "token_type": TokenType.ACCESS_TOKEN.value,
+                    "type": account_type.value,
+                },
                 expire_minutes=self.ACCESS_TOKEN_EXPIRE,
             )
             return AccessToken(access_token=access_token)
@@ -89,7 +107,9 @@ class AuthService(BaseService):
             )
             account_id = payload["id"]
             account_type = get_enum_by_value(enum=AccountType, value=payload["type"])
-            account = await self.account_service.get_account_by_id(account_type=account_type, id=account_id)
+            account = await self.account_service.get_account_by_id(
+                account_type=account_type, id=account_id
+            )
             if account is None:
                 raise AdminUnauthorized()
             return account

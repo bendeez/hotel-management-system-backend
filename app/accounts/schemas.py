@@ -21,7 +21,6 @@ class BusinessUserAccountOut(BaseModel):
     role_name: str
 
 
-
 class BusinessUserAccountCreate(BusinessUserAccountOut):
     password: str
 

@@ -5,7 +5,7 @@ from app.accounts.schemas import (
     UserAccountOut,
     BusinessAccountOut,
     BusinessUserAccountCreate,
-    BusinessUserAccountOut
+    BusinessUserAccountOut,
 )
 from typing import Union
 from app.auth.service import get_account

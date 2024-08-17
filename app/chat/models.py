@@ -1,13 +1,9 @@
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column
-)
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey, Text, String
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.tools.models.base_models import BaseMixin
 from typing import Optional
-
 
 
 class Chat_Messages(BaseMixin):
@@ -36,12 +32,14 @@ class Chat_User(Chat_Messenger):
         "polymorphic_identity": "chat_user",
     }
 
+
 class Chat_Agent(Chat_Messenger):
     id: Mapped[int] = mapped_column(ForeignKey("chat_messenger.id"), primary_key=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "chat_agent",
     }
+
 
 class Chat_Sessions(BaseMixin):
     id: Mapped[str] = mapped_column(String(45), primary_key=True)

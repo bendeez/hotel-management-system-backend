@@ -20,5 +20,3 @@ class Business_Users(Accounts):
     role_name: Mapped[str] = mapped_column(String(45))
 
     __mapper_args__ = {"polymorphic_identity": "business_users"}
-
-

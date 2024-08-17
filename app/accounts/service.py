@@ -60,13 +60,9 @@ class AccountsService(BusinessService, UserService):
         if account_type.value == "users":
             account = await self.get_user_by_email(email=email)
         elif account_type.value == "business":
-            account = await self.get_business_by_email(
-                email=email
-            )
+            account = await self.get_business_by_email(email=email)
         elif account_type.value == "business_users":
-            account = await self.get_business_user_by_email(
-                email=email
-            )
+            account = await self.get_business_user_by_email(email=email)
         else:
             raise ValueError("Invalid account type")
         return account
