@@ -5,7 +5,7 @@ async def test_create_facility(http_request, access_token):
     title = "spa"
     description = "place to relax"
     response = await http_request(
-        "/facilities",
+        "/facility",
         method=RequestMethod.POST,
         token=access_token,
         json={"title": title, "description": description},
@@ -17,7 +17,7 @@ async def test_create_facility(http_request, access_token):
 
 async def test_get_facilities(http_request, access_token):
     response = await http_request(
-        "/facilities", method=RequestMethod.GET, token=access_token
+        "/facility", method=RequestMethod.GET, token=access_token
     )
     assert response.status_code == 200
     data = response.json()

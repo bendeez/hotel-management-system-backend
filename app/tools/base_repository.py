@@ -1,21 +1,22 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.orm import selectinload
 from fastapi import Depends
-from app.tools.db.database import get_db
-from app.tools.enums import DatabaseQueryOrder
+from app.tools.database import get_db
+from app.tools.constants import DatabaseQueryOrder
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, asc, desc, inspect
 from typing import Optional, Any
 
 
-class DatabaseTransactionService:
+class BaseRepository:
     def __init__(self, db: AsyncSession = Depends(get_db)):
         self.db = db
 
-    async def create(self, model, **attributes):
-        model_instance = model(**attributes)
+    async def create(self, model_instance, ongoing_transaction=False):
         self.db.add(model_instance)
-        await self.db.commit()
-        await self.db.refresh(model_instance)
+        if not ongoing_transaction:
+            await self.db.commit()
+            await self.db.refresh(model_instance)
         return model_instance
 
     async def delete(self, model_instance, ongoing_transaction=False):
@@ -27,6 +28,7 @@ class DatabaseTransactionService:
         self,
         model,
         filter: Optional[dict[InstrumentedAttribute, Any]] = {},
+        relationships: list[InstrumentedAttribute] = [],
         order_by: Optional[InstrumentedAttribute] = None,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
         limit: int = 100,
@@ -41,15 +43,23 @@ class DatabaseTransactionService:
             .limit(limit)
             .offset(offset)
             .where(*[attribute == value for attribute, value in filter.items()])
+            .options(
+                *[selectinload(relationship) for relationship in relationships]
+            )  # no chaining
         )
         models = await self.db.execute(stmt)
         return models.scalars().all()
 
-    async def get_one(self, model, filter: Optional[dict] = None):
-        stmt = select(model)
-        if filter is not None:
-            stmt = stmt.where(
-                *[attribute == value for attribute, value in filter.items()]
-            )
+    async def get_one(
+        self,
+        model,
+        filter: Optional[dict[InstrumentedAttribute, Any]] = {},
+        relationships: list[InstrumentedAttribute] = [],
+    ):
+        stmt = (
+            select(model)
+            .where(*[attribute == value for attribute, value in filter.items()])
+            .options(*[selectinload(relationship) for relationship in relationships])
+        )  # no chaining
         model = await self.db.execute(stmt)
         return model.scalars().first()

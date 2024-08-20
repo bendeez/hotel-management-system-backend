@@ -1,10 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import Literal
-from app.accounts.enums import AccountType
 
 
 class BusinessAccountIn(BaseModel):
-    type: Literal[AccountType.BUSINESS] = AccountType.BUSINESS
     email: EmailStr
     password: str
 
@@ -19,3 +16,18 @@ class BusinessAccountOut(BaseModel):
     email: EmailStr
     name: str
     location: str
+
+
+class BusinessUserAccountOut(BaseModel):
+    email: str
+    business_id: int
+    role_name: str
+
+
+class BusinessUserAccountCreate(BusinessUserAccountOut):
+    password: str
+
+
+class BusinessUserAccountIn(BaseModel):
+    email: str
+    password: str

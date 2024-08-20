@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.facilities.endpoints import facilities_router
-from app.chat.endpoints import chat_logs_router
+from app.facility.endpoints import facility_router
+from app.chat.endpoints import chat_router
+from app.business.endpoints import business_router
 from app.auth.endpoints import auth_router
 from app.user.endpoints import user_router
-from app.accounts.endpoints import account_router
 from app.exception_handlers import add_exception_handlers
 
 
@@ -18,8 +18,8 @@ app.add_middleware(
 )
 
 add_exception_handlers(app=app)
-app.include_router(facilities_router)
-app.include_router(chat_logs_router)
+app.include_router(facility_router)
+app.include_router(chat_router)
 app.include_router(auth_router)
 app.include_router(user_router)
-app.include_router(account_router)
+app.include_router(business_router)

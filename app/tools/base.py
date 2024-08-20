@@ -1,4 +1,4 @@
-from app.facilities.models import *
+from app.facility.models import *
 from app.business.models import *
 from app.chat.models import *
 from app.user.models import *
