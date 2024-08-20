@@ -27,8 +27,8 @@ class BaseRepository:
     async def get_all(
         self,
         model,
-        filter: Optional[dict[InstrumentedAttribute, Any]] = {},
-        relationships: list[InstrumentedAttribute] = [],
+        filter: Optional[dict[InstrumentedAttribute, Any]] = None,
+        relationships: Optional[list[InstrumentedAttribute]] = None,
         order_by: Optional[InstrumentedAttribute] = None,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
         limit: int = 100,
@@ -36,6 +36,10 @@ class BaseRepository:
     ):
         if order_by is None:
             order_by = inspect(model).primary_key[0]
+        if filter is None:
+            filter = {}
+        if relationships is None:
+            relationships = []
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
         stmt = (
             select(model)
@@ -53,9 +57,13 @@ class BaseRepository:
     async def get_one(
         self,
         model,
-        filter: Optional[dict[InstrumentedAttribute, Any]] = {},
-        relationships: list[InstrumentedAttribute] = [],
+        filter: Optional[dict[InstrumentedAttribute, Any]] = None,
+        relationships: Optional[list[InstrumentedAttribute]] = None,
     ):
+        if filter is None:
+            filter = {}
+        if relationships is None:
+            relationships = []
         stmt = (
             select(model)
             .where(*[attribute == value for attribute, value in filter.items()])
