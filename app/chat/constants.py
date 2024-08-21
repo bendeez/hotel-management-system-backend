@@ -1,11 +1,8 @@
 from enum import Enum
+from app.chat.models import Chat_Messages
 
 
-class ChatsAttributes(Enum):
-    message_id = "message_id"
-    session_id = "session_id"
-    chat_id = "chat_id"
-    message = "message"
-    messenger = "messenger"
-    date = "date"
-    environment = "environment"
+
+
+ChatsAttributes = Enum(Chat_Messages.__tablename__,[column.name for column in Chat_Messages.__table__.columns])
+

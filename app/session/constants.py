@@ -1,7 +1,7 @@
 from enum import Enum
+from app.session.models import Chat_Sessions
 
 
-class SessionAttributes(Enum):
-    session_id = "session_id"
-    start_time = "start_time"
-    end_time = "end_time"
+
+
+SessionAttributes = Enum(Chat_Sessions.__tablename__,[column.name for column in Chat_Sessions.__table__.columns])

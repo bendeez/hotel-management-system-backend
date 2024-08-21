@@ -11,8 +11,4 @@ class DatabaseQueryQuantity(Enum):
     ALL = "all"
 
 
-def get_enum_by_value(enum, value):
-    for e in enum:
-        if e.value == value:
-            return e
-    return None
+
