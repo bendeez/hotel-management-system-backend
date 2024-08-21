@@ -9,6 +9,3 @@ class DatabaseQueryOrder(Enum):
 class DatabaseQueryQuantity(Enum):
     FIRST = "first"
     ALL = "all"
-
-
-
