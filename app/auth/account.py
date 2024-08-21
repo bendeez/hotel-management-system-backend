@@ -16,7 +16,5 @@ async def get_account(
         token=token, _token_type=TokenType.ACCESS_TOKEN
     )
     account_id = payload["id"]
-    account = await account_repository.get_account_by_id(
-        account_id=account_id, load_sub=True
-    )
-    return account.sub
+    account = await account_repository.get_account_by_id(account_id=account_id)
+    return account

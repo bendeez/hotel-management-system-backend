@@ -3,6 +3,8 @@ from app.facility.schemas import FacilityIn, FacilityCreate, FacilitiesOut
 from typing import List
 from app.facility.service import FacilityService
 from app.facility.repository import FacilityRepository
+from app.auth.account import get_account
+from app.accounts.models import Accounts
 
 
 facility_router = APIRouter(prefix="/facility")
@@ -15,6 +17,7 @@ async def create_facility(
     facility: FacilityIn,
     facility_service: FacilityService = Depends(FacilityService),
     facility_repository: FacilityRepository = Depends(FacilityRepository),
+    account: Accounts = Depends(get_account),
 ):
     facility = facility_service.create_facility(facility=facility)
     saved_facility = await facility_repository.create(facility)
@@ -24,6 +27,8 @@ async def create_facility(
 @facility_router.get("/", response_model=List[FacilitiesOut])
 async def get_facilities(
     facility_repository: FacilityRepository = Depends(FacilityRepository),
+    account: Accounts = Depends(get_account),
 ):
+    print(account)
     facilities = await facility_repository.get_all_facilities()
     return facilities

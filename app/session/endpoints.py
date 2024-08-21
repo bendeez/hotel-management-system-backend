@@ -5,10 +5,10 @@ from app.tools.constants import DatabaseQueryOrder
 from app.session.repository import SessionRepository
 from typing import List
 
-session_router = APIRouter()
+session_router = APIRouter(prefix="/sessions")
 
 
-@session_router.get("/sessions", response_model=List[SessionsOut])
+@session_router.get("/", response_model=List[SessionsOut])
 async def get_chat_sessions(
     limit: int = 100,
     offset: int = 0,

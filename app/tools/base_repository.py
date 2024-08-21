@@ -1,5 +1,5 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_polymorphic
 from fastapi import Depends
 from app.tools.database import get_db
 from app.tools.constants import DatabaseQueryOrder
@@ -24,9 +24,30 @@ class BaseRepository:
         if not ongoing_transaction:
             await self.db.commit()
 
+    def build_query(
+        self,
+        model,
+        polymorphic: bool = False,
+        filter: Optional[dict[InstrumentedAttribute, Any]] = None,
+        relationships: Optional[list[InstrumentedAttribute]] = None,
+    ):
+        filter = filter or {}
+        relationships = relationships or []
+        if polymorphic:
+            model = with_polymorphic(model, "*")
+        stmt = (
+            select(model)
+            .where(*[attribute == value for attribute, value in filter.items()])
+            .options(
+                *[selectinload(relationship) for relationship in relationships]
+            )  # no chaining
+        )
+        return stmt
+
     async def get_all(
         self,
         model,
+        polymorphic: bool = False,
         filter: Optional[dict[InstrumentedAttribute, Any]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
         order_by: Optional[InstrumentedAttribute] = None,
@@ -34,40 +55,30 @@ class BaseRepository:
         limit: int = 100,
         offset: int = 0,
     ):
-        if order_by is None:
-            order_by = inspect(model).primary_key[0]
-        if filter is None:
-            filter = {}
-        if relationships is None:
-            relationships = []
+        order_by = order_by or inspect(model).primary_key[0]
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
-        stmt = (
-            select(model)
-            .order_by(order_by)
-            .limit(limit)
-            .offset(offset)
-            .where(*[attribute == value for attribute, value in filter.items()])
-            .options(
-                *[selectinload(relationship) for relationship in relationships]
-            )  # no chaining
+        stmt = self.build_query(
+            model=model,
+            polymorphic=polymorphic,
+            filter=filter,
+            relationships=relationships,
         )
-        models = await self.db.execute(stmt)
-        return models.scalars().all()
+        stmt = stmt.order_by(order_by).limit(limit).offset(offset)
+        model_instances = await self.db.execute(stmt)
+        return model_instances.scalars().all()
 
     async def get_one(
         self,
         model,
+        polymorphic: bool = False,
         filter: Optional[dict[InstrumentedAttribute, Any]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
     ):
-        if filter is None:
-            filter = {}
-        if relationships is None:
-            relationships = []
-        stmt = (
-            select(model)
-            .where(*[attribute == value for attribute, value in filter.items()])
-            .options(*[selectinload(relationship) for relationship in relationships])
-        )  # no chaining
-        model = await self.db.execute(stmt)
-        return model.scalars().first()
+        stmt = self.build_query(
+            model=model,
+            polymorphic=polymorphic,
+            filter=filter,
+            relationships=relationships,
+        )
+        model_instance = await self.db.execute(stmt)
+        return model_instance.scalars().first()
