@@ -41,10 +41,10 @@ class AuthService:
             raise AdminUnauthorized()
         return payload
 
-    def verify_new_account(self, account: Accounts, input_password: str):
+    def verify_account(self, account: Accounts, input_password: str):
         if account is None:
             raise AdminUnauthorized()
-        verify = self.hash_service.verify(account.password, input_password)
+        verify = self.hash_service.verify(input_password, account.password)
         if not verify:
             raise AdminUnauthorized()
         access_token = self.create_token(

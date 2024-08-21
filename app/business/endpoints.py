@@ -10,6 +10,7 @@ from app.business.service import BusinessService
 from app.auth.account import get_account
 from app.accounts.models import Accounts
 
+
 business_router = APIRouter(prefix="/business")
 
 

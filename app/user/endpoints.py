@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from app.user.schemas import UserAccountOut, UserAccountCreate
 from app.user.service import UserService
 from app.user.repository import UserRepository
+from app.accounts.models import Accounts
+from app.auth.account import get_account
 
 
 user_router = APIRouter(prefix="/user")
@@ -12,6 +14,7 @@ async def create_user_account(
     user: UserAccountCreate,
     user_repository: UserRepository = Depends(UserRepository),
     user_service: UserService = Depends(UserService),
+    account: Accounts = Depends(get_account),
 ):
     existing_user = await user_repository.get_user_by_email(email=user.email)
     if existing_user is None:

@@ -16,7 +16,7 @@ async def user_login(
     auth_service: AuthService = Depends(AuthService),
 ):
     user_account = await account_repository.get_account_by_email(email=user.email)
-    tokens = auth_service.verify_new_account(
+    tokens = auth_service.verify_account(
         account=user_account, input_password=user.password
     )
     return tokens
@@ -31,7 +31,7 @@ async def business_login(
     business_account = await account_repository.get_account_by_email(
         email=business.email
     )
-    tokens = auth_service.verify_new_account(
+    tokens = auth_service.verify_account(
         account=business_account, input_password=business.password
     )
     return tokens
@@ -44,7 +44,7 @@ async def business_user_login(
     auth_service: AuthService = Depends(AuthService),
 ):
     account = await account_repository.get_account_by_email(email=business_user.email)
-    tokens = auth_service.verify_new_account(
+    tokens = auth_service.verify_account(
         account=account, input_password=business_user.password
     )
     return tokens
