@@ -12,9 +12,8 @@ async def get_account(
     auth_service: AuthService = Depends(AuthService),
     account_repository: AccountsRepository = Depends(AccountsRepository),
 ):
-    payload = auth_service.verify_token_and_type_for_payload(
+    account_id = auth_service.get_account_id(
         token=token, _token_type=TokenType.ACCESS_TOKEN
     )
-    account_id = payload["id"]
     account = await account_repository.get_account_by_id(account_id=account_id)
     return account

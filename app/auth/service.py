@@ -19,27 +19,33 @@ class AuthService:
         self.REFRESH_TOKEN_EXPIRE = settings.REFRESH_TOKEN_EXPIRE
         self.hash_service = HashService()
 
-    def encode(self, to_encode: dict):
+    def _encode(self, to_encode: dict):
         return jwt.encode(to_encode, self.JWT_SECRET_KEY, algorithm=self.JWT_ALGORITHM)
 
-    def create_token(self, data: dict, expire_minutes: int):
+    def _create_token(self, data: dict, expire_minutes: int):
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + timedelta(minutes=expire_minutes)
         to_encode.update({"exp": expire})
-        token = self.encode(to_encode=to_encode)
+        token = self._encode(to_encode=to_encode)
         return token
 
-    def decode(self, token):
+    def _decode(self, token):
         return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
 
-    def verify_token_and_type_for_payload(
+    def _verify_token_and_type_for_payload(
         self, token: str, _token_type: TokenType
     ) -> dict:
-        payload = self.decode(token=token)
+        payload = self._decode(token=token)
         token_type = payload["token_type"]
         if token_type != _token_type.value:
             raise AdminUnauthorized()
         return payload
+
+    def get_account_id(self, token: str, _token_type: TokenType):
+        payload = self._verify_token_and_type_for_payload(
+            token=token, _token_type=_token_type
+        )
+        return payload["id"]
 
     def verify_account(self, account: Accounts, input_password: str):
         if account is None:
@@ -47,7 +53,7 @@ class AuthService:
         verify = self.hash_service.verify(input_password, account.password)
         if not verify:
             raise AdminUnauthorized()
-        access_token = self.create_token(
+        access_token = self._create_token(
             data={
                 "id": account.id,
                 "token_type": TokenType.ACCESS_TOKEN.value,
@@ -55,7 +61,7 @@ class AuthService:
             },
             expire_minutes=self.ACCESS_TOKEN_EXPIRE,
         )
-        refresh_token = self.create_token(
+        refresh_token = self._create_token(
             data={
                 "id": account.id,
                 "token_type": TokenType.REFRESH_TOKEN.value,
@@ -67,12 +73,12 @@ class AuthService:
 
     def get_new_access_token_with_refresh_token(self, refresh_token: str):
         try:
-            payload = self.verify_token_and_type_for_payload(
+            payload = self._verify_token_and_type_for_payload(
                 token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
             )
             account_id = payload["id"]
             account_type = payload["type"]
-            access_token = self.create_token(
+            access_token = self._create_token(
                 data={
                     "id": account_id,
                     "token_type": TokenType.ACCESS_TOKEN.value,
