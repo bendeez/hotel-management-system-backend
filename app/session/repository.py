@@ -12,7 +12,7 @@ class SessionRepository(BaseRepository):
         limit: int = 100,
         offset: int = 0,
     ):
-        chat_sessions = await self.get_all(
+        chat_sessions = await self._get_all(
             model=Chat_Sessions,
             limit=limit,
             offset=offset,

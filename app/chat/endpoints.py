@@ -9,14 +9,14 @@ chat_router = APIRouter(prefix="/chat")
 
 
 @chat_router.get("/chat-logs", response_model=List[ChatLogsOut])
-async def get_all_chat_logs(
+async def _get_all_chat_logs(
     limit: int = 100,
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
     order_by: ChatsAttributes = ChatsAttributes.date,
     chat_repository: ChatRepository = Depends(ChatRepository),
 ):
-    chat_logs = await chat_repository.get_all_chat_logs(
+    chat_logs = await chat_repository._get_all_chat_logs(
         order=order, order_by=order_by, limit=limit, offset=offset
     )
     return chat_logs

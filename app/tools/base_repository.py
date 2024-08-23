@@ -24,7 +24,7 @@ class BaseRepository:
         if not ongoing_transaction:
             await self.db.commit()
 
-    def build_query(
+    def _build_query(
         self,
         model,
         polymorphic: bool = False,
@@ -44,7 +44,7 @@ class BaseRepository:
         )
         return stmt
 
-    async def get_all(
+    async def _get_all(
         self,
         model,
         polymorphic: bool = False,
@@ -57,7 +57,7 @@ class BaseRepository:
     ):
         order_by = order_by or inspect(model).primary_key[0]
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
-        stmt = self.build_query(
+        stmt = self._build_query(
             model=model,
             polymorphic=polymorphic,
             filter=filter,
@@ -67,14 +67,14 @@ class BaseRepository:
         model_instances = await self.db.execute(stmt)
         return model_instances.scalars().all()
 
-    async def get_one(
+    async def _get_one(
         self,
         model,
         polymorphic: bool = False,
         filter: Optional[dict[InstrumentedAttribute, Any]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
     ):
-        stmt = self.build_query(
+        stmt = self._build_query(
             model=model,
             polymorphic=polymorphic,
             filter=filter,

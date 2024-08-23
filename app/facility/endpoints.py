@@ -29,5 +29,5 @@ async def get_facilities(
     facility_repository: FacilityRepository = Depends(FacilityRepository),
     account: Accounts = Depends(get_account),
 ):
-    facilities = await facility_repository.get_all_facilities()
+    facilities = await facility_repository._get_all_facilities()
     return facilities

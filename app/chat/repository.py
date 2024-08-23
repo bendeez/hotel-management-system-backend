@@ -5,14 +5,14 @@ from app.chat.models import Chat_Messages
 
 
 class ChatRepository(BaseRepository):
-    async def get_all_chat_logs(
+    async def _get_all_chat_logs(
         self,
         order: DatabaseQueryOrder,
         order_by: ChatsAttributes,
         limit: int = 100,
         offset: int = 0,
     ):
-        chat_logs = await self.get_all(
+        chat_logs = await self._get_all(
             model=Chat_Messages,
             order_by=getattr(Chat_Messages, order_by.value),
             order=order,
@@ -29,7 +29,7 @@ class ChatRepository(BaseRepository):
         limit: int = 100,
         offset: int = 0,
     ):
-        chat_logs = await self.get_all(
+        chat_logs = await self._get_all(
             model=Chat_Messages,
             order_by=getattr(Chat_Messages, order_by.value),
             order=order,

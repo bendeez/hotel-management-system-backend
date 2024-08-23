@@ -21,7 +21,7 @@ class BusinessService:
         business.password = self.hash_service.hash(business.password)
         return Business(**business.model_dump())
 
-    async def create_business_user_account(
+    def create_business_user_account(
         self,
         account: Accounts,
         business_user: BusinessUserAccountCreate,

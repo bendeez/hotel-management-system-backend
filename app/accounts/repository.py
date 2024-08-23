@@ -7,7 +7,7 @@ from app.business.models import Business, Business_Users
 
 class AccountsRepository(BaseRepository):
     async def get_account_by_email(self, email: str):
-        stmt = self.build_query(model=Accounts, polymorphic=True)
+        stmt = self._build_query(model=Accounts, polymorphic=True)
         stmt = stmt.where(
             or_(
                 Users.email == email,
@@ -19,7 +19,7 @@ class AccountsRepository(BaseRepository):
         return account.scalars().first()
 
     async def get_account_by_id(self, account_id: int):
-        account = await self.get_one(
+        account = await self._get_one(
             model=Accounts,
             polymorphic=True,
             filter={Accounts.id: account_id},

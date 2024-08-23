@@ -1,9 +1,8 @@
 from app.config import settings
 import jwt
-from app.auth.exceptions import AdminUnauthorized, InvalidRefreshToken
-from app.auth.schemas import TokenCreate
+from app.auth.exceptions import AdminUnauthorized, InvalidToken
+from app.auth.schemas import TokenCreate, AccessToken
 from datetime import datetime, timezone, timedelta
-from app.auth.schemas import AccessToken
 from app.utils.service import HashService
 from app.accounts.models import Accounts
 from app.auth.constants import TokenType
@@ -30,7 +29,10 @@ class AuthService:
         return token
 
     def _decode(self, token):
-        return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
+        try:
+            return jwt.decode(token, self.JWT_SECRET_KEY, self.JWT_ALGORITHM)
+        except jwt.PyJWTError:
+            raise AdminUnauthorized()
 
     def _verify_token_and_type_for_payload(
         self, token: str, _token_type: TokenType
@@ -38,7 +40,7 @@ class AuthService:
         payload = self._decode(token=token)
         token_type = payload["token_type"]
         if token_type != _token_type.value:
-            raise AdminUnauthorized()
+            raise InvalidToken()
         return payload
 
     def get_account_id(self, token: str, _token_type: TokenType):
@@ -47,10 +49,10 @@ class AuthService:
         )
         return payload["id"]
 
-    def verify_account(self, account: Accounts, input_password: str):
+    def verify_account(self, account: Accounts, input_password: str)-> TokenCreate:
         if account is None:
             raise AdminUnauthorized()
-        verify = self.hash_service.verify(input_password, account.password)
+        verify = self.hash_service.verify(password=input_password, hashed_password=account.password)
         if not verify:
             raise AdminUnauthorized()
         access_token = self._create_token(
@@ -71,21 +73,18 @@ class AuthService:
         )
         return TokenCreate(access_token=access_token, refresh_token=refresh_token)
 
-    def get_new_access_token_with_refresh_token(self, refresh_token: str):
-        try:
-            payload = self._verify_token_and_type_for_payload(
-                token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
-            )
-            account_id = payload["id"]
-            account_type = payload["type"]
-            access_token = self._create_token(
-                data={
-                    "id": account_id,
-                    "token_type": TokenType.ACCESS_TOKEN.value,
-                    "type": account_type,
-                },
-                expire_minutes=self.ACCESS_TOKEN_EXPIRE,
-            )
-            return AccessToken(access_token=access_token)
-        except jwt.PyJWTError:
-            raise InvalidRefreshToken()
+    def get_new_access_token_with_refresh_token(self, refresh_token: str) -> AccessToken:
+        payload = self._verify_token_and_type_for_payload(
+            token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
+        )
+        account_id = payload["id"]
+        account_type = payload["type"]
+        access_token = self._create_token(
+            data={
+                "id": account_id,
+                "token_type": TokenType.ACCESS_TOKEN.value,
+                "type": account_type,
+            },
+            expire_minutes=self.ACCESS_TOKEN_EXPIRE,
+        )
+        return AccessToken(access_token=access_token)
