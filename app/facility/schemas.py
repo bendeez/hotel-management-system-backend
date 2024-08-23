@@ -1,15 +1,13 @@
 from pydantic import BaseModel
 
 
-class FacilityIn(BaseModel):
+
+
+class FacilityCreate(BaseModel):
     title: str
     description: str
-    business_id: int
+    account_id: int
 
 
-class FacilityCreate(FacilityIn):
+class FacilityOut(FacilityCreate):
     id: int
-
-
-class FacilitiesOut(FacilityCreate):
-    pass

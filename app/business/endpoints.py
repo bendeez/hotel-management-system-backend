@@ -24,11 +24,11 @@ async def create_business_account(
         email=business.email
     )
     if existing_business is None:
-        business_exists = False
+        business_email_exists = False
     else:
-        business_exists = True
+        business_email_exists = True
     business_account = business_service.create_business_account(
-        business=business, business_exists=business_exists
+        business=business, business_email_exists=business_email_exists
     )
     saved_business_account = await business_repository.create(business_account)
     return saved_business_account
@@ -45,13 +45,13 @@ async def add_account_to_business(
         email=business_user.email
     )
     if existing_business_user is None:
-        business_user_exists = False
+        business_user_email_exists = False
     else:
-        business_user_exists = True
+        business_user_email_exists = True
     business_user_account = business_service.create_business_user_account(
         account=account,
         business_user=business_user,
-        business_user_exists=business_user_exists,
+        business_user_email_exists=business_user_email_exists,
     )
     saved_business_user_account = await business_repository.create(
         business_user_account

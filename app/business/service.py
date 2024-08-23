@@ -14,9 +14,9 @@ class BusinessService:
         self.hash_service = HashService()
 
     def create_business_account(
-        self, business: BusinessAccountCreate, business_exists: bool
+        self, business: BusinessAccountCreate, business_email_exists: bool
     ):
-        if business_exists:
+        if business_email_exists:
             raise BusinessEmailAlreadyExists()
         business.password = self.hash_service.hash(business.password)
         return Business(**business.model_dump())
@@ -25,13 +25,13 @@ class BusinessService:
         self,
         account: Accounts,
         business_user: BusinessUserAccountCreate,
-        business_user_exists: bool,
+        business_user_email_exists: bool,
     ):
         if not isinstance(account, Business):
             raise NotABusiness()
         if account.id != business_user.business_id:
             raise BusinessForbidden()
-        if business_user_exists:
+        if business_user_email_exists:
             raise BusinessUserEmailAlreadyExists()
         business_user.password = self.hash_service.hash(business_user.password)
         return Business_Users(**business_user.model_dump())

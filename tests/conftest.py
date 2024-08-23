@@ -6,6 +6,8 @@ from app.auth.service import AuthService
 from app.auth.schemas import TokenCreate
 from app.utils.service import HashService
 from app.business.service import BusinessService
+from app.user.service import UserService
+from app.facility.service import FacilityService
 import pytest
 
 
@@ -22,6 +24,13 @@ def hash_service():
 def business_service():
     return BusinessService()
 
+@pytest.fixture(scope="session")
+def user_service():
+    return UserService()
+
+@pytest.fixture(scope="session")
+def facility_service():
+    return FacilityService()
 
 @pytest.fixture(scope="session")
 def password():
@@ -35,7 +44,7 @@ def hashed_password(password, hash_service):
 
 @pytest.fixture(scope="session")
 def user(hashed_password, password, auth_service) -> tuple[TokenCreate,Users]:
-    user = Users(**UserAccountIn(id=1, email="user@gmail.com", password=hashed_password).model_dump())
+    user = Users(id=1, **UserAccountIn(email="user@gmail.com", password=hashed_password).model_dump())
     tokens = auth_service.verify_account(account=user, input_password=password)
     return tokens, user
 

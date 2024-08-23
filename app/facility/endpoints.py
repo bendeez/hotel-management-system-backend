@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from app.facility.schemas import FacilityIn, FacilityCreate, FacilitiesOut
+from app.facility.schemas import FacilityIn, FacilityCreate, FacilityOut
 from typing import List
 from app.facility.service import FacilityService
 from app.facility.repository import FacilityRepository
@@ -24,7 +24,7 @@ async def create_facility(
     return saved_facility
 
 
-@facility_router.get("/", response_model=List[FacilitiesOut])
+@facility_router.get("/", response_model=List[FacilityOut])
 async def get_facilities(
     facility_repository: FacilityRepository = Depends(FacilityRepository),
     account: Accounts = Depends(get_account),
