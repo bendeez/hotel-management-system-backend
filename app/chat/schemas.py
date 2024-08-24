@@ -11,8 +11,3 @@ class ChatLogsOut(BaseModel):
     messenger: str
     message_time: datetime
     environment: Optional[str] = None
-
-
-class SessionsOut(BaseModel):
-    session_id: str
-    expiry: datetime

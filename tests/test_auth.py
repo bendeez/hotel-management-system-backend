@@ -1,72 +1,49 @@
-from utils import RequestMethod
+import pytest
+from pytest_lazy_fixtures import lf
+from app.auth.schemas import TokenCreate, AccessToken
+from app.auth.exceptions import AdminUnauthorized, InvalidToken
+from app.auth.constants import TokenType
 
 
-async def test_admin_login(admin_user, http_request, auth_service):
-
-
-
-async def test_invalid_normal_user_login(normal_user, http_request):
-    """
-    only admins allowed
-    """
-    response = await http_request(
-        "/login",
-        method=RequestMethod.POST,
-        json={"email": normal_user.email, "password": normal_user.password},
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+def test_login(account, password, auth_service):
+    _, account = account
+    tokens = auth_service.verify_account(account=account, input_password=password)
+    assert tokens == TokenCreate(
+        access_token=tokens.access_token, refresh_token=tokens.refresh_token
     )
-    assert response.status_code == 401
 
 
-async def test_login_invalid_credentials(admin_user, http_request):
-    response = await http_request(
-        "/login",
-        method=RequestMethod.POST,
-        json={"email": admin_user.email, "password": "39883457854"},
-    )
-    assert response.status_code == 401
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+def test_invalid_password_login(account, auth_service):
+    _, account = account
+    with pytest.raises(AdminUnauthorized):
+        auth_service.verify_account(account=account, input_password="wrong password")
 
 
-async def test_refresh(refresh_token, admin_user, http_request, auth_service):
-    response = await http_request(
-        "/refresh", method=RequestMethod.POST, json={"refresh_token": refresh_token}
-    )
-    assert response.status_code == 201
-    data = response.json()
-    access_token_payload = auth_service.decode(data["access_token"])
-    del access_token_payload["exp"]
-    assert access_token_payload == {
-        "user_id": admin_user.id,
-        "token_type": "access_token",
-    }
+def test_account_doesnt_exist(auth_service):
+    with pytest.raises(AdminUnauthorized):
+        auth_service.verify_account(account=None, input_password="wrong password")
 
 
-async def test_invalid_refresh_with_access_token(
-    access_token, admin_user, http_request, auth_service
-):
-    """
-        access token cannot be used to get another access token
-    :param admin_user:
-    :param http_request:
-    :param auth_service:
-    :return:
-    """
-    response = await http_request(
-        "/refresh", method=RequestMethod.POST, json={"refresh_token": access_token}
-    )
-    assert response.status_code == 409
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+def test_get_account(account, auth_service):
+    tokens, account = account
+    account_id = auth_service.get_account_id(token=tokens.access_token, _token_type=TokenType.ACCESS_TOKEN)
+    assert account_id == account.id
 
+def test_invalid_get_account(auth_service):
+    with pytest.raises(AdminUnauthorized):
+        auth_service.get_account_id(token="485657375467", _token_type=TokenType.ACCESS_TOKEN)
 
-async def test_invalid_protected_route_request_with_refresh_token(
-    admin_user, http_request, refresh_token
-):
-    """
-        refresh token is not used for authentication
-    :param admin_user:
-    :param http_request:
-    :param refresh_token:
-    :return:
-    """
-    response = await http_request(
-        "/user/me", method=RequestMethod.GET, token=refresh_token
-    )
-    assert response.status_code == 401
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+def test_get_access_token_with_refresh_token(account, auth_service):
+    tokens, _ = account
+    access_token = auth_service.get_new_access_token_with_refresh_token(refresh_token=tokens.refresh_token)
+    assert access_token == AccessToken(access_token=access_token.access_token)
+
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+def test_invalid_get_access_token_with_access_token(account, auth_service):
+    tokens, _ = account
+    with pytest.raises(InvalidToken):
+        auth_service.get_new_access_token_with_refresh_token(refresh_token=tokens.access_token)

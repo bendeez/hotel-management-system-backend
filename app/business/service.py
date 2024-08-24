@@ -1,38 +1,37 @@
-from fastapi import Depends
-from app.tools.base_service import BaseService
-from app.business.models import Business
-from app.business.schemas import BusinessAccountCreate
+from app.business.models import Business, Business_Users, Accounts
+from app.business.schemas import BusinessAccountCreate, BusinessUserAccountCreate
 from app.utils.service import HashService
-from app.tools.db.database_transaction import DatabaseTransactionService
-from app.business.exceptions import BusinessEmailAlreadyExists
+from app.business.exceptions import (
+    BusinessEmailAlreadyExists,
+    NotABusiness,
+    BusinessForbidden,
+    BusinessUserEmailAlreadyExists,
+)
 
 
-class BusinessService(BaseService):
-    def __init__(
-        self,
-        transaction: DatabaseTransactionService = Depends(DatabaseTransactionService),
-    ):
-        super().__init__(transaction=transaction)
+class BusinessService:
+    def __init__(self):
         self.hash_service = HashService()
 
-    async def create_business_account(self, business: BusinessAccountCreate):
-        existing_business = await self.get_business_by_email(email=business.email)
-        if existing_business is not None:
+    def create_business_account(
+        self, business: BusinessAccountCreate, business_email_exists: bool
+    ):
+        if business_email_exists:
             raise BusinessEmailAlreadyExists()
         business.password = self.hash_service.hash(business.password)
-        business_account = await self.transaction.create(
-            model=Business, **business.model_dump()
-        )
-        return business_account
+        return Business(**business.model_dump())
 
-    async def get_business_by_email(self, email: str):
-        business = await self.transaction.get_one(
-            model=Business, filter={Business.email: email}
-        )
-        return business
-
-    async def get_business_by_id(self, business_id: int):
-        business = await self.transaction.get_one(
-            model=Business, filter={Business.id: business_id}
-        )
-        return business
+    def create_business_user_account(
+        self,
+        account: Accounts,
+        business_user: BusinessUserAccountCreate,
+        business_user_email_exists: bool,
+    ):
+        if not isinstance(account, Business):
+            raise NotABusiness()
+        if account.id != business_user.business_id:
+            raise BusinessForbidden()
+        if business_user_email_exists:
+            raise BusinessUserEmailAlreadyExists()
+        business_user.password = self.hash_service.hash(business_user.password)
+        return Business_Users(**business_user.model_dump())
