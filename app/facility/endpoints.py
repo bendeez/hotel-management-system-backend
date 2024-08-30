@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from app.facility.schemas import FacilityIn, FacilityCreate, FacilityOut
+from app.facility.schemas import FacilityCreate, FacilityOut
 from typing import List
 from app.facility.service import FacilityService
 from app.facility.repository import FacilityRepository
@@ -11,23 +11,21 @@ facility_router = APIRouter(prefix="/facility")
 
 
 @facility_router.post(
-    "/", response_model=FacilityCreate, status_code=status.HTTP_201_CREATED
+    "/", response_model=FacilityOut, status_code=status.HTTP_201_CREATED
 )
 async def create_facility(
-    facility: FacilityIn,
+    facility: FacilityCreate,
     facility_service: FacilityService = Depends(FacilityService),
-    facility_repository: FacilityRepository = Depends(FacilityRepository),
     account: Accounts = Depends(get_account),
 ):
-    facility = facility_service.create_facility(facility=facility)
-    saved_facility = await facility_repository.create(facility)
-    return saved_facility
+    facility = await facility_service.create_facility(facility=facility)
+    return facility
 
 
 @facility_router.get("/", response_model=List[FacilityOut])
 async def get_facilities(
-    facility_repository: FacilityRepository = Depends(FacilityRepository),
+    facility_service: FacilityService = Depends(FacilityService),
     account: Accounts = Depends(get_account),
 ):
-    facilities = await facility_repository._get_all_facilities()
+    facilities = await facility_service.get_all_facilities()
     return facilities
