@@ -4,19 +4,20 @@ from app.auth.exceptions import AdminUnauthorized, InvalidToken
 from app.auth.schemas import TokenCreate, AccessToken
 from datetime import datetime, timezone, timedelta
 from app.utils.service import HashService
-from app.accounts.models import Accounts
+from app.accounts.repository import AccountsRepository
 from app.auth.constants import TokenType
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 
 
 class AuthService:
-    def __init__(
-        self,
-    ):
+    def __init__(self, repository: AccountsRepository = Depends(AccountsRepository)):
         self.JWT_SECRET_KEY = settings.JWT_SECRET_KEY
         self.JWT_ALGORITHM = settings.JWT_ALGORITHM
         self.ACCESS_TOKEN_EXPIRE = settings.ACCESS_TOKEN_EXPIRE
         self.REFRESH_TOKEN_EXPIRE = settings.REFRESH_TOKEN_EXPIRE
         self.hash_service = HashService()
+        self.repository = repository
 
     def _encode(self, to_encode: dict):
         return jwt.encode(to_encode, self.JWT_SECRET_KEY, algorithm=self.JWT_ALGORITHM)
@@ -49,10 +50,18 @@ class AuthService:
         )
         return payload["id"]
 
-    def verify_account(self, account: Accounts, input_password: str)-> TokenCreate:
+    async def get_account(self, token: str, _token_type: TokenType):
+        account_id = self.get_account_id(token, _token_type)
+        account = await self.repository.get_account_by_id(account_id=account_id)
+        return account
+
+    async def verify_account(self, email: str, input_password: str) -> TokenCreate:
+        account = await self.repository.get_account_by_email(email=email)
         if account is None:
             raise AdminUnauthorized()
-        verify = self.hash_service.verify(password=input_password, hashed_password=account.password)
+        verify = self.hash_service.verify(
+            password=input_password, hashed_password=account.password
+        )
         if not verify:
             raise AdminUnauthorized()
         access_token = self._create_token(
@@ -73,7 +82,9 @@ class AuthService:
         )
         return TokenCreate(access_token=access_token, refresh_token=refresh_token)
 
-    def get_new_access_token_with_refresh_token(self, refresh_token: str) -> AccessToken:
+    def get_new_access_token_with_refresh_token(
+        self, refresh_token: str
+    ) -> AccessToken:
         payload = self._verify_token_and_type_for_payload(
             token=refresh_token, _token_type=TokenType.REFRESH_TOKEN
         )
@@ -88,3 +99,16 @@ class AuthService:
             expire_minutes=self.ACCESS_TOKEN_EXPIRE,
         )
         return AccessToken(access_token=access_token)
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
+
+async def get_account(
+    token: str = Depends(oauth2_scheme),
+    auth_service: AuthService = Depends(AuthService),
+):
+    account = await auth_service.get_account(
+        token=token, _token_type=TokenType.ACCESS_TOKEN
+    )
+    return account

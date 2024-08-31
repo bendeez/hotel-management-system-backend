@@ -29,21 +29,32 @@ def test_account_doesnt_exist(auth_service):
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 def test_get_account(account, auth_service):
     tokens, account = account
-    account_id = auth_service.get_account_id(token=tokens.access_token, _token_type=TokenType.ACCESS_TOKEN)
+    account_id = auth_service.get_account_id(
+        token=tokens.access_token, _token_type=TokenType.ACCESS_TOKEN
+    )
     assert account_id == account.id
+
 
 def test_invalid_get_account(auth_service):
     with pytest.raises(AdminUnauthorized):
-        auth_service.get_account_id(token="485657375467", _token_type=TokenType.ACCESS_TOKEN)
+        auth_service.get_account_id(
+            token="485657375467", _token_type=TokenType.ACCESS_TOKEN
+        )
+
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 def test_get_access_token_with_refresh_token(account, auth_service):
     tokens, _ = account
-    access_token = auth_service.get_new_access_token_with_refresh_token(refresh_token=tokens.refresh_token)
+    access_token = auth_service.get_new_access_token_with_refresh_token(
+        refresh_token=tokens.refresh_token
+    )
     assert access_token == AccessToken(access_token=access_token.access_token)
+
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 def test_invalid_get_access_token_with_access_token(account, auth_service):
     tokens, _ = account
     with pytest.raises(InvalidToken):
-        auth_service.get_new_access_token_with_refresh_token(refresh_token=tokens.access_token)
+        auth_service.get_new_access_token_with_refresh_token(
+            refresh_token=tokens.access_token
+        )

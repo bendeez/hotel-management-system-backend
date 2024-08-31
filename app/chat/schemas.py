@@ -1,13 +1,14 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+
+
+class ChatLogsCreate(BaseModel):
+    session_id: str
+    message: str
 
 
 class ChatLogsOut(BaseModel):
-    message_id: str
+    id: int
     session_id: str
-    chat_id: str
     message: str
-    messenger: str
-    message_time: datetime
-    environment: Optional[str] = None
+    date: datetime

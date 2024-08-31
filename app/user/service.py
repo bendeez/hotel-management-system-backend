@@ -1,15 +1,20 @@
+from fastapi import Depends
 from app.user.schemas import UserAccountCreate
 from app.utils.service import HashService
 from app.user.exceptions import UserEmailAlreadyExists
 from app.user.models import Users
+from app.user.repository import UserRepository
 
 
 class UserService:
-    def __init__(self):
+    def __init__(self, respository: UserRepository = Depends(UserRepository)):
         self.hash_service = HashService()
+        self.repository = respository
 
-    def create_user_account(self, user: UserAccountCreate, user_email_exists: bool):
-        if user_email_exists:
+    async def create_user_account(self, user: UserAccountCreate):
+        existing_user = await self.repository.get_user_by_email(email=user.email)
+        if existing_user is not None:
             raise UserEmailAlreadyExists()
         user.password = self.hash_service.hash(user.password)
-        return Users(**user.model_dump())
+        user_account = await self.repository.create(Users(**user.model_dump()))
+        return user_account

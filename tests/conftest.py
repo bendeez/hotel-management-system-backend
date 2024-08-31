@@ -20,17 +20,21 @@ def auth_service():
 def hash_service():
     return HashService()
 
+
 @pytest.fixture(scope="session")
 def business_service():
     return BusinessService()
+
 
 @pytest.fixture(scope="session")
 def user_service():
     return UserService()
 
+
 @pytest.fixture(scope="session")
 def facility_service():
     return FacilityService()
+
 
 @pytest.fixture(scope="session")
 def password():
@@ -43,24 +47,42 @@ def hashed_password(password, hash_service):
 
 
 @pytest.fixture(scope="session")
-def user(hashed_password, password, auth_service) -> tuple[TokenCreate,Users]:
-    user = Users(id=1, **UserAccountIn(email="user@gmail.com", password=hashed_password).model_dump())
+def user(hashed_password, password, auth_service) -> tuple[TokenCreate, Users]:
+    user = Users(
+        id=1,
+        **UserAccountIn(email="user@gmail.com", password=hashed_password).model_dump(),
+    )
     tokens = auth_service.verify_account(account=user, input_password=password)
     return tokens, user
 
+
 @pytest.fixture(scope="session")
-def business(hashed_password, password, auth_service) -> tuple[TokenCreate,Business]:
-    business = Business(id=2, **BusinessAccountCreate(email="admin@admin.com",
-                        password=hashed_password, name="Spa and relax", location="San Francisco").model_dump())
+def business(hashed_password, password, auth_service) -> tuple[TokenCreate, Business]:
+    business = Business(
+        id=2,
+        **BusinessAccountCreate(
+            email="admin@admin.com",
+            password=hashed_password,
+            name="Spa and relax",
+            location="San Francisco",
+        ).model_dump(),
+    )
     tokens = auth_service.verify_account(account=business, input_password=password)
     return tokens, business
 
+
 @pytest.fixture(scope="session")
-def business_user(hashed_password, password, auth_service) -> tuple[TokenCreate,Business_Users]:
+def business_user(
+    hashed_password, password, auth_service
+) -> tuple[TokenCreate, Business_Users]:
     business_user = Business_Users(
-        id=3, **BusinessUserAccountCreate(email="user@gmail.com", password=hashed_password, business_id=2, role_name="admin").model_dump()
+        id=3,
+        **BusinessUserAccountCreate(
+            email="user@gmail.com",
+            password=hashed_password,
+            business_id=2,
+            role_name="admin",
+        ).model_dump(),
     )
     tokens = auth_service.verify_account(account=business_user, input_password=password)
     return tokens, business_user
-
-

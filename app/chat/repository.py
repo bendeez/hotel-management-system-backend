@@ -1,12 +1,15 @@
-from app.facility.repository import BaseRepository
 from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
 from app.chat.models import Chat_Messages
+from app.session.repository import SessionRepository
+from app.accounts.models import Accounts
+from app.tools.base_repository import JoinExpression
 
 
-class ChatRepository(BaseRepository):
-    async def _get_all_chat_logs(
+class ChatRepository(SessionRepository):
+    async def get_all_account_chat_logs(
         self,
+        account_id: int,
         order: DatabaseQueryOrder,
         order_by: ChatsAttributes,
         limit: int = 100,
@@ -18,11 +21,14 @@ class ChatRepository(BaseRepository):
             order=order,
             offset=offset,
             limit=limit,
+            joins=[JoinExpression(model=Chat_Messages.account)],
+            filters=[Accounts.id == account_id],
         )
         return chat_logs
 
-    async def get_chat_logs_by_session_id(
+    async def get_account_chat_logs_by_session_id(
         self,
+        account_id: int,
         order: DatabaseQueryOrder,
         order_by: ChatsAttributes,
         session_id: str,
@@ -35,6 +41,7 @@ class ChatRepository(BaseRepository):
             order=order,
             limit=limit,
             offset=offset,
-            filter={Chat_Messages.session_id: session_id},
+            joins=[JoinExpression(model=Chat_Messages.account)],
+            filters=[Accounts.id == account_id, Chat_Messages.session_id == session_id],
         )
         return chat_logs

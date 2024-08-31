@@ -20,3 +20,9 @@ class SessionRepository(BaseRepository):
             order=order,
         )
         return chat_sessions
+
+    async def get_chat_session_by_id(self, session_id: str):
+        session = await self._get_one(
+            model=Chat_Sessions, filters=[Chat_Sessions.id == session_id]
+        )
+        return session
