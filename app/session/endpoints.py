@@ -19,8 +19,8 @@ async def get_chat_sessions(
     session_service: SessionService = Depends(SessionService),
     account: Accounts = Depends(get_account),
 ):
-    chat_sessions = await session_service.get_chat_sessions(
-        limit=limit, offset=offset, order=order, order_by=order_by
+    chat_sessions = await session_service.get_account_chat_sessions(
+        account=account, limit=limit, offset=offset, order=order, order_by=order_by
     )
     return chat_sessions
 

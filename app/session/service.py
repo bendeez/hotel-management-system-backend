@@ -16,15 +16,16 @@ class SessionService:
         self.repository = repository
         self.session_duration = settings.SESSION_DURATION
 
-    async def get_chat_sessions(
+    async def get_account_chat_sessions(
         self,
+        account: Accounts,
         order: DatabaseQueryOrder,
         order_by: SessionAttributes,
         limit: int = 100,
         offset: int = 0,
     ):
-        chat_sessions = await self.repository.get_chat_sessions(
-            order=order, order_by=order_by, limit=limit, offset=offset
+        chat_sessions = await self.repository.get_account_chat_sessions(
+            account_id=account.id, order=order, order_by=order_by, limit=limit, offset=offset
         )
         return chat_sessions
 
@@ -37,4 +38,4 @@ class SessionService:
                 user_agent=request.headers.get("User-Agent"),
             )
         )
-        return SessionsOut(expiry=session.end_time, **session.__dict__)
+        return SessionsOut(**session.__dict__)
