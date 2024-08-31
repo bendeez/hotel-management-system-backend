@@ -7,9 +7,9 @@ from app.user.repository import UserRepository
 
 
 class UserService:
-    def __init__(self, respository: UserRepository = Depends(UserRepository)):
+    def __init__(self, repository: UserRepository = Depends(UserRepository)):
         self.hash_service = HashService()
-        self.repository = respository
+        self.repository = repository
 
     async def create_user_account(self, user: UserAccountCreate):
         existing_user = await self.repository.get_user_by_email(email=user.email)

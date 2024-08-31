@@ -25,7 +25,11 @@ class SessionService:
         offset: int = 0,
     ):
         chat_sessions = await self.repository.get_account_chat_sessions(
-            account_id=account.id, order=order, order_by=order_by, limit=limit, offset=offset
+            account_id=account.id,
+            order=order,
+            order_by=order_by,
+            limit=limit,
+            offset=offset,
         )
         return chat_sessions
 
