@@ -5,7 +5,16 @@ from app.tools.database import get_db
 from app.tools.constants import DatabaseQueryOrder
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, asc, desc, inspect
-from typing import Optional, Any
+from typing import Optional
+from sqlalchemy.sql.expression import BinaryExpression
+from typing import Any
+from dataclasses import dataclass
+
+
+@dataclass
+class JoinExpression:
+    model: Any
+    condition: Optional[BinaryExpression] = None
 
 
 class BaseRepository:
@@ -24,44 +33,50 @@ class BaseRepository:
         if not ongoing_transaction:
             await self.db.commit()
 
-    def _build_query(
+    def __build_query(
         self,
         model,
         polymorphic: bool = False,
-        filter: Optional[dict[InstrumentedAttribute, Any]] = None,
+        filters: Optional[list[BinaryExpression]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
+        joins: Optional[list[JoinExpression]] = None,
     ):
-        filter = filter or {}
+        filters = filters or []
         relationships = relationships or []
         if polymorphic:
             model = with_polymorphic(model, "*")
         stmt = (
             select(model)
-            .where(*[attribute == value for attribute, value in filter.items()])
+            .where(*filters)
             .options(
                 *[selectinload(relationship) for relationship in relationships]
             )  # no chaining
         )
+        if joins:
+            for j in joins:
+                stmt = stmt.join(j.model, j.condition)
         return stmt
 
     async def _get_all(
         self,
         model,
         polymorphic: bool = False,
-        filter: Optional[dict[InstrumentedAttribute, Any]] = None,
+        filters: Optional[list[BinaryExpression]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
         order_by: Optional[InstrumentedAttribute] = None,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
         limit: int = 100,
         offset: int = 0,
+        joins: Optional[list[JoinExpression]] = None,
     ):
         order_by = order_by or inspect(model).primary_key[0]
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
-        stmt = self._build_query(
+        stmt = self.__build_query(
             model=model,
             polymorphic=polymorphic,
-            filter=filter,
+            filters=filters,
             relationships=relationships,
+            joins=joins,
         )
         stmt = stmt.order_by(order_by).limit(limit).offset(offset)
         model_instances = await self.db.execute(stmt)
@@ -71,14 +86,16 @@ class BaseRepository:
         self,
         model,
         polymorphic: bool = False,
-        filter: Optional[dict[InstrumentedAttribute, Any]] = None,
+        filters: Optional[list[BinaryExpression]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
+        joins: Optional[list[JoinExpression]] = None,
     ):
-        stmt = self._build_query(
+        stmt = self.__build_query(
             model=model,
             polymorphic=polymorphic,
-            filter=filter,
+            filters=filters,
             relationships=relationships,
+            joins=joins,
         )
         model_instance = await self.db.execute(stmt)
         return model_instance.scalars().first()

@@ -3,5 +3,7 @@ from datetime import datetime
 
 
 class SessionsOut(BaseModel):
-    session_id: str
-    expiry: datetime
+    id: str
+    end_time: datetime
+    ip_address: str
+    user_agent: str

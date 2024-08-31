@@ -1,5 +1,5 @@
 from app.tools.base_models import BaseMixin
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 
 

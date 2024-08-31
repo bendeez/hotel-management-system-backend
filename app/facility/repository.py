@@ -3,6 +3,8 @@ from app.facility.models import Facility
 
 
 class FacilityRepository(BaseRepository):
-    async def get_all_facilities(self):
-        facilities = await self._get_all(model=Facility)
+    async def get_all_account_facilities(self, account_id: int) -> list[Facility]:
+        facilities = await self._get_all(
+            model=Facility, filters=[Facility.account_id == account_id]
+        )
         return facilities

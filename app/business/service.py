@@ -7,31 +7,43 @@ from app.business.exceptions import (
     BusinessForbidden,
     BusinessUserEmailAlreadyExists,
 )
+from app.business.repository import BusinessRepository
+from fastapi import Depends
 
 
 class BusinessService:
-    def __init__(self):
+    def __init__(self, repository: BusinessRepository = Depends(BusinessRepository)):
         self.hash_service = HashService()
+        self.repository = repository
 
-    def create_business_account(
-        self, business: BusinessAccountCreate, business_email_exists: bool
-    ):
-        if business_email_exists:
+    async def create_business_account(self, business: BusinessAccountCreate):
+        existing_business = await self.repository.get_business_by_email(
+            email=business.email
+        )
+        if existing_business is not None:
             raise BusinessEmailAlreadyExists()
         business.password = self.hash_service.hash(business.password)
-        return Business(**business.model_dump())
+        business_account = await self.repository.create(
+            Business(**business.model_dump())
+        )
+        return business_account
 
-    def create_business_user_account(
+    async def create_business_user_account(
         self,
         account: Accounts,
         business_user: BusinessUserAccountCreate,
-        business_user_email_exists: bool,
     ):
         if not isinstance(account, Business):
             raise NotABusiness()
         if account.id != business_user.business_id:
             raise BusinessForbidden()
-        if business_user_email_exists:
+        existing_business_user = await self.repository.get_business_user_by_email(
+            email=business_user.email
+        )
+        if existing_business_user is not None:
             raise BusinessUserEmailAlreadyExists()
         business_user.password = self.hash_service.hash(business_user.password)
-        return Business_Users(**business_user.model_dump())
+        business_user_account = await self.repository.create(
+            Business_Users(**business_user.model_dump())
+        )
+        return business_user_account
