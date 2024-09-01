@@ -6,6 +6,7 @@ from app.business.endpoints import business_router
 from app.auth.endpoints import auth_router
 from app.user.endpoints import user_router
 from app.session.endpoints import session_router
+from app.business_user.endpoints import business_user_router
 from app.exception_handlers import add_exception_handlers
 
 
@@ -24,4 +25,5 @@ app.include_router(chat_router)
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(business_router)
+app.include_router(business_user_router)
 app.include_router(session_router)

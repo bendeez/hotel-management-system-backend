@@ -26,12 +26,3 @@ class NotABusiness(AdminError):
         status_code: int = 403,
     ) -> None:
         super().__init__(message, status_code)
-
-
-class BusinessUserEmailAlreadyExists(AdminError):
-    def __init__(
-        self,
-        message: str = "Username already exists within your business user accounts",
-        status_code: int = 409,
-    ) -> None:
-        super().__init__(message, status_code)

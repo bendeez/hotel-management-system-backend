@@ -12,3 +12,7 @@ class ChatLogsOut(BaseModel):
     session_id: str
     message: str
     date: datetime
+
+
+class ChatLogDelete(BaseModel):
+    chat_log_id: int

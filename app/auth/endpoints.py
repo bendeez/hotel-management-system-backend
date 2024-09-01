@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from app.auth.schemas import TokenCreate, AccessToken, TokenRequest
 from app.auth.service import AuthService
-from app.business.schemas import BusinessAccountIn, BusinessUserAccountIn
+from app.business.schemas import BusinessAccountIn
+from app.business_user.schemas import BusinessUserAccountIn
 from app.user.schemas import UserAccountIn
 
 

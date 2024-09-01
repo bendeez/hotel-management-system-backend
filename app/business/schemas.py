@@ -16,22 +16,3 @@ class BusinessAccountOut(BaseModel):
     email: EmailStr
     name: str
     location: str
-
-
-class BusinessUserAccountBase(BaseModel):
-    email: str
-    business_id: int
-    role_name: str
-
-
-class BusinessUserAccountOut(BusinessUserAccountBase):
-    id: int
-
-
-class BusinessUserAccountCreate(BusinessUserAccountBase):
-    password: str
-
-
-class BusinessUserAccountIn(BaseModel):
-    email: str
-    password: str
