@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from app.session.schemas import SessionsOut
 from app.session.constants import SessionAttributes
 from app.tools.constants import DatabaseQueryOrder
@@ -25,7 +25,9 @@ async def get_chat_sessions(
     return chat_sessions
 
 
-@session_router.post("/session", response_model=SessionsOut)
+@session_router.post(
+    "/session", response_model=SessionsOut, status_code=status.HTTP_201_CREATED
+)
 async def create_chat_session(
     request: Request,
     session_service: SessionService = Depends(SessionService),

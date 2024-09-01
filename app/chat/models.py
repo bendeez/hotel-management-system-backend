@@ -4,7 +4,7 @@ from datetime import datetime
 from app.tools.base_models import BaseMixin
 
 
-class Chat_Messages(BaseMixin):
+class Chat_Logs(BaseMixin):
     session_id: Mapped[str] = mapped_column(ForeignKey("chat_sessions.id"))
     message: Mapped[str] = mapped_column(Text)
     date: Mapped[datetime] = mapped_column(default=datetime.now())

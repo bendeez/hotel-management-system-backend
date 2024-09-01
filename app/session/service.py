@@ -42,4 +42,4 @@ class SessionService:
                 user_agent=request.headers.get("User-Agent"),
             )
         )
-        return SessionsOut(**session.__dict__)
+        return session

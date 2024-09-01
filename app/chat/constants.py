@@ -1,8 +1,8 @@
 from enum import Enum
-from app.chat.models import Chat_Messages
+from app.chat.models import Chat_Logs
 
 
 ChatsAttributes = Enum(
-    Chat_Messages.__tablename__,
-    {column.name: column.name for column in Chat_Messages.__table__.columns},
+    Chat_Logs.__tablename__,
+    {column.name: column.name for column in Chat_Logs.__table__.columns},
 )

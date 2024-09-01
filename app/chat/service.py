@@ -4,7 +4,7 @@ from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
 from app.chat.schemas import ChatLogsCreate
 from app.session.exceptions import SessionNotExists, SessionForbidden, SessionExpired
-from app.chat.models import Chat_Messages
+from app.chat.models import Chat_Logs
 from app.accounts.models import Accounts
 from datetime import datetime
 
@@ -60,6 +60,6 @@ class ChatService:
         if datetime.now() >= session.end_time:
             raise SessionExpired()
         chat_log = await self.repository.create(
-            model_instance=Chat_Messages(**chat_log.model_dump())
+            model_instance=Chat_Logs(**chat_log.model_dump())
         )
         return chat_log

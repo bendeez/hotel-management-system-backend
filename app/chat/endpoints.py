@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from app.chat.service import ChatService
 from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
@@ -46,7 +46,9 @@ async def get_account_chat_logs_by_session_id(
     return chat_logs
 
 
-@chat_router.post("/chat-log", response_model=ChatLogsOut)
+@chat_router.post(
+    "/chat-log", response_model=ChatLogsOut, status_code=status.HTTP_201_CREATED
+)
 async def create_chat_log(
     chat_log: ChatLogsCreate,
     chat_service: ChatService = Depends(ChatService),
