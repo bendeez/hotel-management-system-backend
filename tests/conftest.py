@@ -96,7 +96,8 @@ async def business_user(
             password=password,
             role_name="admin",
             business_id=business.id,
-        )
+        ),
+        account=business,
     )
     tokens = await auth_service.verify_account(
         email=business_user_account.email, input_password=password

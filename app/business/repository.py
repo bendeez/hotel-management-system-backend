@@ -16,13 +16,13 @@ class BusinessRepository(BaseRepository):
         return business
 
     async def get_business_user_by_email(self, email: str):
-        business_user = await self.transaction._get_one(
-            model=Business_Users, filters=[Business_Users.username == email]
+        business_user = await self._get_one(
+            model=Business_Users, filters=[Business_Users.email == email]
         )
         return business_user
 
     async def get_business_user_by_id(self, business_user_id: int):
-        business_user = await self.transaction._get_one(
+        business_user = await self._get_one(
             model=Business_Users, filters=[Business_Users.id == business_user_id]
         )
         return business_user
