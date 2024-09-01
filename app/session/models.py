@@ -9,7 +9,9 @@ from app.config import settings
 
 class Chat_Sessions(BaseMixin):
     id: Mapped[str] = mapped_column(String(45), primary_key=True)
-    account_id: Mapped[[int]] = mapped_column(ForeignKey("accounts.id"))
+    account_id: Mapped[[int]] = mapped_column(
+        ForeignKey("accounts.id", ondelete="CASCADE")
+    )
     start_time: Mapped[datetime] = mapped_column(default=datetime.now())
     end_time: Mapped[datetime] = mapped_column(
         default=datetime.now() + timedelta(minutes=settings.SESSION_DURATION)

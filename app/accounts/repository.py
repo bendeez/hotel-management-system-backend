@@ -1,7 +1,8 @@
 from app.accounts.models import Accounts
 from app.tools.base_repository import BaseRepository
 from app.user.models import Users
-from app.business.models import Business, Business_Users
+from app.business.models import Business
+from app.business_user.models import Business_Users
 from sqlalchemy import or_
 
 

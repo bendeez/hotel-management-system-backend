@@ -4,7 +4,9 @@ from app.accounts.models import Accounts
 
 
 class Users(Accounts):
-    id: Mapped[int] = mapped_column(ForeignKey("accounts.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        ForeignKey("accounts.id", ondelete="CASCADE"), primary_key=True
+    )
     email: Mapped[str] = mapped_column(String(45), unique=True)
     email_verified: Mapped[bool] = mapped_column(default=False)
     password: Mapped[str] = mapped_column(String(500))

@@ -1,6 +1,7 @@
 import httpx
 import pytest
 from app.app import app
+from app.facility.models import Facility
 from app.tools.database import SessionLocal, engine
 from app.tools.base_models import BaseMixin
 from utils import RequestMethod, http_request, Request, Client
@@ -10,11 +11,13 @@ from app.business.service import BusinessService
 from app.user.service import UserService
 from app.user.repository import UserRepository
 from app.user.models import Users
-from app.business.models import Business, Business_Users
+from app.business.models import Business
+from app.business_user.models import Business_Users
 from app.business.repository import BusinessRepository
 from app.accounts.repository import AccountsRepository
 from app.user.schemas import UserAccountCreate
-from app.business.schemas import BusinessAccountCreate, BusinessUserAccountCreate
+from app.business.schemas import BusinessAccountCreate
+from app.business_user.schemas import BusinessUserAccountCreate
 from app.session.service import SessionService
 from app.session.models import Chat_Sessions
 from app.session.repository import SessionRepository
@@ -22,9 +25,13 @@ from app.chat.schemas import ChatLogsCreate
 from app.chat.service import ChatService
 from app.chat.repository import ChatRepository
 from app.chat.models import Chat_Logs
+from app.facility.service import FacilityService
+from app.facility.repository import FacilityRepository
+from app.facility.schemas import FacilityCreate
 from typing import Optional
 from app.auth.schemas import TokenCreate
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 
 @pytest.fixture(name="db", scope="session", autouse=True)
@@ -68,6 +75,11 @@ def user_service(db):
 @pytest.fixture(scope="session")
 def chat_service(db):
     return ChatService(repository=ChatRepository(db=db))
+
+
+@pytest.fixture(scope="session")
+def facility_service(db):
+    return FacilityService(repository=FacilityRepository(db=db))
 
 
 @pytest.fixture(scope="session")
@@ -138,6 +150,10 @@ async def sessions(
     sessions = []
     for account in [user, business, business_user]:
         _, account = account
+        """
+            2 sessions created for each account
+            not counting the expired ones
+        """
         for i in range(2):
             session = await session_service.create_chat_session(
                 account=account, request=user_request
@@ -175,15 +191,34 @@ async def chat_logs(
             if business[1].id == session.account.id
             else business_user[1]
         )
-        for _ in range(
-            3
-        ):  # each account has 2 sessions so it will create 6 chat logs total per account
+        """
+            each account has 2 sessions so it will create 6 (2 * 3) 
+            chat logs total per account
+        """
+        for _ in range(3):
             chat_log = await chat_service.create_chat_log(
                 account=account,
-                chat_log=ChatLogsCreate(session_id=session.id, message="hello"),
+                chat_log=ChatLogsCreate(session_id=session.id, message=str(uuid4())),
             )
             chat_logs.append(chat_log)
     return chat_logs
+
+
+@pytest.fixture(scope="session")
+async def facilities(facility_service, user, business, business_user) -> list[Facility]:
+    facilities = []
+    for account in [user, business, business_user]:
+        _, account = account
+        """
+            3 facilities are created for each account
+        """
+        for i in range(3):
+            facility = await facility_service.create_facility(
+                FacilityCreate(title=str(uuid4()), description=str(uuid4())),
+                account=account,
+            )
+            facilities.append(facility)
+    return facilities
 
 
 @pytest.fixture(scope="session", name="client", autouse=True)

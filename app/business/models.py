@@ -5,7 +5,9 @@ from app.accounts.models import Accounts
 
 
 class Business(Accounts):
-    id: Mapped[int] = mapped_column(ForeignKey("accounts.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        ForeignKey("accounts.id", ondelete="CASCADE"), primary_key=True
+    )
     email: Mapped[str] = mapped_column(String(45), unique=True)
     email_verified: Mapped[bool] = mapped_column(default=False)
     name: Mapped[str] = String(45)
@@ -19,8 +21,12 @@ class Business(Accounts):
 
 
 class Business_Data(BaseMixin):
-    business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))
-    category_id: Mapped[int] = mapped_column(ForeignKey("data_categories.id"))
+    business_id: Mapped[int] = mapped_column(
+        ForeignKey("business.id", ondelete="CASCADE")
+    )
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("data_categories.id", ondelete="CASCADE")
+    )
     data: Mapped[str] = mapped_column(Text)
     keywords: Mapped[str] = mapped_column(String(45))
 
@@ -28,13 +34,3 @@ class Business_Data(BaseMixin):
 class Data_Categories(BaseMixin):
     name: Mapped[str] = mapped_column(String(45))
     keywords: Mapped[str] = mapped_column(String(45))
-
-
-class Business_Users(Accounts):
-    id: Mapped[int] = mapped_column(ForeignKey("accounts.id"), primary_key=True)
-    email: Mapped[str] = mapped_column(String(45), unique=True)
-    password: Mapped[str] = mapped_column(String(500))
-    business_id: Mapped[int] = mapped_column(ForeignKey("business.id"))
-    role_name: Mapped[str] = mapped_column(String(45))
-
-    __mapper_args__ = {"polymorphic_identity": "business_users"}

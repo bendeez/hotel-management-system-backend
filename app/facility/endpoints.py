@@ -10,7 +10,7 @@ facility_router = APIRouter(prefix="/facility")
 
 
 @facility_router.post(
-    "", response_model=FacilityOut, status_code=status.HTTP_201_CREATED
+    "/facility", response_model=FacilityOut, status_code=status.HTTP_201_CREATED
 )
 async def create_facility(
     facility: FacilityCreate,
@@ -23,7 +23,7 @@ async def create_facility(
     return facility
 
 
-@facility_router.get("", response_model=List[FacilityOut])
+@facility_router.get("/facilities", response_model=List[FacilityOut])
 async def get_account_facilities(
     facility_service: FacilityService = Depends(FacilityService),
     account: Accounts = Depends(get_account),

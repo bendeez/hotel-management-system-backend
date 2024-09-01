@@ -2,8 +2,9 @@ from app.chat.repository import ChatRepository
 from fastapi import Depends
 from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
-from app.chat.schemas import ChatLogsCreate
+from app.chat.schemas import ChatLogsCreate, ChatLogDelete
 from app.session.exceptions import SessionNotExists, SessionForbidden, SessionExpired
+from app.chat.exceptions import ChatLogNotFound
 from app.chat.models import Chat_Logs
 from app.accounts.models import Accounts
 from datetime import datetime
@@ -63,3 +64,11 @@ class ChatService:
             model_instance=Chat_Logs(**chat_log.model_dump())
         )
         return chat_log
+
+    async def delete_chat_log(self, chat_log: ChatLogDelete, account: Accounts):
+        chat_log = await self.repository.get_account_chat_log_by_id(
+            account_id=account.id, chat_log_id=chat_log.chat_log_id
+        )
+        if chat_log is None:
+            raise ChatLogNotFound()
+        await self.repository.delete(model_instance=chat_log)

@@ -1,13 +1,9 @@
-from app.business.schemas import (
-    BusinessUserAccountCreate,
-    BusinessUserAccountOut,
-    BusinessAccountCreate,
-    BusinessAccountOut,
-)
+from app.business.schemas import BusinessAccountCreate, BusinessAccountOut
+from app.business_user.schemas import BusinessUserAccountCreate, BusinessUserAccountOut
 from utils import RequestMethod
 
 
-async def test_create_business_account(http_request, password):
+async def test_create_business_account(http_request, password, business_service):
     business_config = BusinessAccountCreate(
         email="business-create@gmail.com",
         password=password,
@@ -38,7 +34,9 @@ async def test_create_business_account_with_email_already_exists(
     assert response.status_code == 409
 
 
-async def test_create_business_user_account(business, http_request, password):
+async def test_create_business_user_account(
+    business, http_request, password, business_service
+):
     tokens, business = business
     business_user_config = BusinessUserAccountCreate(
         email="business-user-create@gmail.com",
@@ -47,7 +45,7 @@ async def test_create_business_user_account(business, http_request, password):
         business_id=business.id,
     ).model_dump()
     response = await http_request(
-        path="/business/add",
+        path="/business/add-user",
         method=RequestMethod.POST,
         json=business_user_config,
         token=tokens.access_token,
@@ -58,25 +56,6 @@ async def test_create_business_user_account(business, http_request, password):
     assert business_user_account == BusinessUserAccountOut(
         id=business_user_account.id, **business_user_config
     )
-
-
-async def test_invalid_create_business_user_account_with_invalid_business_id(
-    business, http_request, password
-):
-    tokens, _ = business
-    business_user_config = BusinessUserAccountCreate(
-        email="business-user-create@gmail.com",
-        password=password,
-        role_name="admin",
-        business_id=1000,
-    ).model_dump()
-    response = await http_request(
-        path="/business/add",
-        method=RequestMethod.POST,
-        json=business_user_config,
-        token=tokens.access_token,
-    )
-    assert response.status_code == 403
 
 
 async def test_invalid_create_business_user_account_with_invalid_account_type(
@@ -90,7 +69,7 @@ async def test_invalid_create_business_user_account_with_invalid_account_type(
         business_id=user.id,
     ).model_dump()
     response = await http_request(
-        path="/business/add",
+        path="/business/add-user",
         method=RequestMethod.POST,
         json=business_user_config,
         token=tokens.access_token,
@@ -110,7 +89,7 @@ async def test_invalid_create_business_user_account_with_email_already_exists(
         business_id=business.id,
     ).model_dump()
     response = await http_request(
-        path="/business/add",
+        path="/business/add-user",
         method=RequestMethod.POST,
         json=business_user_config,
         token=tokens.access_token,

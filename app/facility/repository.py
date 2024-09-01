@@ -8,3 +8,12 @@ class FacilityRepository(BaseRepository):
             model=Facility, filters=[Facility.account_id == account_id]
         )
         return facilities
+
+    async def get_account_facility_by_id(
+        self, account_id: int, facility_id: int
+    ) -> Facility:
+        facility = await self._get_one(
+            model=Facility,
+            filters=[Facility.account_id == account_id, Facility.id == facility_id],
+        )
+        return facility
