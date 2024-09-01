@@ -98,7 +98,7 @@ async def test_get_account_chat_logs(account, http_request, chat_logs, sessions)
     assert response.status_code == 200
     data = response.json()
     chat_logs = [ChatLogsOut(**d) for d in data]
-    assert len(chat_logs) <= 2
+    assert len(chat_logs) <= params["limit"]
     assert chat_logs[0].date >= chat_logs[1].date
     """
         gets session for each chat log and checks that the session
@@ -129,7 +129,7 @@ async def test_get_account_chat_logs_by_session_id(
     assert response.status_code == 200
     data = response.json()
     chat_logs = [ChatLogsOut(**d) for d in data]
-    assert len(chat_logs) <= 2
+    assert len(chat_logs) <= params["limit"]
     assert chat_logs[0].date >= chat_logs[1].date
     assert session.account_id == account.id
     assert all(chat_log.session_id == session.id for chat_log in chat_logs)

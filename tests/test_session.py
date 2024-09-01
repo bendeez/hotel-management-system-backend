@@ -35,6 +35,6 @@ async def test_get_account_chat_logs(account, http_request, chat_logs):
     assert response.status_code == 200
     data = response.json()
     chat_sessions = [SessionsOut(**d) for d in data]
-    assert len(chat_sessions) <= 2
+    assert len(chat_sessions) <= params["limit"]
     assert chat_logs[0].date >= chat_logs[1].date
     assert all(session.account_id == account.id for session in chat_sessions)
