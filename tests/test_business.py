@@ -3,7 +3,7 @@ from app.business_user.schemas import BusinessUserAccountCreate, BusinessUserAcc
 from utils import RequestMethod
 
 
-async def test_create_business_account(http_request, password, business_service):
+async def test_create_business_account(http_request, password):
     business_config = BusinessAccountCreate(
         email="business-create@gmail.com",
         password=password,
@@ -34,9 +34,7 @@ async def test_create_business_account_with_email_already_exists(
     assert response.status_code == 409
 
 
-async def test_create_business_user_account(
-    business, http_request, password, business_service
-):
+async def test_create_business_user_account(business, http_request, password):
     tokens, business = business
     business_user_config = BusinessUserAccountCreate(
         email="business-user-create@gmail.com",

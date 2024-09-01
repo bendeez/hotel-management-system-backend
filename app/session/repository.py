@@ -2,7 +2,6 @@ from app.tools.constants import DatabaseQueryOrder
 from app.session.constants import SessionAttributes
 from app.session.models import Chat_Sessions
 from app.tools.base_repository import BaseRepository
-from app.accounts.models import Accounts
 
 
 class SessionRepository(BaseRepository):
@@ -20,7 +19,7 @@ class SessionRepository(BaseRepository):
             offset=offset,
             order_by=getattr(Chat_Sessions, order_by.value),
             order=order,
-            filters=[Accounts.id == account_id],
+            filters=[Chat_Sessions.account_id == account_id],
         )
         return chat_sessions
 

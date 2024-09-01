@@ -7,3 +7,4 @@ class SessionsOut(BaseModel):
     end_time: datetime
     ip_address: str
     user_agent: str
+    account_id: int
