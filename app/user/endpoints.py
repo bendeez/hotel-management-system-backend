@@ -8,7 +8,7 @@ from app.auth.service import get_account
 user_router = APIRouter(prefix="/user")
 
 
-@user_router.post("/", response_model=UserAccountOut)
+@user_router.post("", response_model=UserAccountOut)
 async def create_user_account(
     user: UserAccountCreate,
     user_service: UserService = Depends(UserService),

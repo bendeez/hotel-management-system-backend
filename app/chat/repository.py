@@ -1,6 +1,6 @@
 from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
-from app.chat.models import Chat_Messages
+from app.chat.models import Chat_Logs
 from app.session.repository import SessionRepository
 from app.accounts.models import Accounts
 from app.tools.base_repository import JoinExpression
@@ -16,12 +16,12 @@ class ChatRepository(SessionRepository):
         offset: int = 0,
     ):
         chat_logs = await self._get_all(
-            model=Chat_Messages,
-            order_by=getattr(Chat_Messages, order_by.value),
+            model=Chat_Logs,
+            order_by=getattr(Chat_Logs, order_by.value),
             order=order,
             offset=offset,
             limit=limit,
-            joins=[JoinExpression(model=Chat_Messages.account)],
+            joins=[JoinExpression(model=Chat_Logs.account)],
             filters=[Accounts.id == account_id],
         )
         return chat_logs
@@ -36,12 +36,12 @@ class ChatRepository(SessionRepository):
         offset: int = 0,
     ):
         chat_logs = await self._get_all(
-            model=Chat_Messages,
-            order_by=getattr(Chat_Messages, order_by.value),
+            model=Chat_Logs,
+            order_by=getattr(Chat_Logs, order_by.value),
             order=order,
             limit=limit,
             offset=offset,
-            joins=[JoinExpression(model=Chat_Messages.account)],
-            filters=[Accounts.id == account_id, Chat_Messages.session_id == session_id],
+            joins=[JoinExpression(model=Chat_Logs.account)],
+            filters=[Accounts.id == account_id, Chat_Logs.session_id == session_id],
         )
         return chat_logs

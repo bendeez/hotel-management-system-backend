@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from app.business.schemas import (
     BusinessAccountOut,
     BusinessAccountCreate,
@@ -13,7 +13,9 @@ from app.accounts.models import Accounts
 business_router = APIRouter(prefix="/business")
 
 
-@business_router.post("/", response_model=BusinessAccountOut)
+@business_router.post(
+    "", response_model=BusinessAccountOut, status_code=status.HTTP_201_CREATED
+)
 async def create_business_account(
     business: BusinessAccountCreate,
     business_service: BusinessService = Depends(BusinessService),
@@ -22,7 +24,9 @@ async def create_business_account(
     return business_account
 
 
-@business_router.post("/add", response_model=BusinessUserAccountOut)
+@business_router.post(
+    "/add", response_model=BusinessUserAccountOut, status_code=status.HTTP_201_CREATED
+)
 async def add_account_to_business(
     business_user: BusinessUserAccountCreate,
     account: Accounts = Depends(get_account),
