@@ -1,12 +1,11 @@
 from utils import RequestMethod
-from app.facility.schemas import FacilityCreate, FacilityOut, FacilityDelete
-from app.facility.models import Facility
+from app.facility.schemas import FacilityCreate, FacilityOut
 from pytest_lazy_fixtures import lf
 import pytest
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
-async def test_create_facility(account, http_request, facility_service):
+async def test_create_facility(account, http_request):
     tokens, account = account
     facility_config = FacilityCreate(
         title="spa", description="Have a relaxing time"
@@ -23,9 +22,6 @@ async def test_create_facility(account, http_request, facility_service):
     assert facility == FacilityOut(
         id=facility.id, account_id=account.id, **facility_config
     )
-    await facility_service.delete_account_facility(
-        account=account, facility=FacilityDelete(facility_id=facility.id)
-    )
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
@@ -39,6 +35,6 @@ async def test_get_account_facilities(account, http_request, facilities):
     facilities = list(
         filter(lambda facility: facility.account_id == account.id, facilities)
     )
-    facilities = [FacilityOut(**facility) for facility in facilities]
+    facilities = [FacilityOut(**facility.__dict__) for facility in facilities]
     assert len(data) == len(facilities)
     assert all(FacilityOut(**d) in facilities for d in data)

@@ -28,7 +28,7 @@ from app.chat.models import Chat_Logs
 from app.facility.service import FacilityService
 from app.facility.repository import FacilityRepository
 from app.facility.schemas import FacilityCreate
-from typing import Optional
+from typing import Optional, Any
 from app.auth.schemas import TokenCreate
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -97,24 +97,35 @@ async def user(user_service, password, auth_service) -> tuple[TokenCreate, Users
     )
     return tokens, user_account
 
+@pytest.fixture(scope="session")
+async def create_business_account(business_service, password):
+    async def _create_business_account():
+        business_account = await business_service.create_business_account(
+            business=BusinessAccountCreate(
+                email="business@gmail.com",
+                password=password,
+                name="resort and fun",
+                location="US",
+            )
+        )
+        return business_account
+    return _create_business_account
 
 @pytest.fixture(scope="session")
 async def business(
-    business_service, password, auth_service
-) -> tuple[TokenCreate, Business]:
-    business_account = await business_service.create_business_account(
-        business=BusinessAccountCreate(
-            email="business@gmail.com",
-            password=password,
-            name="resort and fun",
-            location="US",
-        )
-    )
+    create_business_account, auth_service, password
+) -> list[TokenCreate, Business]:
+    business_account = await create_business_account()
     tokens = await auth_service.verify_account(
         email=business_account.email, input_password=password
     )
-    return tokens, business_account
+    return [tokens, business_account]
 
+@pytest.fixture()
+async def recreate_business_account(business, request, create_business_account):
+    yield
+    recreated_business = await create_business_account()
+    business[1] = recreated_business
 
 @pytest.fixture(scope="session")
 async def business_user(
@@ -180,7 +191,7 @@ async def expired_sessions(
 
 @pytest.fixture(scope="session")
 async def chat_logs(
-    db, sessions, chat_service, user, business, business_user
+    sessions, chat_service, user, business, business_user
 ) -> list[Chat_Logs]:
     chat_logs = []
     for session in sessions:
@@ -253,7 +264,6 @@ async def make_http_request(client):
         return data
 
     return _make_http_request
-
 
 @pytest.fixture(scope="session", autouse=True)
 def anyio_backend():
