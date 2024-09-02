@@ -7,7 +7,7 @@ from app.accounts.models import Accounts
 from app.auth.service import get_account
 from typing import List
 
-chat_router = APIRouter(prefix="/chat")
+chat_router = APIRouter()
 
 
 @chat_router.get("/chat-logs", response_model=List[ChatLogsOut])

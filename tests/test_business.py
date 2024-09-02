@@ -20,6 +20,7 @@ async def test_create_business_account(http_request, password):
         id=business_account.id, **business_config
     )
 
+
 async def test_create_business_account_with_email_already_exists(
     business, http_request, password
 ):
@@ -32,13 +33,14 @@ async def test_create_business_account_with_email_already_exists(
     )
     assert response.status_code == 409
 
+
 async def test_delete_business_account(business, http_request):
     tokens, business = business
     response = await http_request(
-        path="/business", method=RequestMethod.DELETE,
-        token=tokens.refresh_token
+        path="/business", method=RequestMethod.DELETE, token=tokens.refresh_token
     )
     assert response.status_code == 200
+
 
 async def test_create_business_user_account(business, http_request, password):
     tokens, business = business

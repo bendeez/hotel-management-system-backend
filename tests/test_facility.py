@@ -11,7 +11,7 @@ async def test_create_facility(account, http_request):
         title="spa", description="Have a relaxing time"
     ).model_dump()
     response = await http_request(
-        path="/facility/facility",
+        path="/facility",
         method=RequestMethod.POST,
         json=facility_config,
         token=tokens.access_token,
@@ -28,7 +28,7 @@ async def test_create_facility(account, http_request):
 async def test_get_account_facilities(account, http_request, facilities):
     tokens, account = account
     response = await http_request(
-        path="/facility/facilities", method=RequestMethod.GET, token=tokens.access_token
+        path="/facilities", method=RequestMethod.GET, token=tokens.access_token
     )
     assert response.status_code == 200
     data = response.json()

@@ -97,6 +97,7 @@ async def user(user_service, password, auth_service) -> tuple[TokenCreate, Users
     )
     return tokens, user_account
 
+
 @pytest.fixture(scope="session")
 async def create_business_account(business_service, password):
     async def _create_business_account():
@@ -109,7 +110,9 @@ async def create_business_account(business_service, password):
             )
         )
         return business_account
+
     return _create_business_account
+
 
 @pytest.fixture(scope="session")
 async def business(
@@ -121,11 +124,13 @@ async def business(
     )
     return [tokens, business_account]
 
+
 @pytest.fixture()
 async def recreate_business_account(business, request, create_business_account):
     yield
     recreated_business = await create_business_account()
     business[1] = recreated_business
+
 
 @pytest.fixture(scope="session")
 async def business_user(
@@ -264,6 +269,7 @@ async def make_http_request(client):
         return data
 
     return _make_http_request
+
 
 @pytest.fixture(scope="session", autouse=True)
 def anyio_backend():

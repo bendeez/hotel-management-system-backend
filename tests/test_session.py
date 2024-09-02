@@ -8,7 +8,7 @@ from app.session.schemas import SessionsOut
 async def test_create_chat_session(account, http_request, sessions, user_request):
     tokens, account = account
     response = await http_request(
-        path="/session/session", method=RequestMethod.POST, token=tokens.access_token
+        path="/session", method=RequestMethod.POST, token=tokens.access_token
     )
     assert response.status_code == 201
     data = response.json()
@@ -27,7 +27,7 @@ async def test_get_account_chat_logs(account, http_request, chat_logs):
     tokens, account = account
     params = {"limit": 2, "offset": 0, "order": "desc", "order_by": "end_time"}
     response = await http_request(
-        path="/session/sessions",
+        path="/sessions",
         params=params,
         method=RequestMethod.GET,
         token=tokens.access_token,
