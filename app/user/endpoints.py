@@ -5,11 +5,11 @@ from app.accounts.models import Accounts
 from app.auth.service import get_account
 
 
-user_router = APIRouter(prefix="/user")
+user_router = APIRouter()
 
 
 @user_router.post(
-    "", response_model=UserAccountOut, status_code=status.HTTP_201_CREATED
+    "/user", response_model=UserAccountOut, status_code=status.HTTP_201_CREATED
 )
 async def create_user_account(
     user: UserAccountCreate, user_service: UserService = Depends(UserService)

@@ -34,6 +34,14 @@ async def test_create_business_account_with_email_already_exists(
     assert response.status_code == 409
 
 
+async def test_delete_business_account(business, http_request):
+    tokens, business = business
+    response = await http_request(
+        path="/business", method=RequestMethod.DELETE, token=tokens.refresh_token
+    )
+    assert response.status_code == 200
+
+
 async def test_create_business_user_account(business, http_request, password):
     tokens, business = business
     business_user_config = BusinessUserAccountCreate(
@@ -43,7 +51,7 @@ async def test_create_business_user_account(business, http_request, password):
         business_id=business.id,
     ).model_dump()
     response = await http_request(
-        path="/business/add-user",
+        path="/business/add-account",
         method=RequestMethod.POST,
         json=business_user_config,
         token=tokens.access_token,
@@ -67,7 +75,7 @@ async def test_invalid_create_business_user_account_with_invalid_account_type(
         business_id=user.id,
     ).model_dump()
     response = await http_request(
-        path="/business/add-user",
+        path="/business/add-account",
         method=RequestMethod.POST,
         json=business_user_config,
         token=tokens.access_token,
@@ -87,7 +95,7 @@ async def test_invalid_create_business_user_account_with_email_already_exists(
         business_id=business.id,
     ).model_dump()
     response = await http_request(
-        path="/business/add-user",
+        path="/business/add-account",
         method=RequestMethod.POST,
         json=business_user_config,
         token=tokens.access_token,

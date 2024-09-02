@@ -1,5 +1,6 @@
 from app.user.schemas import UserAccountIn
-from app.business.schemas import BusinessAccountIn, BusinessUserAccountIn
+from app.business.schemas import BusinessAccountIn
+from app.business_user.schemas import BusinessUserAccountIn
 from utils import RequestMethod
 from app.auth.schemas import TokenCreate, TokenRequest, AccessToken
 from app.auth.constants import TokenType

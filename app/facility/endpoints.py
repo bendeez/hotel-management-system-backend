@@ -6,7 +6,7 @@ from app.auth.service import get_account
 from app.accounts.models import Accounts
 
 
-facility_router = APIRouter(prefix="/facility")
+facility_router = APIRouter()
 
 
 @facility_router.post(

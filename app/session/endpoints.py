@@ -7,7 +7,7 @@ from typing import List
 from app.accounts.models import Accounts
 from app.auth.service import get_account
 
-session_router = APIRouter(prefix="/session")
+session_router = APIRouter()
 
 
 @session_router.get("/sessions", response_model=List[SessionsOut])

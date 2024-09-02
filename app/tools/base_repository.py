@@ -4,7 +4,7 @@ from fastapi import Depends
 from app.tools.database import get_db
 from app.tools.constants import DatabaseQueryOrder
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc, desc, inspect
+from sqlalchemy import select, asc, desc, inspect, and_
 from typing import Optional
 from sqlalchemy.sql.expression import BinaryExpression
 from typing import Any

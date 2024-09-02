@@ -13,7 +13,7 @@ async def test_create_chat_log(account, http_request, sessions, user_request):
     session = next(filter(lambda session: session.account_id == account.id, sessions))
     chat_log_info = ChatLogsCreate(session_id=session.id, message="hello").model_dump()
     response = await http_request(
-        path="/chat/chat-log",
+        path="/chat-log",
         method=RequestMethod.POST,
         json=chat_log_info,
         token=tokens.access_token,
@@ -35,7 +35,7 @@ async def test_invalid_create_chat_log_with_invalid_session_id(account, http_req
     tokens, account = account
     chat_log_info = ChatLogsCreate(session_id="4595959", message="hello").model_dump()
     response = await http_request(
-        path="/chat/chat-log",
+        path="/chat-log",
         method=RequestMethod.POST,
         json=chat_log_info,
         token=tokens.access_token,
@@ -56,7 +56,7 @@ async def test_invalid_create_chat_log_with_unauthorized_session_id(
     )  # note !=
     chat_log_info = ChatLogsCreate(session_id=session.id, message="hello").model_dump()
     response = await http_request(
-        path="/chat/chat-log",
+        path="/chat-log",
         method=RequestMethod.POST,
         json=chat_log_info,
         token=tokens.access_token,
@@ -77,7 +77,7 @@ async def test_invalid_create_chat_log_with_expired_session(
     )
     chat_log_info = ChatLogsCreate(session_id=session.id, message="hello").model_dump()
     response = await http_request(
-        path="/chat/chat-log",
+        path="/chat-log",
         method=RequestMethod.POST,
         json=chat_log_info,
         token=tokens.access_token,
@@ -90,7 +90,7 @@ async def test_get_account_chat_logs(account, http_request, chat_logs, sessions)
     tokens, account = account
     params = {"limit": 2, "offset": 0, "order": "desc", "order_by": "date"}
     response = await http_request(
-        path="/chat/chat-logs",
+        path="/chat-logs",
         params=params,
         method=RequestMethod.GET,
         token=tokens.access_token,
@@ -121,7 +121,7 @@ async def test_get_account_chat_logs_by_session_id(
     session = next(filter(lambda session: session.account_id == account.id, sessions))
     params = {"limit": 2, "offset": 0, "order": "desc", "order_by": "date"}
     response = await http_request(
-        path=f"/chat/chat-logs/{session.id}",
+        path=f"/chat-logs/{session.id}",
         params=params,
         method=RequestMethod.GET,
         token=tokens.access_token,
