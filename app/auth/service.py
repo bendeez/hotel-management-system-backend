@@ -41,7 +41,7 @@ class AuthService:
         payload = self._decode(token=token)
         token_type = payload["token_type"]
         if token_type != _token_type.value:
-            raise InvalidToken()
+            raise InvalidToken(_token_type)
         return payload
 
     def get_account_id(self, token: str, _token_type: TokenType):

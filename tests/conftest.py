@@ -99,57 +99,75 @@ async def user(user_service, password, auth_service) -> tuple[TokenCreate, Users
 
 
 @pytest.fixture(scope="session")
-async def create_business_account(business_service, password):
-    async def _create_business_account():
+async def create_business_account(auth_service, business_service, password):
+    delete_accounts = []
+
+    async def _create_business_account(delete=False) -> tuple[TokenCreate, Business]:
         business_account = await business_service.create_business_account(
             business=BusinessAccountCreate(
-                email="business@gmail.com",
+                email=f"{uuid4()}@gmail.com",
                 password=password,
                 name="resort and fun",
                 location="US",
             )
         )
-        return business_account
+        tokens = await auth_service.verify_account(
+            email=business_account.email, input_password=password
+        )
+        if delete:
+            delete_accounts.append(business_account)
+        return tokens, business_account
 
-    return _create_business_account
+    yield _create_business_account
+    for account in delete_accounts:
+        await business_service.delete_business_account(account=account)
 
 
 @pytest.fixture(scope="session")
 async def business(
     create_business_account, auth_service, password
-) -> list[TokenCreate, Business]:
-    business_account = await create_business_account()
-    tokens = await auth_service.verify_account(
-        email=business_account.email, input_password=password
-    )
-    return [tokens, business_account]
+) -> tuple[TokenCreate, Business]:
+    tokens, business_account = await create_business_account()
+    return tokens, business_account
 
 
-@pytest.fixture()
-async def recreate_business_account(business, request, create_business_account):
-    yield
-    recreated_business = await create_business_account()
-    business[1] = recreated_business
+@pytest.fixture(scope="session")
+async def create_business_user_account(
+    auth_service, business, business_service, password
+):
+    delete_accounts = []
+    _, business = business
+
+    async def _create_business_user_account(
+        delete=False, business=business
+    ) -> tuple[TokenCreate, Business_Users]:
+        business_user_account = await business_service.create_business_user_account(
+            business_user=BusinessUserAccountCreate(
+                email=f"{uuid4()}@gmail.com",
+                password=password,
+                role_name="admin",
+                business_id=business.id,
+            ),
+            account=business,
+        )
+        tokens = await auth_service.verify_account(
+            email=business_user_account.email, input_password=password
+        )
+        if delete:
+            delete_accounts.append(business_user_account)
+        return tokens, business_user_account
+
+    yield _create_business_user_account
+    for account in delete_accounts:
+        await business_service.delete_business_user_account(account=account)
 
 
 @pytest.fixture(scope="session")
 async def business_user(
-    business, business_service, password, auth_service
+    create_business_user_account,
 ) -> tuple[TokenCreate, Business_Users]:
-    tokens, business = business
-    business_user_account = await business_service.create_business_user_account(
-        business_user=BusinessUserAccountCreate(
-            email="business-user@gmail.com",
-            password=password,
-            role_name="admin",
-            business_id=business.id,
-        ),
-        account=business,
-    )
-    tokens = await auth_service.verify_account(
-        email=business_user_account.email, input_password=password
-    )
-    return tokens, business_user_account
+    tokens, business_account = await create_business_user_account()
+    return tokens, business_account
 
 
 @pytest.fixture(scope="session")

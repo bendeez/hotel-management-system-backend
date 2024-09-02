@@ -1,11 +1,15 @@
+import pytest
+from app.auth.exceptions import AdminUnauthorized
 from app.business.schemas import BusinessAccountCreate, BusinessAccountOut
 from app.business_user.schemas import BusinessUserAccountCreate, BusinessUserAccountOut
+from app.business_user.schemas import BusinessUserAccountDelete
 from utils import RequestMethod
+from uuid import uuid4
 
 
 async def test_create_business_account(http_request, password):
     business_config = BusinessAccountCreate(
-        email="business-create@gmail.com",
+        email=f"{uuid4()}@gmail.com",
         password=password,
         name="resort and fun",
         location="US",
@@ -34,12 +38,16 @@ async def test_create_business_account_with_email_already_exists(
     assert response.status_code == 409
 
 
-async def test_delete_business_account(business, http_request):
-    tokens, business = business
+async def test_delete_business_account(
+    create_business_account, http_request, business_service, auth_service, password
+):
+    tokens, business = await create_business_account(delete=True)
     response = await http_request(
-        path="/business", method=RequestMethod.DELETE, token=tokens.refresh_token
+        path="/business", method=RequestMethod.DELETE, token=tokens.access_token
     )
     assert response.status_code == 200
+    with pytest.raises(AdminUnauthorized):
+        await auth_service.verify_account(email=business.email, input_password=password)
 
 
 async def test_create_business_user_account(business, http_request, password):
@@ -101,3 +109,38 @@ async def test_invalid_create_business_user_account_with_email_already_exists(
         token=tokens.access_token,
     )
     assert response.status_code == 409
+
+
+async def test_delete_business_user_account(
+    business, create_business_user_account, http_request, auth_service, password
+):
+    _, business_user = await create_business_user_account()
+    tokens, business = business
+    business_user_config = BusinessUserAccountDelete(
+        business_user_id=business_user.id
+    ).model_dump()
+    response = await http_request(
+        path="/business/remove-account",
+        method=RequestMethod.DELETE,
+        json=business_user_config,
+        token=tokens.access_token,
+    )
+    assert response.status_code == 200
+    with pytest.raises(AdminUnauthorized):
+        await auth_service.verify_account(
+            email=business_user.email, input_password=password
+        )
+
+
+async def test_invalid_delete_business_user_account_not_linked_to_business(
+    business, http_request
+):
+    tokens, _ = business
+    business_user_config = BusinessUserAccountDelete(business_user_id=100).model_dump()
+    response = await http_request(
+        path="/business/remove-account",
+        method=RequestMethod.DELETE,
+        json=business_user_config,
+        token=tokens.access_token,
+    )
+    assert response.status_code == 404
