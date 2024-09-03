@@ -10,7 +10,7 @@ class Business(Accounts):
     )
     email: Mapped[str] = mapped_column(String(100), unique=True)
     email_verified: Mapped[bool] = mapped_column(default=False)
-    name: Mapped[str] = String(45)
+    name: Mapped[str] = String(100)
     subscription_id: Mapped[int] = mapped_column(default=1)  # for development purposes
     location: Mapped[str] = mapped_column(String(45))
     password: Mapped[str] = mapped_column(String(500))

@@ -2,7 +2,6 @@ import pytest
 from app.auth.exceptions import AdminUnauthorized
 from app.business.schemas import BusinessAccountCreate, BusinessAccountOut
 from app.business_user.schemas import BusinessUserAccountCreate, BusinessUserAccountOut
-from app.business_user.schemas import BusinessUserAccountDelete
 from utils import RequestMethod
 from uuid import uuid4
 
@@ -39,7 +38,6 @@ async def test_create_business_account_with_email_already_exists(
 
 
 async def test_delete_business_account(
-    refresh_session,
     create_business_account,
     http_request,
     business_service,
@@ -51,7 +49,6 @@ async def test_delete_business_account(
         path="/business", method=RequestMethod.DELETE, token=tokens.access_token
     )
     assert response.status_code == 204
-    await refresh_session()
     with pytest.raises(AdminUnauthorized):
         await auth_service.verify_account(email=business.email, input_password=password)
 
@@ -118,7 +115,6 @@ async def test_invalid_create_business_user_account_with_email_already_exists(
 
 
 async def test_delete_business_user_account(
-    refresh_session,
     business,
     create_business_user_account,
     http_request,
@@ -127,17 +123,12 @@ async def test_delete_business_user_account(
 ):
     _, business_user = await create_business_user_account()
     tokens, business = business
-    business_user_config = BusinessUserAccountDelete(
-        business_user_id=business_user.id
-    ).model_dump()
     response = await http_request(
-        path="/business/remove-account",
+        path=f"/business/remove-account/{business_user.id}",
         method=RequestMethod.DELETE,
-        json=business_user_config,
         token=tokens.access_token,
     )
     assert response.status_code == 204
-    await refresh_session()
     with pytest.raises(AdminUnauthorized):
         await auth_service.verify_account(
             email=business_user.email, input_password=password
@@ -148,11 +139,26 @@ async def test_invalid_delete_business_user_account_not_linked_to_business(
     business, http_request
 ):
     tokens, _ = business
-    business_user_config = BusinessUserAccountDelete(business_user_id=100).model_dump()
     response = await http_request(
-        path="/business/remove-account",
+        path="/business/remove-account/100",
         method=RequestMethod.DELETE,
-        json=business_user_config,
         token=tokens.access_token,
     )
     assert response.status_code == 404
+
+
+async def test_get_business_info(http_request, business):
+    tokens, business = business
+    response = await http_request(
+        path="/business/me",
+        method=RequestMethod.GET,
+        token=tokens.access_token,
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert BusinessAccountOut(**data) == BusinessAccountOut(**business.__dict__)
+
+
+async def test_get_business_info_unauthorized_with_no_token(http_request):
+    response = await http_request(path="/business/me", method=RequestMethod.GET)
+    assert response.status_code == 401

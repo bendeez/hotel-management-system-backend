@@ -5,9 +5,7 @@ import pytest
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
-async def test_create_facility(
-    account, http_request, refresh_session, facility_service
-):
+async def test_create_facility(account, http_request, facility_service):
     tokens, account = account
     facility_config = FacilityCreate(
         title="spa", description="Have a relaxing time"
@@ -24,7 +22,6 @@ async def test_create_facility(
     assert facility == FacilityOut(
         id=facility.id, account_id=account.id, **facility_config
     )
-    await refresh_session()
     await facility_service.delete_account_facility(
         account=account, facility=FacilityDelete(facility_id=facility.id)
     )

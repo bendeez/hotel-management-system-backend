@@ -31,6 +31,7 @@ from app.facility.schemas import FacilityCreate
 from typing import Optional, Any
 from app.auth.schemas import TokenCreate
 from datetime import datetime, timedelta
+from app.tools.database import get_db
 from uuid import uuid4
 
 
@@ -40,24 +41,12 @@ async def create_db_session():
         yield db
 
 
-@pytest.fixture(scope="session")
-async def refresh_session(db):
-    """
-        the db session can become not sync with
-        the database after a concurrent database
-        request from another db session that
-        you call indirectly when making a request
-        to the fastapi application (it creates
-        its own db session to handle the request)
-    :param db:
-    :return:
-    """
+@pytest.fixture(autouse=True)
+async def override_dependencies(db):
+    def get_test_db():
+        return db
 
-    async def _refresh_session():
-        await db.close()
-        await db.connection()
-
-    return _refresh_session
+    app.dependency_overrides[get_db] = get_test_db
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -108,13 +97,22 @@ def password():
 
 
 @pytest.fixture(scope="session")
-async def user(user_service, password, auth_service) -> tuple[TokenCreate, Users]:
-    user_account = await user_service.create_user_account(
-        user=UserAccountCreate(email="user@gmail.com", password=password)
-    )
-    tokens = await auth_service.verify_account(
-        email=user_account.email, input_password=password
-    )
+async def create_user_account(user_service, password, auth_service):
+    async def _create_user_account():
+        user_account = await user_service.create_user_account(
+            user=UserAccountCreate(email=f"{uuid4()}@gmail.com", password=password)
+        )
+        tokens = await auth_service.verify_account(
+            email=user_account.email, input_password=password
+        )
+        return tokens, user_account
+
+    return _create_user_account
+
+
+@pytest.fixture(scope="session")
+async def user(create_user_account) -> tuple[TokenCreate, Users]:
+    tokens, user_account = await create_user_account()
     return tokens, user_account
 
 

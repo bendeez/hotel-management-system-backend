@@ -30,3 +30,16 @@ async def get_account_facilities(
 ):
     facilities = await facility_service.get_all_account_facilities(account=account)
     return facilities
+
+
+@facility_router.delete(
+    "/facility/{facility_id}", status_code=status.HTTP_204_NO_CONTENT
+)
+async def create_chat_log(
+    facility_id: int,
+    facility_service: FacilityService = Depends(FacilityService),
+    account: Accounts = Depends(get_account),
+):
+    await facility_service.delete_account_facility(
+        facility_id=facility_id, account=account
+    )

@@ -5,7 +5,9 @@ from pytest_lazy_fixtures import lf
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
-async def test_create_chat_log(account, http_request, sessions, user_request):
+async def test_create_chat_log(
+    account, http_request, sessions, user_request, chat_service
+):
     tokens, account = account
     """
         gets first session by account id
@@ -28,6 +30,7 @@ async def test_create_chat_log(account, http_request, sessions, user_request):
         user_agent=user_request.headers["User-Agent"],
         **chat_log_info,
     )
+    await chat_service.delete_chat_log(account=account, chat_log_id=chat_log.id)
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
@@ -133,3 +136,25 @@ async def test_get_account_chat_logs_by_session_id(
     assert chat_logs[0].date >= chat_logs[1].date
     assert session.account_id == account.id
     assert all(chat_log.session_id == session.id for chat_log in chat_logs)
+
+
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+async def test_delete_business_user_account(
+    account,
+    create_business_user_account,
+    http_request,
+    auth_service,
+    password,
+):
+    _, account = account
+    tokens, business = business
+    response = await http_request(
+        path=f"/business/remove-account/{business_user.id}",
+        method=RequestMethod.DELETE,
+        token=tokens.access_token,
+    )
+    assert response.status_code == 204
+    with pytest.raises(AdminUnauthorized):
+        await auth_service.verify_account(
+            email=business_user.email, input_password=password
+        )

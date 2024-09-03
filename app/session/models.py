@@ -19,4 +19,4 @@ class Chat_Sessions(BaseMixin):
     ip_address: Mapped[str] = mapped_column(String(45))
     user_agent: Mapped[str] = mapped_column(String(45))
 
-    account: Mapped["Accounts"] = relationship()
+    account: Mapped["Accounts"] = relationship(viewonly=True)

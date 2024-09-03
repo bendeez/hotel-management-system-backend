@@ -3,7 +3,6 @@ from app.business_user.models import Business_Users
 from app.business.schemas import BusinessAccountCreate
 from app.business_user.schemas import (
     BusinessUserAccountCreate,
-    BusinessUserAccountDelete,
 )
 from app.utils.service import HashService
 from app.business.exceptions import (
@@ -60,12 +59,12 @@ class BusinessService:
         await self.repository.delete(model_instance=account)
 
     async def delete_business_user_account(
-        self, business_user: BusinessUserAccountDelete, account: Accounts
+        self, business_user_id: int, account: Accounts
     ):
         if not isinstance(account, Business):
             raise NotABusiness()
         business_user = await self.repository.get_business_user_by_id(
-            business_user_id=business_user.business_user_id, business_id=account.id
+            business_user_id=business_user_id, business_id=account.id
         )
         if business_user is None:
             raise BusinessUserNotFound()

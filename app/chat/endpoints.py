@@ -56,3 +56,12 @@ async def create_chat_log(
 ):
     chat_log = await chat_service.create_chat_log(account=account, chat_log=chat_log)
     return chat_log
+
+
+@chat_router.delete("/chat-log/{chat_log_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def create_chat_log(
+    chat_log_id: int,
+    chat_service: ChatService = Depends(ChatService),
+    account: Accounts = Depends(get_account),
+):
+    await chat_service.delete_chat_log(chat_log_id=chat_log_id, account=account)
