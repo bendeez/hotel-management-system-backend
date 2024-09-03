@@ -1,3 +1,4 @@
+from tests.conftest import create_chat_log
 from utils import RequestMethod
 from app.chat.schemas import ChatLogsCreate, ChatLogsOut
 import pytest
@@ -5,7 +6,9 @@ from pytest_lazy_fixtures import lf
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
-async def test_create_chat_log(account, http_request, sessions, user_request):
+async def test_create_chat_log(
+    account, http_request, sessions, user_request, chat_service
+):
     tokens, account = account
     """
         gets first session by account id
@@ -28,6 +31,7 @@ async def test_create_chat_log(account, http_request, sessions, user_request):
         user_agent=user_request.headers["User-Agent"],
         **chat_log_info,
     )
+    await chat_service.delete_chat_log(account=account, chat_log_id=chat_log.id)
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
@@ -133,3 +137,35 @@ async def test_get_account_chat_logs_by_session_id(
     assert chat_logs[0].date >= chat_logs[1].date
     assert session.account_id == account.id
     assert all(chat_log.session_id == session.id for chat_log in chat_logs)
+
+
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+async def test_delete_chat_log(
+    account, http_request, chat_service, create_chat_log, sessions
+):
+    tokens, account = account
+    session = next(filter(lambda session: session.account_id == account.id, sessions))
+    chat_log = await create_chat_log(session=session, account=account)
+    response = await http_request(
+        path=f"/chat-log/{chat_log.id}",
+        method=RequestMethod.DELETE,
+        token=tokens.access_token,
+    )
+    assert response.status_code == 204
+    chat_logs = await chat_service.get_chat_logs_by_session_id(
+        session_id=session.id, account=account
+    )
+    assert all(chat_log.id != _chat_log.id for _chat_log in chat_logs)
+
+
+@pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
+async def test_invalid_delete_chat_log_with_account_chat_log_not_exists(
+    account, http_request
+):
+    tokens, _ = account
+    response = await http_request(
+        path=f"/chat-log/100",
+        method=RequestMethod.DELETE,
+        token=tokens.access_token,
+    )
+    assert response.status_code == 404

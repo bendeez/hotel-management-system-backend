@@ -2,7 +2,7 @@ from app.chat.repository import ChatRepository
 from fastapi import Depends
 from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
-from app.chat.schemas import ChatLogsCreate, ChatLogDelete
+from app.chat.schemas import ChatLogsCreate
 from app.session.exceptions import SessionNotExists, SessionForbidden, SessionExpired
 from app.chat.exceptions import ChatLogNotFound
 from app.chat.models import Chat_Logs
@@ -17,8 +17,8 @@ class ChatService:
     async def get_all_account_chat_logs(
         self,
         account: Accounts,
-        order: DatabaseQueryOrder,
-        order_by: ChatsAttributes,
+        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
+        order_by: ChatsAttributes = ChatsAttributes.date,
         limit: int = 100,
         offset: int = 0,
     ):
@@ -33,10 +33,10 @@ class ChatService:
 
     async def get_chat_logs_by_session_id(
         self,
-        account: Accounts,
-        order: DatabaseQueryOrder,
-        order_by: ChatsAttributes,
         session_id: str,
+        account: Accounts,
+        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
+        order_by: ChatsAttributes = ChatsAttributes.date,
         limit: int = 100,
         offset: int = 0,
     ):
@@ -65,9 +65,9 @@ class ChatService:
         )
         return chat_log
 
-    async def delete_chat_log(self, chat_log: ChatLogDelete, account: Accounts):
+    async def delete_chat_log(self, chat_log_id: id, account: Accounts):
         chat_log = await self.repository.get_account_chat_log_by_id(
-            account_id=account.id, chat_log_id=chat_log.chat_log_id
+            account_id=account.id, chat_log_id=chat_log_id
         )
         if chat_log is None:
             raise ChatLogNotFound()

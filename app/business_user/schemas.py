@@ -17,7 +17,3 @@ class BusinessUserAccountCreate(BusinessUserAccountBase):
 class BusinessUserAccountIn(BaseModel):
     email: str
     password: str
-
-
-class BusinessUserAccountDelete(BaseModel):
-    business_user_id: int

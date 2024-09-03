@@ -3,7 +3,6 @@ from app.business.schemas import BusinessAccountOut, BusinessAccountCreate
 from app.business_user.schemas import (
     BusinessUserAccountCreate,
     BusinessUserAccountOut,
-    BusinessUserAccountDelete,
 )
 from app.business.service import BusinessService
 from app.auth.service import get_account
@@ -59,13 +58,14 @@ async def add_account_to_business(
 
 
 @business_router.delete(
-    "/business/remove-account", status_code=status.HTTP_204_NO_CONTENT
+    "/business/remove-account/{business_user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_business_user_account(
-    business_user: BusinessUserAccountDelete,
+    business_user_id: int,
     business_service: BusinessService = Depends(BusinessService),
     account: Accounts = Depends(get_account),
 ):
     await business_service.delete_business_user_account(
-        account=account, business_user=business_user
+        account=account, business_user_id=business_user_id
     )

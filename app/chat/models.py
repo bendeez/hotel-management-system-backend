@@ -11,4 +11,4 @@ class Chat_Logs(BaseMixin):
     message: Mapped[str] = mapped_column(Text)
     date: Mapped[datetime] = mapped_column(default=datetime.now())
 
-    account: Mapped["Accounts"] = relationship(secondary="chat_sessions")
+    account: Mapped["Accounts"] = relationship(secondary="chat_sessions", viewonly=True)

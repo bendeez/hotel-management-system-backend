@@ -1,6 +1,6 @@
 from fastapi import Depends
 from app.facility.models import Facility
-from app.facility.schemas import FacilityCreate, FacilityDelete
+from app.facility.schemas import FacilityCreate
 from app.facility.repository import FacilityRepository
 from app.accounts.models import Accounts
 from app.facility.exceptions import FacilityNotFound
@@ -24,11 +24,9 @@ class FacilityService:
         )
         return facilities
 
-    async def delete_account_facility(
-        self, facility: FacilityDelete, account: Accounts
-    ):
+    async def delete_account_facility(self, facility_id: int, account: Accounts):
         facility = await self.repository.get_account_facility_by_id(
-            account_id=account.id, facility_id=facility.facility_id
+            account_id=account.id, facility_id=facility_id
         )
         if facility is None:
             raise FacilityNotFound()
