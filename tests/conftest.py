@@ -40,6 +40,26 @@ async def create_db_session():
         yield db
 
 
+@pytest.fixture(scope="session")
+async def refresh_session(db):
+    """
+        the db session can become not sync with
+        the database after a concurrent database
+        request from another db session that
+        you call indirectly when making a request
+        to the fastapi application (it creates
+        its own db session to handle the request)
+    :param db:
+    :return:
+    """
+
+    async def _refresh_session():
+        await db.close()
+        await db.connection()
+
+    return _refresh_session
+
+
 @pytest.fixture(scope="session", autouse=True)
 async def create_tables(db):
     async with engine.begin() as conn:
@@ -99,17 +119,20 @@ async def user(user_service, password, auth_service) -> tuple[TokenCreate, Users
 
 
 @pytest.fixture(scope="session")
-async def create_business_account(business_service, password):
-    async def _create_business_account():
+async def create_business_account(auth_service, business_service, password):
+    async def _create_business_account() -> tuple[TokenCreate, Business]:
         business_account = await business_service.create_business_account(
             business=BusinessAccountCreate(
-                email="business@gmail.com",
+                email=f"{uuid4()}@gmail.com",
                 password=password,
                 name="resort and fun",
                 location="US",
             )
         )
-        return business_account
+        tokens = await auth_service.verify_account(
+            email=business_account.email, input_password=password
+        )
+        return tokens, business_account
 
     return _create_business_account
 
@@ -117,39 +140,43 @@ async def create_business_account(business_service, password):
 @pytest.fixture(scope="session")
 async def business(
     create_business_account, auth_service, password
-) -> list[TokenCreate, Business]:
-    business_account = await create_business_account()
-    tokens = await auth_service.verify_account(
-        email=business_account.email, input_password=password
-    )
-    return [tokens, business_account]
+) -> tuple[TokenCreate, Business]:
+    tokens, business_account = await create_business_account()
+    return tokens, business_account
 
 
-@pytest.fixture()
-async def recreate_business_account(business, request, create_business_account):
-    yield
-    recreated_business = await create_business_account()
-    business[1] = recreated_business
+@pytest.fixture(scope="session")
+async def create_business_user_account(
+    auth_service, business, business_service, password
+):
+    _, business = business
+
+    async def _create_business_user_account(
+        business=business,
+    ) -> tuple[TokenCreate, Business_Users]:
+        business_user_account = await business_service.create_business_user_account(
+            business_user=BusinessUserAccountCreate(
+                email=f"{uuid4()}@gmail.com",
+                password=password,
+                role_name="admin",
+                business_id=business.id,
+            ),
+            account=business,
+        )
+        tokens = await auth_service.verify_account(
+            email=business_user_account.email, input_password=password
+        )
+        return tokens, business_user_account
+
+    return _create_business_user_account
 
 
 @pytest.fixture(scope="session")
 async def business_user(
-    business, business_service, password, auth_service
+    create_business_user_account,
 ) -> tuple[TokenCreate, Business_Users]:
-    tokens, business = business
-    business_user_account = await business_service.create_business_user_account(
-        business_user=BusinessUserAccountCreate(
-            email="business-user@gmail.com",
-            password=password,
-            role_name="admin",
-            business_id=business.id,
-        ),
-        account=business,
-    )
-    tokens = await auth_service.verify_account(
-        email=business_user_account.email, input_password=password
-    )
-    return tokens, business_user_account
+    tokens, business_account = await create_business_user_account()
+    return tokens, business_account
 
 
 @pytest.fixture(scope="session")

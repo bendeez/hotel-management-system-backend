@@ -8,7 +8,7 @@ class Business(Accounts):
     id: Mapped[int] = mapped_column(
         ForeignKey("accounts.id", ondelete="CASCADE"), primary_key=True
     )
-    email: Mapped[str] = mapped_column(String(45), unique=True)
+    email: Mapped[str] = mapped_column(String(100), unique=True)
     email_verified: Mapped[bool] = mapped_column(default=False)
     name: Mapped[str] = String(45)
     subscription_id: Mapped[int] = mapped_column(default=1)  # for development purposes

@@ -4,7 +4,7 @@ from app.exceptions import AdminError
 class BusinessUserEmailAlreadyExists(AdminError):
     def __init__(
         self,
-        message: str = "Username already exists within your business user accounts",
+        message: str = "Email already exists within your business user accounts",
         status_code: int = 409,
     ) -> None:
         super().__init__(message, status_code)
