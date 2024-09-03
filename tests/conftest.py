@@ -32,6 +32,7 @@ from typing import Optional, Any
 from app.auth.schemas import TokenCreate
 from datetime import datetime, timedelta
 from app.tools.database import get_db
+from app.accounts.models import Accounts
 from uuid import uuid4
 
 
@@ -183,10 +184,18 @@ def user_request():
         client=Client(host="127.0.0.1"), headers={"User-Agent": "Mozilla/5.0"}
     )
 
+@pytest.fixture(scope="session")
+async def create_session(session_service, user_request):
+    async def _create_session(account: Accounts) -> Chat_Sessions:
+        session = await session_service.create_chat_session(
+            account=account, request=user_request
+        )
+        return session
+    return _create_session
 
 @pytest.fixture(scope="session")
 async def sessions(
-    session_service, user, business, business_user, user_request
+    create_session, user, business, business_user
 ) -> list[Chat_Sessions]:
     sessions = []
     for account in [user, business, business_user]:
@@ -196,9 +205,7 @@ async def sessions(
             not counting the expired ones
         """
         for i in range(2):
-            session = await session_service.create_chat_session(
-                account=account, request=user_request
-            )
+            session = await create_session(account=account)
             sessions.append(session)
     return sessions
 
@@ -218,10 +225,20 @@ async def expired_sessions(
     await db.commit()
     return expired_sessions
 
+@pytest.fixture(scope="session")
+async def create_chat_log(chat_service):
+    async def _create_chat_log(session: Chat_Sessions, account: Accounts):
+        chat_log = await chat_service.create_chat_log(
+            account=account,
+            chat_log=ChatLogsCreate(session_id=session.id, message=str(uuid4())),
+        )
+        return chat_log
+
+    return _create_chat_log
 
 @pytest.fixture(scope="session")
 async def chat_logs(
-    sessions, chat_service, user, business, business_user
+    sessions, create_chat_log, user, business, business_user
 ) -> list[Chat_Logs]:
     chat_logs = []
     for session in sessions:
@@ -237,16 +254,25 @@ async def chat_logs(
             chat logs total per account
         """
         for _ in range(3):
-            chat_log = await chat_service.create_chat_log(
+            chat_log = await create_chat_log(
                 account=account,
-                chat_log=ChatLogsCreate(session_id=session.id, message=str(uuid4())),
+                session=session
             )
             chat_logs.append(chat_log)
     return chat_logs
 
+@pytest.fixture(scope="session")
+async def create_facility(facility_service):
+    async def _create_facility(account: Accounts) -> Facility:
+        facility = await facility_service.create_facility(
+            FacilityCreate(title=str(uuid4()), description=str(uuid4())),
+            account=account,
+        )
+        return facility
+    return _create_facility
 
 @pytest.fixture(scope="session")
-async def facilities(facility_service, user, business, business_user) -> list[Facility]:
+async def facilities(create_facility, user, business, business_user) -> list[Facility]:
     facilities = []
     for account in [user, business, business_user]:
         _, account = account
@@ -254,10 +280,7 @@ async def facilities(facility_service, user, business, business_user) -> list[Fa
             3 facilities are created for each account
         """
         for i in range(3):
-            facility = await facility_service.create_facility(
-                FacilityCreate(title=str(uuid4()), description=str(uuid4())),
-                account=account,
-            )
+            facility = await create_facility(account=account)
             facilities.append(facility)
     return facilities
 

@@ -59,7 +59,7 @@ async def create_chat_log(
 
 
 @chat_router.delete("/chat-log/{chat_log_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def create_chat_log(
+async def delete_chat_log(
     chat_log_id: int,
     chat_service: ChatService = Depends(ChatService),
     account: Accounts = Depends(get_account),

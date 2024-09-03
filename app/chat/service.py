@@ -17,8 +17,8 @@ class ChatService:
     async def get_all_account_chat_logs(
         self,
         account: Accounts,
-        order: DatabaseQueryOrder,
-        order_by: ChatsAttributes,
+        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
+        order_by: ChatsAttributes = ChatsAttributes.date,
         limit: int = 100,
         offset: int = 0,
     ):
@@ -33,10 +33,10 @@ class ChatService:
 
     async def get_chat_logs_by_session_id(
         self,
-        account: Accounts,
-        order: DatabaseQueryOrder,
-        order_by: ChatsAttributes,
         session_id: str,
+        account: Accounts,
+        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
+        order_by: ChatsAttributes = ChatsAttributes.date,
         limit: int = 100,
         offset: int = 0,
     ):

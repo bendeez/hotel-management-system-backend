@@ -35,7 +35,7 @@ async def get_account_facilities(
 @facility_router.delete(
     "/facility/{facility_id}", status_code=status.HTTP_204_NO_CONTENT
 )
-async def create_chat_log(
+async def delete_facility(
     facility_id: int,
     facility_service: FacilityService = Depends(FacilityService),
     account: Accounts = Depends(get_account),
