@@ -184,6 +184,7 @@ def user_request():
         client=Client(host="127.0.0.1"), headers={"User-Agent": "Mozilla/5.0"}
     )
 
+
 @pytest.fixture(scope="session")
 async def create_session(session_service, user_request):
     async def _create_session(account: Accounts) -> Chat_Sessions:
@@ -191,7 +192,9 @@ async def create_session(session_service, user_request):
             account=account, request=user_request
         )
         return session
+
     return _create_session
+
 
 @pytest.fixture(scope="session")
 async def sessions(
@@ -225,6 +228,7 @@ async def expired_sessions(
     await db.commit()
     return expired_sessions
 
+
 @pytest.fixture(scope="session")
 async def create_chat_log(chat_service):
     async def _create_chat_log(session: Chat_Sessions, account: Accounts):
@@ -235,6 +239,7 @@ async def create_chat_log(chat_service):
         return chat_log
 
     return _create_chat_log
+
 
 @pytest.fixture(scope="session")
 async def chat_logs(
@@ -254,12 +259,10 @@ async def chat_logs(
             chat logs total per account
         """
         for _ in range(3):
-            chat_log = await create_chat_log(
-                account=account,
-                session=session
-            )
+            chat_log = await create_chat_log(account=account, session=session)
             chat_logs.append(chat_log)
     return chat_logs
+
 
 @pytest.fixture(scope="session")
 async def create_facility(facility_service):
@@ -269,7 +272,9 @@ async def create_facility(facility_service):
             account=account,
         )
         return facility
+
     return _create_facility
+
 
 @pytest.fixture(scope="session")
 async def facilities(create_facility, user, business, business_user) -> list[Facility]:

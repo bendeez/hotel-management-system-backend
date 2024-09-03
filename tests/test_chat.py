@@ -141,11 +141,7 @@ async def test_get_account_chat_logs_by_session_id(
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 async def test_delete_chat_log(
-    account,
-    http_request,
-    chat_service,
-    create_chat_log,
-    sessions
+    account, http_request, chat_service, create_chat_log, sessions
 ):
     tokens, account = account
     session = next(filter(lambda session: session.account_id == account.id, sessions))
@@ -156,13 +152,15 @@ async def test_delete_chat_log(
         token=tokens.access_token,
     )
     assert response.status_code == 204
-    chat_logs = await chat_service.get_chat_logs_by_session_id(session_id=session.id, account=account)
+    chat_logs = await chat_service.get_chat_logs_by_session_id(
+        session_id=session.id, account=account
+    )
     assert all(chat_log.id != _chat_log.id for _chat_log in chat_logs)
+
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 async def test_invalid_delete_chat_log_with_account_chat_log_not_exists(
-    account,
-    http_request
+    account, http_request
 ):
     tokens, _ = account
     response = await http_request(

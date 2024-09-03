@@ -42,12 +42,10 @@ async def test_get_account_facilities(account, http_request, facilities):
     assert len(data) == len(facilities)
     assert all(FacilityOut(**d) in facilities for d in data)
 
+
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 async def test_delete_facility(
-    account,
-    http_request,
-    create_facility,
-    facility_service
+    account, http_request, create_facility, facility_service
 ):
     tokens, account = account
     facility = await create_facility(account=account)
@@ -60,10 +58,10 @@ async def test_delete_facility(
     facilities = await facility_service.get_all_account_facilities(account=account)
     assert all(facility.id != _facility.id for _facility in facilities)
 
+
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 async def test_invalid_delete_facility_with_account_facility_not_exists(
-    account,
-    http_request
+    account, http_request
 ):
     tokens, _ = account
     response = await http_request(
