@@ -40,6 +40,26 @@ async def create_db_session():
         yield db
 
 
+@pytest.fixture(scope="session")
+async def refresh_session(db):
+    """
+        the db session can become not sync with
+        the database after a concurrent database
+        request from another db session that
+        you call indirectly when making a request
+        to the fastapi application (it creates
+        its own db session to handle the request)
+    :param db:
+    :return:
+    """
+
+    async def _refresh_session():
+        await db.close()
+        await db.connection()
+
+    return _refresh_session
+
+
 @pytest.fixture(scope="session", autouse=True)
 async def create_tables(db):
     async with engine.begin() as conn:
@@ -100,9 +120,7 @@ async def user(user_service, password, auth_service) -> tuple[TokenCreate, Users
 
 @pytest.fixture(scope="session")
 async def create_business_account(auth_service, business_service, password):
-    delete_accounts = []
-
-    async def _create_business_account(delete=False) -> tuple[TokenCreate, Business]:
+    async def _create_business_account() -> tuple[TokenCreate, Business]:
         business_account = await business_service.create_business_account(
             business=BusinessAccountCreate(
                 email=f"{uuid4()}@gmail.com",
@@ -114,13 +132,9 @@ async def create_business_account(auth_service, business_service, password):
         tokens = await auth_service.verify_account(
             email=business_account.email, input_password=password
         )
-        if delete:
-            delete_accounts.append(business_account)
         return tokens, business_account
 
-    yield _create_business_account
-    for account in delete_accounts:
-        await business_service.delete_business_account(account=account)
+    return _create_business_account
 
 
 @pytest.fixture(scope="session")
@@ -135,11 +149,10 @@ async def business(
 async def create_business_user_account(
     auth_service, business, business_service, password
 ):
-    delete_accounts = []
     _, business = business
 
     async def _create_business_user_account(
-        delete=False, business=business
+        business=business,
     ) -> tuple[TokenCreate, Business_Users]:
         business_user_account = await business_service.create_business_user_account(
             business_user=BusinessUserAccountCreate(
@@ -153,13 +166,9 @@ async def create_business_user_account(
         tokens = await auth_service.verify_account(
             email=business_user_account.email, input_password=password
         )
-        if delete:
-            delete_accounts.append(business_user_account)
         return tokens, business_user_account
 
-    yield _create_business_user_account
-    for account in delete_accounts:
-        await business_service.delete_business_user_account(account=account)
+    return _create_business_user_account
 
 
 @pytest.fixture(scope="session")

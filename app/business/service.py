@@ -17,7 +17,6 @@ from app.business_user.exceptions import (
 )
 from app.business.repository import BusinessRepository
 from fastapi import Depends
-from app.tools.schemas import DeleteResponse
 
 
 class BusinessService:
@@ -59,9 +58,6 @@ class BusinessService:
         if not isinstance(account, Business):
             raise NotABusiness()
         await self.repository.delete(model_instance=account)
-        return DeleteResponse(
-            message=f"Business account {account.email} has been deleted"
-        )
 
     async def delete_business_user_account(
         self, business_user: BusinessUserAccountDelete, account: Accounts
@@ -74,9 +70,6 @@ class BusinessService:
         if business_user is None:
             raise BusinessUserNotFound()
         await self.repository.delete(model_instance=business_user)
-        return DeleteResponse(
-            message=f"Business user account {account.email} has been deleted"
-        )
 
     async def get_business_account_info(self, account: Accounts):
         if not isinstance(account, Business):

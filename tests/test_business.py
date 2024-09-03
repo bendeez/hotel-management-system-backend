@@ -39,13 +39,19 @@ async def test_create_business_account_with_email_already_exists(
 
 
 async def test_delete_business_account(
-    create_business_account, http_request, business_service, auth_service, password
+    refresh_session,
+    create_business_account,
+    http_request,
+    business_service,
+    auth_service,
+    password,
 ):
-    tokens, business = await create_business_account(delete=True)
+    tokens, business = await create_business_account()
     response = await http_request(
         path="/business", method=RequestMethod.DELETE, token=tokens.access_token
     )
-    assert response.status_code == 200
+    assert response.status_code == 204
+    await refresh_session()
     with pytest.raises(AdminUnauthorized):
         await auth_service.verify_account(email=business.email, input_password=password)
 
@@ -53,7 +59,7 @@ async def test_delete_business_account(
 async def test_create_business_user_account(business, http_request, password):
     tokens, business = business
     business_user_config = BusinessUserAccountCreate(
-        email="business-user-create@gmail.com",
+        email=f"{uuid4()}@gmail.com",
         password=password,
         role_name="admin",
         business_id=business.id,
@@ -77,7 +83,7 @@ async def test_invalid_create_business_user_account_with_invalid_account_type(
 ):
     tokens, user = user
     business_user_config = BusinessUserAccountCreate(
-        email="business-user-create@gmail.com",
+        email=f"{uuid4()}@gmail.com",
         password=password,
         role_name="admin",
         business_id=user.id,
@@ -112,7 +118,12 @@ async def test_invalid_create_business_user_account_with_email_already_exists(
 
 
 async def test_delete_business_user_account(
-    business, create_business_user_account, http_request, auth_service, password
+    refresh_session,
+    business,
+    create_business_user_account,
+    http_request,
+    auth_service,
+    password,
 ):
     _, business_user = await create_business_user_account()
     tokens, business = business
@@ -125,7 +136,8 @@ async def test_delete_business_user_account(
         json=business_user_config,
         token=tokens.access_token,
     )
-    assert response.status_code == 200
+    assert response.status_code == 204
+    await refresh_session()
     with pytest.raises(AdminUnauthorized):
         await auth_service.verify_account(
             email=business_user.email, input_password=password
