@@ -13,7 +13,7 @@ from fastapi import Request
 
 class SessionService:
     def __init__(self, repository: SessionRepository = Depends(SessionRepository)):
-        self.repository = repository
+        self._repository = repository
         self.session_duration = settings.SESSION_DURATION
 
     async def get_account_chat_sessions(
@@ -24,7 +24,7 @@ class SessionService:
         limit: int = 100,
         offset: int = 0,
     ):
-        chat_sessions = await self.repository.get_account_chat_sessions(
+        chat_sessions = await self._repository.get_account_chat_sessions(
             account_id=account.id,
             order=order,
             order_by=order_by,
@@ -34,7 +34,7 @@ class SessionService:
         return chat_sessions
 
     async def create_chat_session(self, account: Accounts, request: Request):
-        session = await self.repository.create(
+        session = await self._repository.create(
             model_instance=Chat_Sessions(
                 id=str(uuid4()),
                 account_id=account.id,

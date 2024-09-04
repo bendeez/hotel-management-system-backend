@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from app.chat.service import ChatService
 from app.chat.constants import ChatsAttributes
 from app.tools.constants import DatabaseQueryOrder
@@ -6,12 +6,15 @@ from app.chat.schemas import ChatLogsOut, ChatLogsCreate
 from app.accounts.models import Accounts
 from app.auth.service import get_account
 from typing import List
+from app.tools.rate_limiter import limiter, limit
 
 chat_router = APIRouter()
 
 
 @chat_router.get("/chat-logs", response_model=List[ChatLogsOut])
+@limiter.limit(limit)
 async def get_all_account_chat_logs(
+    request: Request,
     limit: int = 100,
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
@@ -26,7 +29,9 @@ async def get_all_account_chat_logs(
 
 
 @chat_router.get("/chat-logs/{session_id}", response_model=List[ChatLogsOut])
+@limiter.limit(limit)
 async def get_account_chat_logs_by_session_id(
+    request: Request,
     session_id: str,
     limit: int = 100,
     offset: int = 0,
@@ -49,7 +54,9 @@ async def get_account_chat_logs_by_session_id(
 @chat_router.post(
     "/chat-log", response_model=ChatLogsOut, status_code=status.HTTP_201_CREATED
 )
+@limiter.limit(limit)
 async def create_chat_log(
+    request: Request,
     chat_log: ChatLogsCreate,
     chat_service: ChatService = Depends(ChatService),
     account: Accounts = Depends(get_account),
@@ -59,7 +66,9 @@ async def create_chat_log(
 
 
 @chat_router.delete("/chat-log/{chat_log_id}", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(limit)
 async def delete_chat_log(
+    request: Request,
     chat_log_id: int,
     chat_service: ChatService = Depends(ChatService),
     account: Accounts = Depends(get_account),
