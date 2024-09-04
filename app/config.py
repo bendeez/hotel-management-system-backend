@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE: int
     REFRESH_TOKEN_EXPIRE: int
     SESSION_DURATION: int
+    LIMIT_REQUESTS_PER_ENDPOINT: int
 
     model_config = SettingsConfigDict(env_file=f"./app/.env.{ENV}")
 

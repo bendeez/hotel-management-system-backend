@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from app.business.schemas import BusinessAccountOut, BusinessAccountCreate
 from app.business_user.schemas import (
     BusinessUserAccountCreate,
@@ -7,6 +7,7 @@ from app.business_user.schemas import (
 from app.business.service import BusinessService
 from app.auth.service import get_account
 from app.accounts.models import Accounts
+from app.tools.rate_limiter import limiter, limit
 
 
 business_router = APIRouter()
@@ -15,7 +16,9 @@ business_router = APIRouter()
 @business_router.post(
     "/business", response_model=BusinessAccountOut, status_code=status.HTTP_201_CREATED
 )
+@limiter.limit(limit)
 async def create_business_account(
+    request: Request,
     business: BusinessAccountCreate,
     business_service: BusinessService = Depends(BusinessService),
 ):
@@ -24,7 +27,9 @@ async def create_business_account(
 
 
 @business_router.delete("/business", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit(limit)
 async def delete_business_account(
+    request: Request,
     business_service: BusinessService = Depends(BusinessService),
     account: Accounts = Depends(get_account),
 ):
@@ -32,7 +37,9 @@ async def delete_business_account(
 
 
 @business_router.get("/business/me", response_model=BusinessAccountOut)
+@limiter.limit(limit)
 async def get_business_account_info(
+    request: Request,
     business_service: BusinessService = Depends(BusinessService),
     account: Accounts = Depends(get_account),
 ):
@@ -45,7 +52,9 @@ async def get_business_account_info(
     response_model=BusinessUserAccountOut,
     status_code=status.HTTP_201_CREATED,
 )
+@limiter.limit(limit)
 async def add_account_to_business(
+    request: Request,
     business_user: BusinessUserAccountCreate,
     account: Accounts = Depends(get_account),
     business_service: BusinessService = Depends(BusinessService),
@@ -61,7 +70,9 @@ async def add_account_to_business(
     "/business/remove-account/{business_user_id}",
     status_code=status.HTTP_204_NO_CONTENT,
 )
+@limiter.limit(limit)
 async def delete_business_user_account(
+    request: Request,
     business_user_id: int,
     business_service: BusinessService = Depends(BusinessService),
     account: Accounts = Depends(get_account),

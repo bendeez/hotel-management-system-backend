@@ -6,12 +6,15 @@ from app.session.service import SessionService
 from typing import List
 from app.accounts.models import Accounts
 from app.auth.service import get_account
+from app.tools.rate_limiter import limiter, limit
 
 session_router = APIRouter()
 
 
 @session_router.get("/sessions", response_model=List[SessionsOut])
+@limiter.limit(limit)
 async def get_chat_sessions(
+    request: Request,
     limit: int = 100,
     offset: int = 0,
     order_by: SessionAttributes = SessionAttributes.end_time,
@@ -28,6 +31,7 @@ async def get_chat_sessions(
 @session_router.post(
     "/session", response_model=SessionsOut, status_code=status.HTTP_201_CREATED
 )
+@limiter.limit(limit)
 async def create_chat_session(
     request: Request,
     session_service: SessionService = Depends(SessionService),

@@ -157,8 +157,3 @@ async def test_get_business_info(http_request, business):
     assert response.status_code == 200
     data = response.json()
     assert BusinessAccountOut(**data) == BusinessAccountOut(**business.__dict__)
-
-
-async def test_get_business_info_unauthorized_with_no_token(http_request):
-    response = await http_request(path="/business/me", method=RequestMethod.GET)
-    assert response.status_code == 401

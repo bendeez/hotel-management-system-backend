@@ -9,7 +9,7 @@ class BusinessUserService:
     def __init__(
         self, repository: BusinessUserRepository = Depends(BusinessUserRepository)
     ):
-        self.repository = repository
+        self._repository = repository
 
     async def get_business_user_account_info(self, account: Accounts):
         if not isinstance(account, Business_Users):

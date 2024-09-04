@@ -153,3 +153,18 @@ async def test_invalid_get_access_token_with_access_token(
         json=TokenRequest(refresh_token=tokens.access_token).model_dump(),
     )
     assert response.status_code == 409
+
+
+async def test_get_business_info_unauthorized_with_no_token(http_request):
+    response = await http_request(path="/business/me", method=RequestMethod.GET)
+    assert response.status_code == 401
+
+
+async def test_get_business_user_info_unauthorized_with_no_token(http_request):
+    response = await http_request(path="/business-user/me", method=RequestMethod.GET)
+    assert response.status_code == 401
+
+
+async def test_get_user_info_unauthorized_with_no_token(http_request):
+    response = await http_request(path="/user/me", method=RequestMethod.GET)
+    assert response.status_code == 401

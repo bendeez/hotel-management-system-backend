@@ -8,6 +8,7 @@ from app.user.endpoints import user_router
 from app.session.endpoints import session_router
 from app.business_user.endpoints import business_user_router
 from app.exception_handlers import add_exception_handlers
+from app.tools.rate_limiter import limiter
 
 
 app = FastAPI()
@@ -18,6 +19,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.state.limiter = limiter
 
 add_exception_handlers(app=app)
 app.include_router(facility_router)

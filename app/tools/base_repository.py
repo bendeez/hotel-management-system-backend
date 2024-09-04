@@ -19,19 +19,19 @@ class JoinExpression:
 
 class BaseRepository:
     def __init__(self, db: AsyncSession = Depends(get_db)):
-        self.db = db
+        self.__db = db
 
     async def create(self, model_instance, ongoing_transaction=False):
-        self.db.add(model_instance)
+        self.__db.add(model_instance)
         if not ongoing_transaction:
-            await self.db.commit()
-            await self.db.refresh(model_instance)
+            await self.__db.commit()
+            await self.__db.refresh(model_instance)
         return model_instance
 
     async def delete(self, model_instance, ongoing_transaction=False):
-        await self.db.delete(model_instance)
+        await self.__db.delete(model_instance)
         if not ongoing_transaction:
-            await self.db.commit()
+            await self.__db.commit()
 
     def __build_query(
         self,
@@ -79,7 +79,7 @@ class BaseRepository:
             joins=joins,
         )
         stmt = stmt.order_by(order_by).limit(limit).offset(offset)
-        model_instances = await self.db.execute(stmt)
+        model_instances = await self.__db.execute(stmt)
         return model_instances.scalars().all()
 
     async def _get_one(
@@ -97,5 +97,5 @@ class BaseRepository:
             relationships=relationships,
             joins=joins,
         )
-        model_instance = await self.db.execute(stmt)
+        model_instance = await self.__db.execute(stmt)
         return model_instance.scalars().first()

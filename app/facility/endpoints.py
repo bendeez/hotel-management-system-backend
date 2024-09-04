@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from app.facility.schemas import FacilityCreate, FacilityOut
 from typing import List
 from app.facility.service import FacilityService
 from app.auth.service import get_account
 from app.accounts.models import Accounts
+from app.tools.rate_limiter import limiter, limit
 
 
 facility_router = APIRouter()
@@ -12,7 +13,9 @@ facility_router = APIRouter()
 @facility_router.post(
     "/facility", response_model=FacilityOut, status_code=status.HTTP_201_CREATED
 )
+@limiter.limit(limit)
 async def create_facility(
+    request: Request,
     facility: FacilityCreate,
     facility_service: FacilityService = Depends(FacilityService),
     account: Accounts = Depends(get_account),
@@ -24,7 +27,9 @@ async def create_facility(
 
 
 @facility_router.get("/facilities", response_model=List[FacilityOut])
+@limiter.limit(limit)
 async def get_account_facilities(
+    request: Request,
     facility_service: FacilityService = Depends(FacilityService),
     account: Accounts = Depends(get_account),
 ):
@@ -35,7 +40,9 @@ async def get_account_facilities(
 @facility_router.delete(
     "/facility/{facility_id}", status_code=status.HTTP_204_NO_CONTENT
 )
+@limiter.limit(limit)
 async def delete_facility(
+    request: Request,
     facility_id: int,
     facility_service: FacilityService = Depends(FacilityService),
     account: Accounts = Depends(get_account),

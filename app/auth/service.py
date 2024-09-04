@@ -17,7 +17,7 @@ class AuthService:
         self.ACCESS_TOKEN_EXPIRE = settings.ACCESS_TOKEN_EXPIRE
         self.REFRESH_TOKEN_EXPIRE = settings.REFRESH_TOKEN_EXPIRE
         self.hash_service = HashService()
-        self.repository = repository
+        self._repository = repository
 
     def _encode(self, to_encode: dict):
         return jwt.encode(to_encode, self.JWT_SECRET_KEY, algorithm=self.JWT_ALGORITHM)
@@ -52,11 +52,11 @@ class AuthService:
 
     async def get_account(self, token: str, _token_type: TokenType):
         account_id = self.get_account_id(token, _token_type)
-        account = await self.repository.get_account_by_id(account_id=account_id)
+        account = await self._repository.get_account_by_id(account_id=account_id)
         return account
 
     async def verify_account(self, email: str, input_password: str) -> TokenCreate:
-        account = await self.repository.get_account_by_email(email=email)
+        account = await self._repository.get_account_by_email(email=email)
         if account is None:
             raise AdminUnauthorized()
         verify = self.hash_service.verify(
