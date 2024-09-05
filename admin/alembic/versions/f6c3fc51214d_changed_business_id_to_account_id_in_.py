@@ -1,4 +1,4 @@
-"""changed business id to account id in facility table so all accounts can create facilities for their use
+"""changed domain id to account id in facility table so all accounts can create facilities for their use
 
 Revision ID: f6c3fc51214d
 Revises:
@@ -41,7 +41,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_table(
-        "business",
+        "domain",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("email", sa.String(length=45), nullable=False),
         sa.Column("email_verified", sa.Boolean(), nullable=False),
@@ -177,7 +177,7 @@ def downgrade() -> None:
     op.drop_table("chat_user")
     op.drop_table("chat_sessions")
     op.drop_table("chat_agent")
-    op.drop_table("business")
+    op.drop_table("domain")
     op.drop_table("data_categories")
     op.drop_table("chat_messenger")
     op.drop_table("accounts")

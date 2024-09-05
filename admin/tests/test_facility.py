@@ -1,5 +1,5 @@
-from admin.tests.utils import RequestMethod
-from admin.app.facility.schemas import FacilityCreate, FacilityOut
+from tests.utils import RequestMethod
+from app.facility.domain.schemas import FacilityCreate, FacilityOut
 from pytest_lazy_fixtures import lf
 import pytest
 

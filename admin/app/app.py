@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from admin.app.facility.endpoints import facility_router
-from admin.app.app import chat_router
-from admin.app.business.endpoints import business_router
-from admin.app.auth.endpoints import auth_router
-from admin.app.user.endpoints import user_router
-from admin.app.app import session_router
-from admin.app.app import business_user_router
-from admin.app.app import add_exception_handlers
-from admin.app.tools.rate_limiter import limiter
+from app.facility.application.endpoints import facility_router
+from app.chat.application.endpoints import chat_router
+from app.business.application.endpoints import business_router
+from app.auth.application.endpoints import auth_router
+from app.user.application.endpoints import user_router
+from app.session.application.endpoints import session_router
+from app.business_user.application.endpoints import business_user_router
+from app.exception_handlers import add_exception_handlers
+from app.tools.application.rate_limiter import limiter
 
 
 app = FastAPI()

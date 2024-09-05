@@ -1,5 +1,5 @@
-from admin.tests.utils import RequestMethod
-from admin.app.business_user.schemas import BusinessUserAccountOut
+from tests.utils import RequestMethod
+from app.business_user.domain.schemas import BusinessUserAccountOut
 
 
 async def test_get_business_user_info(http_request, business_user):

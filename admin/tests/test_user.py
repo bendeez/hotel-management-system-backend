@@ -1,7 +1,7 @@
-from admin.tests.utils import RequestMethod
-from admin.app.user.schemas import UserAccountCreate, UserAccountOut
+from tests.utils import RequestMethod
+from app.user.domain.schemas import UserAccountCreate, UserAccountOut
 import pytest
-from admin.app.auth.exceptions import AdminUnauthorized
+from app.auth.domain.exceptions import AdminUnauthorized
 from uuid import uuid4
 
 

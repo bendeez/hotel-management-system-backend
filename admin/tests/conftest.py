@@ -1,39 +1,39 @@
 import httpx
 import pytest
-from admin.app.app import app
-from admin.app.facility.models import Facility
-from admin.app.tools.database import SessionLocal, engine
-from admin.app.tools.base_models import BaseMixin
-from admin.tests.utils import RequestMethod, http_request, Request, Client
-from admin.app.auth.service import AuthService
-from admin.app.utils.service import HashService
-from admin.app.business.service import BusinessService
-from admin.app.user.service import UserService
-from admin.app.user.repository import UserRepository
-from admin.app.user.models import Users
-from admin.app.business.models import Business
-from admin.app.business_user.models import Business_Users
-from admin.app.business.repository import BusinessRepository
-from admin.app.accounts.repository import AccountsRepository
-from admin.app.user.schemas import UserAccountCreate
-from admin.app.business.schemas import BusinessAccountCreate
-from admin.app.business_user.schemas import BusinessUserAccountCreate
-from admin.app.session.service import SessionService
-from admin.app.session.models import Chat_Sessions
-from admin.app.session.repository import SessionRepository
-from admin.app.chat.schemas import ChatLogsCreate
-from admin.app.chat.service import ChatService
-from admin.app.chat.repository import ChatRepository
-from admin.app.chat.models import Chat_Logs
-from admin.app.facility.service import FacilityService
-from admin.app.facility.repository import FacilityRepository
-from admin.app.facility.schemas import FacilityCreate
+from app.app import app
+from app.facility.domain.models import Facility
+from app.tools.domain.database import SessionLocal, engine
+from app.tools.domain.base_models import BaseMixin
+from tests.utils import RequestMethod, http_request, Request, Client
+from app.auth.domain.service import AuthService
+from app.utils.domain.service import HashService
+from app.business.domain.service import BusinessService
+from app.user.domain.service import UserService
+from app.user.domain.repository import UserRepository
+from app.user.domain.models import Users
+from app.business.domain.models import Business
+from app.business_user.domain.models import Business_Users
+from app.business.domain.repository import BusinessRepository
+from app.accounts.domain.repository import AccountsRepository
+from app.user.domain.schemas import UserAccountCreate
+from app.business.domain.schemas import BusinessAccountCreate
+from app.business_user.domain.schemas import BusinessUserAccountCreate
+from app.session.domain.service import SessionService
+from app.session.domain.models import Chat_Sessions
+from app.session.domain.repository import SessionRepository
+from app.chat.domain.schemas import ChatLogsCreate
+from app.chat.domain.service import ChatService
+from app.chat.domain.repository import ChatRepository
+from app.chat.domain.models import Chat_Logs
+from app.facility.domain.service import FacilityService
+from app.facility.domain.repository import FacilityRepository
+from app.facility.domain.schemas import FacilityCreate
 from typing import Optional
-from admin.app.auth.schemas import TokenCreate
+from app.auth.domain.schemas import TokenCreate
 from datetime import datetime, timedelta
-from admin.app.tools.database import get_db
-from admin.app.accounts.models import Accounts
+from app.accounts.domain.models import Accounts
 from uuid import uuid4
+from app.tools.application.dependencies import get_db
 
 
 @pytest.fixture(name="db", scope="session", autouse=True)

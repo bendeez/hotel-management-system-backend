@@ -1,6 +1,5 @@
-from admin.tests.conftest import create_chat_log
-from admin.tests.utils import RequestMethod
-from admin.app.chat.schemas import ChatLogsCreate, ChatLogsOut
+from tests.utils import RequestMethod
+from app.chat.domain.schemas import ChatLogsCreate, ChatLogsOut
 import pytest
 from pytest_lazy_fixtures import lf
 

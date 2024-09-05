@@ -1,8 +1,11 @@
 import pytest
-from admin.app.auth.exceptions import AdminUnauthorized
-from admin.app.business.schemas import BusinessAccountCreate, BusinessAccountOut
-from admin.app.business_user.schemas import BusinessUserAccountCreate, BusinessUserAccountOut
-from admin.tests.utils import RequestMethod
+from app.auth.domain.exceptions import AdminUnauthorized
+from app.business.domain.schemas import BusinessAccountCreate, BusinessAccountOut
+from app.business_user.domain.schemas import (
+    BusinessUserAccountCreate,
+    BusinessUserAccountOut,
+)
+from tests.utils import RequestMethod
 from uuid import uuid4
 
 
