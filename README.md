@@ -1,4 +1,4 @@
-put this in the app/.env.dev file:
+put this in the chat-bookings-bot/app/.env.**dev** file:
 ```env
 DATABASE_HOST=localhost
 DATABASE_PORT=3306
@@ -12,3 +12,26 @@ REFRESH_TOKEN_EXPIRE=2880
 SESSION_DURATION=10
 LIMIT_REQUESTS_PER_ENDPOINT=20
 ```
+go to the chat-bookings-bot directory:
+```sh
+cd chat-bookings-bot
+```
+install dependencies:
+```sh
+poetry install
+```
+to start database, run docker-compose up:
+```sh
+docker-compose up
+```
+to start fastapi server, run:
+```sh
+uvicorn app.app:app --reload
+```
+to test, run:
+```sh
+pytest -s
+```
+If you have any questions, my discord is **backendblaziken**
+
+
