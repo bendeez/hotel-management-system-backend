@@ -1,4 +1,4 @@
-put this in the chat-bookings-bot/app/.env.**dev** file:
+put this in the admin/app/.env.**dev** file:
 ```env
 DATABASE_HOST=localhost
 DATABASE_PORT=3306
@@ -12,9 +12,9 @@ REFRESH_TOKEN_EXPIRE=2880
 SESSION_DURATION=10
 LIMIT_REQUESTS_PER_ENDPOINT=20
 ```
-go to the chat-bookings-bot directory:
+go to the admin directory:
 ```sh
-cd chat-bookings-bot/admin
+cd admin
 ```
 install dependencies:
 ```sh
