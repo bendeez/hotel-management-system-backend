@@ -1,5 +1,5 @@
 from tests.conftest import create_chat_log
-from utils import RequestMethod
+from tests.utils import RequestMethod
 from app.chat.schemas import ChatLogsCreate, ChatLogsOut
 import pytest
 from pytest_lazy_fixtures import lf

@@ -1,4 +1,4 @@
-from utils import RequestMethod
+from tests.utils import RequestMethod
 import pytest
 from pytest_lazy_fixtures import lf
 from app.session.schemas import SessionsOut

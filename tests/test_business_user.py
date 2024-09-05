@@ -1,4 +1,4 @@
-from utils import RequestMethod
+from tests.utils import RequestMethod
 from app.business_user.schemas import BusinessUserAccountOut
 
 

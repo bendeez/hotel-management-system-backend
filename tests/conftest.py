@@ -4,7 +4,7 @@ from app.app import app
 from app.facility.models import Facility
 from app.tools.database import SessionLocal, engine
 from app.tools.base_models import BaseMixin
-from utils import RequestMethod, http_request, Request, Client
+from tests.utils import RequestMethod, http_request, Request, Client
 from app.auth.service import AuthService
 from app.utils.service import HashService
 from app.business.service import BusinessService

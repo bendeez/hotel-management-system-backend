@@ -2,7 +2,7 @@ import pytest
 from app.auth.exceptions import AdminUnauthorized
 from app.business.schemas import BusinessAccountCreate, BusinessAccountOut
 from app.business_user.schemas import BusinessUserAccountCreate, BusinessUserAccountOut
-from utils import RequestMethod
+from tests.utils import RequestMethod
 from uuid import uuid4
 
 

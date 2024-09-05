@@ -1,4 +1,4 @@
-from utils import RequestMethod
+from tests.utils import RequestMethod
 from app.facility.schemas import FacilityCreate, FacilityOut
 from pytest_lazy_fixtures import lf
 import pytest

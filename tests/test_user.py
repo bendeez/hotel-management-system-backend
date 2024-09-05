@@ -1,4 +1,4 @@
-from utils import RequestMethod
+from tests.utils import RequestMethod
 from app.user.schemas import UserAccountCreate, UserAccountOut
 import pytest
 from app.auth.exceptions import AdminUnauthorized

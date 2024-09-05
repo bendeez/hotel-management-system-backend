@@ -4,9 +4,7 @@ from app.tools.constants import DatabaseQueryOrder
 from app.session.constants import SessionAttributes
 from app.accounts.models import Accounts
 from app.session.models import Chat_Sessions
-from app.session.schemas import SessionsOut
 from app.config import settings
-from datetime import timedelta
 from uuid import uuid4
 from fastapi import Request
 
