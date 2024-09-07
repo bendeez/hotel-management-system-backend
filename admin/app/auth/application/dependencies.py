@@ -7,12 +7,12 @@ from app.auth.domain.constants import TokenType
 from fastapi import Depends
 
 
-def get_auth_repository(db: AsyncSession = Depends(get_db)) -> AuthRepository:
+def _get_auth_repository(db: AsyncSession = Depends(get_db)) -> AuthRepository:
     return AuthRepository(db=db)
 
 
 def get_auth_service(
-    auth_repository: AuthRepository = Depends(get_auth_repository),
+    auth_repository: AuthRepository = Depends(_get_auth_repository),
 ) -> AuthService:
     return AuthService(repository=auth_repository)
 

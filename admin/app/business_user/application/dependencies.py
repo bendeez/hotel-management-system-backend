@@ -5,7 +5,7 @@ from app.tools.application.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-def get_business_user_repository(
+def _get_business_user_repository(
     db: AsyncSession = Depends(get_db),
 ) -> BusinessUserRepository:
     return BusinessUserRepository(db=db)
@@ -13,7 +13,7 @@ def get_business_user_repository(
 
 def get_business_user_service(
     business_user_repository: BusinessUserRepository = Depends(
-        get_business_user_repository
+        _get_business_user_repository
     ),
 ) -> BusinessUserService:
     return BusinessUserService(repository=business_user_repository)
