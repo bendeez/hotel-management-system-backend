@@ -116,7 +116,7 @@ def upgrade() -> None:
         "business_data",
         sa.Column("business_id", sa.Integer(), nullable=False),
         sa.Column("category_id", sa.Integer(), nullable=False),
-        sa.Column("data", sa.Text(), nullable=False),
+        sa.Column("hotel_data", sa.Text(), nullable=False),
         sa.Column("keywords", sa.String(length=45), nullable=False),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(

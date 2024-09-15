@@ -1,4 +1,4 @@
-"""got rid of messenger table and added extra request data to the session table
+"""got rid of messenger table and added extra request hotel_data to the session table
 
 Revision ID: 3d25162bed70
 Revises: f6c3fc51214d
