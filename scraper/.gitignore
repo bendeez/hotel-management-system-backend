@@ -1,0 +1,9 @@
+.env
+
+hotel_data/hotels_cleaned.csv
+
+.venv/
+
+__pycache__/
+
+.idea/
