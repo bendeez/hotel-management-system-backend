@@ -21,7 +21,7 @@ class ChatService:
         self,
         account: Accounts,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        order_by: ChatsAttributes = ChatsAttributes.date,
+        order_by: ChatsAttributes = ChatsAttributes.DATE,
         limit: int = 100,
         offset: int = 0,
     ):
@@ -39,7 +39,7 @@ class ChatService:
         session_id: str,
         account: Accounts,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        order_by: ChatsAttributes = ChatsAttributes.date,
+        order_by: ChatsAttributes = ChatsAttributes.DATE,
         limit: int = 100,
         offset: int = 0,
     ):

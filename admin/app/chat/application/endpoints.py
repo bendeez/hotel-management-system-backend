@@ -19,7 +19,7 @@ async def get_all_account_chat_logs(
     limit: int = 100,
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-    order_by: ChatsAttributes = ChatsAttributes.date,
+    order_by: ChatsAttributes = ChatsAttributes.DATE,
     chat_service: ChatService = Depends(get_chat_service),
     account: Accounts = Depends(get_account),
 ):
@@ -37,7 +37,7 @@ async def get_account_chat_logs_by_session_id(
     limit: int = 100,
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-    order_by: ChatsAttributes = ChatsAttributes.date,
+    order_by: ChatsAttributes = ChatsAttributes.DATE,
     chat_service: ChatService = Depends(get_chat_service),
     account: Accounts = Depends(get_account),
 ):

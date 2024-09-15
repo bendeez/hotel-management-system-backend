@@ -17,7 +17,7 @@ class SessionService:
         self,
         account: Accounts,
         order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        order_by: SessionAttributes = SessionAttributes.end_time,
+        order_by: SessionAttributes = SessionAttributes.END_TIME,
         limit: int = 100,
         offset: int = 0,
     ):

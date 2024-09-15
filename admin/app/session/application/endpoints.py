@@ -18,7 +18,7 @@ async def get_chat_sessions(
     request: Request,
     limit: int = 100,
     offset: int = 0,
-    order_by: SessionAttributes = SessionAttributes.end_time,
+    order_by: SessionAttributes = SessionAttributes.END_TIME,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
     session_service: SessionService = Depends(get_session_service),
     account: Accounts = Depends(get_account),
