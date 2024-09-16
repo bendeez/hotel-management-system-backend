@@ -7,42 +7,49 @@ class HotelCleanDataTool:
         try:
             return ast.literal_eval(value)
         except Exception as e:
+            # print(e)
             return None
 
     def modify_amenities(self, amenity):
         try:
             return [a.strip() for a in amenity if a != ""]
         except Exception as e:
+            print(e)
             return None
 
     def modify_classified_ratings(self, review):
         try:
             return {key: float(value) for key, value in review.items()}
         except Exception as e:
+            print(e)
             return None
 
     def modify_starting_price(self, price):
         try:
             return float(price.replace("$", "").replace(",", ""))
         except Exception as e:
+            print(e)
             return None
 
     def modify_num_of_reviews(self, review):
         try:
             return int(review.split(" ")[0].replace(",", ""))
         except Exception as e:
+            print(e)
             return None
 
     def modify_num_rating(self, rating):
         try:
             return float(rating.split(" ")[1])
         except Exception as e:
+            print(e)
             return None
 
     def get_rid_of_newline_characters(self, value):
         try:
             return re.sub(r"(\\n)+", " | ", value)
         except Exception as e:
+            print(e)
             return None
 
     def modify_room_to_price(self, rooms):
@@ -61,6 +68,7 @@ class HotelCleanDataTool:
                 for room in rooms
             ]
         except Exception as e:
+            print(e)
             return None
 
     def get_unique_values(self, value):

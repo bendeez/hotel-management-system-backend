@@ -32,7 +32,7 @@ class Hotel_Review(BaseMixin):
 
 class Hotel_Rooms(BaseMixin):
     room_type: Mapped[Optional[JSON]] = mapped_column(JSON)
-    guest_count: Mapped[Optional[str]] = mapped_column(Text)
+    guest_count: Mapped[Optional[JSON]] = mapped_column(JSON)
     price: Mapped[Optional[JSON]] = mapped_column(JSON)
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
 
@@ -45,6 +45,8 @@ class Hotel_House_Rules(BaseMixin):
     age_restriction: Mapped[Optional[str]] = mapped_column(Text)
     pets: Mapped[Optional[str]] = mapped_column(Text)
     groups: Mapped[Optional[str]] = mapped_column(Text)
+    refundable_damage_deposit: Mapped[Optional[str]] = mapped_column(Text)
+    smoking: Mapped[Optional[str]] = mapped_column(Text)
     cards_accepted: Mapped[Optional[str]] = mapped_column(Text)
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
 
