@@ -7,4 +7,3 @@ from app.session.domain.models import *
 from app.user.domain.models import *
 from app.hotels.models import *
 from app.tools.domain.base_models import BaseMixin
-

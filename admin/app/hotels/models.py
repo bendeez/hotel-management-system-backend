@@ -1,11 +1,8 @@
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column,
-    relationship
-)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from sqlalchemy import ForeignKey, Text, JSON
 from app.tools.domain.base_models import BaseMixin
+
 
 class Hotels(BaseMixin):
     title: Mapped[Optional[str]] = mapped_column(Text)

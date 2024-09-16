@@ -3,10 +3,11 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
     declared_attr,
-    as_declarative
+    as_declarative,
 )
 from typing import Optional
 from sqlalchemy import ForeignKey, Text, JSON
+
 
 @as_declarative()
 class BaseMixin:
@@ -15,7 +16,6 @@ class BaseMixin:
         return cls.__name__.lower()
 
     id: Mapped[int] = mapped_column(primary_key=True)
-
 
 
 class Hotels(BaseMixin):

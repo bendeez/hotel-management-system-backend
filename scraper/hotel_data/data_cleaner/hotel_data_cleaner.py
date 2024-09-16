@@ -1,6 +1,7 @@
 import pandas as pd
 from hotel_data_cleaner_tool import ht
 
+
 def clean_hotel_data(df):
     df = df.drop_duplicates()
     columns = [
