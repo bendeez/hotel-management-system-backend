@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str
     DATABASE_NAME: str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file="./hotel_data/.env")
 
 
 settings = Settings()

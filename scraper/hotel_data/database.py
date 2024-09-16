@@ -5,5 +5,4 @@ SQLALCHEMY_DATABASE_URL = f"mysql+aiomysql://{settings.DATABASE_USER}:{settings.
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = async_sessionmaker(
-    autocommit=False, autoflush=False, expire_on_commit=False, bind=engine
-)
+    autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)

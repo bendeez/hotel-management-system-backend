@@ -1,7 +1,6 @@
-.env
+scraper/hotel_data/.env
 
-hotel_data/hotels_cleaned.csv
-
+hotel_data/data/hotels_cleaned.csv
 .venv/
 
 __pycache__/
