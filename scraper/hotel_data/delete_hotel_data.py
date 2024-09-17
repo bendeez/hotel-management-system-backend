@@ -30,4 +30,5 @@ async def main():
         await db.commit()
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

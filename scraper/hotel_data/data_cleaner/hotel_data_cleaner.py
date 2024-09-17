@@ -1,5 +1,5 @@
 import pandas as pd
-from hotel_data_cleaner_tool import ht
+from hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
 
 
 def clean_hotel_data(df):
@@ -43,7 +43,15 @@ def clean_hotel_data(df):
         .apply(ht.modify_room_to_price)
     )
     classified_ratings = df["classified_ratings"]
-    classified_rating_keys = list(classified_ratings[15].keys())
+    classified_rating_keys = [
+        "Staff ",
+        "Facilities ",
+        "Cleanliness ",
+        "Comfort ",
+        "Value for money ",
+        "Location ",
+        "Free Wifi ",
+    ]
     classified_rating_dict = {key: [] for key in classified_rating_keys}
     for rating in classified_ratings:
         if isinstance(rating, dict):
@@ -61,6 +69,7 @@ def clean_hotel_data(df):
     return df
 
 
-df = pd.read_csv("hotels_copy.csv")
-df = clean_hotel_data(df=df)
-df.to_csv("hotels_cleaned.csv", index=False)
+if __name__ == "__main__":
+    df = pd.read_csv("hotels_copy.csv")
+    df = clean_hotel_data(df=df)
+    df.to_csv("hotels_cleaned.csv", index=False)

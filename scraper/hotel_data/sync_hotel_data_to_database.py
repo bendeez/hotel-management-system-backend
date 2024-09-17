@@ -14,9 +14,6 @@ from data_cleaner.hotel_data_cleaner_tool import ht
 
 df = pd.read_csv("./hotel_data/data/hotels_cleaned.csv")
 df = df.replace({np.nan: None})
-"""
-    turning data into valid json
-"""
 
 
 async def sync_to_database(df):
@@ -110,4 +107,5 @@ async def sync_to_database(df):
         await db.commit()
 
 
-asyncio.run(sync_to_database(df=df))
+if __name__ == "__main__":
+    asyncio.run(sync_to_database(df=df))
