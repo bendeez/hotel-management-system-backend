@@ -7,7 +7,7 @@ class HotelCleanDataTool:
         try:
             return ast.literal_eval(value)
         except Exception as e:
-            # print(e)
+            print(e)
             return None
 
     def modify_amenities(self, amenity):
@@ -29,6 +29,23 @@ class HotelCleanDataTool:
             return float(price.replace("$", "").replace(",", ""))
         except Exception as e:
             print(e)
+            return None
+
+    def modify_house_rules(self, house_rules):
+        if isinstance(house_rules, dict):
+            for key, value in house_rules.copy().items():
+                if key == "Cards accepted at this property":
+                    house_rules["Cards accepted at this hotel"] = value
+                    del house_rules[key]
+                elif key == "Parties":
+                    house_rules["Groups"] = value
+                    del house_rules[key]
+                elif key == "No age restriction":
+                    house_rules["Age restriction"] = value
+                    del house_rules[key]
+            return house_rules
+
+        else:
             return None
 
     def modify_num_of_reviews(self, review):

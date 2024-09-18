@@ -1,7 +1,21 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+    declared_attr,
+    as_declarative,
+)
 from typing import Optional
 from sqlalchemy import ForeignKey, Text, JSON
-from app.tools.domain.base_models import BaseMixin
+
+
+@as_declarative()
+class BaseMixin:
+    @declared_attr.directive
+    def __tablename__(cls):
+        return cls.__name__.lower()
+
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class Hotels(BaseMixin):

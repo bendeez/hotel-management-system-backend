@@ -1,4 +1,4 @@
-from models import (
+from hotel_data.models import (
     Hotels,
     Hotel_Rooms,
     Hotel_Location,
@@ -6,12 +6,12 @@ from models import (
     Hotel_Guest_Reviews,
     Hotel_House_Rules,
 )
-from database import SessionLocal
+from hotel_data.database import SessionLocal
 import asyncio
 from sqlalchemy import delete
 
 
-async def main():
+async def delete_hotel_data():
     async with SessionLocal() as db:
         """
             put hotels table at end of list so
@@ -31,4 +31,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(delete_hotel_data())

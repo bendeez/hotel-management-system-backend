@@ -29,6 +29,9 @@ def clean_hotel_data(df):
         .apply(ht.modify_amenities)
         .apply(ht.get_unique_values)
     )
+    df["house_rules"] = (
+        df["house_rules"].apply(ht.safe_literal_eval).apply(ht.modify_house_rules)
+    )
     df["classified_ratings"] = (
         df["classified_ratings"]
         .apply(ht.safe_literal_eval)
@@ -41,6 +44,11 @@ def clean_hotel_data(df):
         .apply(ht.get_rid_of_newline_characters)
         .apply(ht.safe_literal_eval)
         .apply(ht.modify_room_to_price)
+    )
+    df["guest_reviews"] = (
+        df["guest_reviews"]
+        .apply(ht.get_rid_of_newline_characters)
+        .apply(ht.safe_literal_eval)
     )
     classified_ratings = df["classified_ratings"]
     classified_rating_keys = [
@@ -70,6 +78,6 @@ def clean_hotel_data(df):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("hotels_copy.csv")
+    df = pd.read_csv("../../tests/data/hotels_uncleaned_sample.csv")
     df = clean_hotel_data(df=df)
-    df.to_csv("hotels_cleaned.csv", index=False)
+    df.to_csv("hotels_cleaned_sample.csv", index=False)

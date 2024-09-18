@@ -1,6 +1,6 @@
 import pandas as pd
-from database import SessionLocal
-from models import (
+from hotel_data.database import SessionLocal
+from hotel_data.models import (
     Hotels,
     Hotel_Rooms,
     Hotel_Location,
@@ -10,16 +10,13 @@ from models import (
 )
 import asyncio
 import numpy as np
-from data_cleaner.hotel_data_cleaner_tool import ht
-
-df = pd.read_csv("./hotel_data/data/hotels_cleaned.csv")
-df = df.replace({np.nan: None})
 
 
-async def sync_to_database(df):
+async def sync_hotel_data_to_database(df):
+    df = df.replace({np.nan: None})
     async with SessionLocal() as db:
         for index, hotel in df.iterrows():
-            rooms_to_price = ht.safe_literal_eval(hotel["rooms_to_price"])
+            rooms_to_price = hotel["rooms_to_price"]
             hotel_rooms = (
                 [
                     Hotel_Rooms(
@@ -47,26 +44,18 @@ async def sync_to_database(df):
                 location_rating_out_of_10=hotel["location_rating_out_of_10"],
                 free_wifi_rating_out_of_10=hotel["free_wifi_rating_out_of_10"],
             )
-            house_rules = ht.safe_literal_eval(hotel["house_rules"])
+            house_rules = hotel["house_rules"]
             hotel_house_rules = (
                 Hotel_House_Rules(
                     check_in=house_rules.get("Check-in"),
                     check_out=house_rules.get("Check-out"),
                     cancellation_payment=house_rules.get("Cancellation/ prepayment"),
                     children_beds=house_rules.get("Children & Beds"),
-                    age_restriction=house_rules.get("No age restriction")
-                    if house_rules.get("No age restriction") is not None
-                    else house_rules.get("Age restriction"),
-                    groups=house_rules.get(
-                        "Groups"
-                        if house_rules.get("Groups") is not None
-                        else house_rules.get("Parties")
-                    ),
+                    age_restriction=house_rules.get("Age restriction"),
+                    groups=house_rules.get("Groups"),
                     pets=house_rules.get("Pets"),
                     smoking=house_rules.get("Smoking"),
-                    cards_accepted=house_rules.get("Cards accepted at this hotels")
-                    if house_rules.get("Cards accepted at this hotels") is not None
-                    else house_rules.get("'Cards accepted at this property"),
+                    cards_accepted=house_rules.get("Cards accepted at this hotel"),
                     refundable_damage_deposit=house_rules.get(
                         "Refundable damage deposit"
                     ),
@@ -78,8 +67,8 @@ async def sync_to_database(df):
             hotel_guest_reviews = (
                 [
                     Hotel_Guest_Reviews(
-                        date=review.get("date"),
-                        title=review.get("title"),
+                        date=review.get("review_date"),
+                        title=review.get("review_title"),
                         positive=review.get("positive"),
                         negative=review.get("negative"),
                     )
@@ -108,4 +97,5 @@ async def sync_to_database(df):
 
 
 if __name__ == "__main__":
-    asyncio.run(sync_to_database(df=df))
+    df = pd.read_csv("./hotel_data/data/hotels_cleaned_sample.csv")
+    asyncio.run(sync_hotel_data_to_database(df=df))
