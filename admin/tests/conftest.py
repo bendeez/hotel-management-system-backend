@@ -14,7 +14,7 @@ from app.user.domain.models import Users
 from app.business.domain.models import Business
 from app.business_user.domain.models import Business_Users
 from app.business.domain.repository import BusinessRepository
-from app.accounts.domain.repository import AccountsRepository
+from app.auth.domain.repository import AuthRepository
 from app.user.domain.schemas import UserAccountCreate
 from app.business.domain.schemas import BusinessAccountCreate
 from app.business_user.domain.schemas import BusinessUserAccountCreate
@@ -34,6 +34,14 @@ from datetime import datetime, timedelta
 from app.accounts.domain.models import Accounts
 from uuid import uuid4
 from app.tools.application.dependencies import get_db
+from app.hotels.domain.models import (
+    Hotels,
+    Hotel_Rooms,
+    Hotel_Location,
+    Hotel_Review,
+    Hotel_Guest_Reviews,
+    Hotel_House_Rules,
+)
 
 
 @pytest.fixture(name="db", scope="session", autouse=True)
@@ -59,7 +67,7 @@ async def create_tables(db):
 
 @pytest.fixture(scope="session")
 def auth_service(db):
-    return AuthService(repository=AccountsRepository(db=db))
+    return AuthService(repository=AuthRepository(db=db))
 
 
 @pytest.fixture(scope="session")
@@ -239,6 +247,37 @@ async def create_chat_log(chat_service):
         return chat_log
 
     return _create_chat_log
+
+
+@pytest.fixture(scope="session")
+async def hotels(db):
+    hotels = []
+    for i in range(2):
+        """
+            missing values on purpose to test the robustness of the hotels response model
+        """
+        hotel = Hotels(
+            title=str(uuid4()),
+            description=str(uuid4()),
+            amenities=[str(uuid4()), str(uuid4())],
+            image_link=str(uuid4()),
+            hotel_rooms=[Hotel_Rooms(room_type=[str(uuid4())], price=[str(uuid4())])],
+            hotel_location=Hotel_Location(city=str(uuid4())),
+            hotel_guest_reviews=[
+                Hotel_Guest_Reviews(
+                    date=str(uuid4()),
+                    title=str(uuid4()),
+                    positive=str(uuid4()),
+                    negative=str(uuid4()),
+                )
+                for _ in range(2)
+            ],
+        )
+        db.add(hotel)
+        hotels.append(hotel)
+    await db.commit()
+    [await db.refresh(hotel) for hotel in hotels]
+    return hotels
 
 
 @pytest.fixture(scope="session")

@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 
-if "tests" in os.listdir(os.getcwd()):  # bgr-admin-backend directory
+if "tests" in os.listdir(os.getcwd()):  # admin directory
     ENV = "dev"
 else:
     ENV = "prod"

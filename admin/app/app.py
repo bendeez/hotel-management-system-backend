@@ -7,6 +7,7 @@ from app.auth.application.endpoints import auth_router
 from app.user.application.endpoints import user_router
 from app.session.application.endpoints import session_router
 from app.business_user.application.endpoints import business_user_router
+from app.hotels.application.endpoints import hotels_router
 from app.exception_handlers import add_exception_handlers
 from app.tools.application.rate_limiter import limiter
 
@@ -29,3 +30,4 @@ app.include_router(user_router)
 app.include_router(business_router)
 app.include_router(business_user_router)
 app.include_router(session_router)
+app.include_router(hotels_router)

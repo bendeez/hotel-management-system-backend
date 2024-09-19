@@ -31,4 +31,8 @@ async def delete_hotel_data():
 
 
 if __name__ == "__main__":
-    asyncio.run(delete_hotel_data())
+    conformation = input(
+        "Are you sure you want to delete all the hotel data from the database? (y/n): "
+    )
+    if conformation.lower() == "y":
+        asyncio.run(delete_hotel_data())
