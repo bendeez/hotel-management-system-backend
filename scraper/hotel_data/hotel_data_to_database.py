@@ -97,9 +97,9 @@ async def sync_hotel_data_to_database(df):
 
 
 if __name__ == "__main__":
+    df = pd.read_csv("./hotel_data/data/hotels_cleaned_sample.csv")
     conformation = input(
         "Are you sure you want to sync the hotel csv file to the database? (y/n): "
     )
     if conformation.lower() == "y":
-        df = pd.read_csv("./hotel_data/data/hotels_cleaned_sample.csv")
         asyncio.run(sync_hotel_data_to_database(df=df))
