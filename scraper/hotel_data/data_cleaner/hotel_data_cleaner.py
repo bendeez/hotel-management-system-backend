@@ -1,4 +1,3 @@
-import pandas as pd
 from hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
 
 
@@ -75,9 +74,3 @@ def clean_hotel_data(df):
         df[key] = value
     df.drop("classified_ratings", axis=1, inplace=True)
     return df
-
-
-if __name__ == "__main__":
-    df = pd.read_csv("../../tests/data/hotels_uncleaned_sample.csv")
-    df = clean_hotel_data(df=df)
-    df.to_csv("hotels_cleaned_sample.csv", index=False)

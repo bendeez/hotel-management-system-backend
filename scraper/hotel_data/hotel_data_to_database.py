@@ -1,4 +1,3 @@
-import pandas as pd
 from hotel_data.database import SessionLocal
 from hotel_data.models import (
     Hotels,
@@ -8,7 +7,6 @@ from hotel_data.models import (
     Hotel_Guest_Reviews,
     Hotel_House_Rules,
 )
-import asyncio
 import numpy as np
 
 
@@ -94,12 +92,3 @@ async def sync_hotel_data_to_database(df):
             )
             db.add(hotel_data)
         await db.commit()
-
-
-if __name__ == "__main__":
-    df = pd.read_csv("./hotel_data/data/hotels_cleaned_sample.csv")
-    conformation = input(
-        "Are you sure you want to sync the hotel csv file to the database? (y/n): "
-    )
-    if conformation.lower() == "y":
-        asyncio.run(sync_hotel_data_to_database(df=df))

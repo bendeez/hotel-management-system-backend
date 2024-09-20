@@ -7,7 +7,6 @@ from hotel_data.models import (
     Hotel_House_Rules,
 )
 from hotel_data.database import SessionLocal
-import asyncio
 from sqlalchemy import delete
 
 
@@ -28,11 +27,3 @@ async def delete_hotel_data():
         ]:
             await db.execute(delete(table))
         await db.commit()
-
-
-if __name__ == "__main__":
-    conformation = input(
-        "Are you sure you want to delete all the hotel data from the database? (y/n): "
-    )
-    if conformation.lower() == "y":
-        asyncio.run(delete_hotel_data())

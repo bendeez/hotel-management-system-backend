@@ -3,6 +3,7 @@ import pandas as pd
 from hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
 from hotel_data.database import SessionLocal
 from hotel_data.hotel_data_deleter import delete_hotel_data
+from tests.utils import TestHotelCsvFiles
 
 
 @pytest.fixture(scope="session")
@@ -43,7 +44,7 @@ def sort_guest_reviews():
 
 @pytest.fixture()
 def hotel_cleaned_df(create_df, sort_guest_reviews):
-    df = create_df(csv_filename="./tests/data/hotels_cleaned_sample.csv")
+    df = create_df(csv_filename=TestHotelCsvFiles.CLEANED.value)
     df["amenities"] = df["amenities"].apply(ht.safe_literal_eval).apply(sorted)
     df["house_rules"] = (
         df["house_rules"]
@@ -62,7 +63,7 @@ def hotel_cleaned_df(create_df, sort_guest_reviews):
 
 @pytest.fixture()
 def hotel_uncleaned_df(create_df):
-    df = create_df(csv_filename="./tests/data/hotels_uncleaned_sample.csv")
+    df = create_df(csv_filename=TestHotelCsvFiles.UNCLEANED.value)
     return df
 
 

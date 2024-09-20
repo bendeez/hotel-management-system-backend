@@ -1,6 +1,6 @@
 scraper/hotel_data/.env
 
-hotel_data/data/hotels_cleaned.csv
+production/data
 .venv/
 
 __pycache__/

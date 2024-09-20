@@ -279,7 +279,10 @@ class HotelsScraper:
 async def main():
     cities = ["London", "Paris"]
     bookings_scraper = HotelsScraper(
-        browsers=1, tabs=3, cities=cities, hotels_csv="hotels_copy.csv"
+        browsers=1,
+        tabs=3,
+        cities=cities,
+        hotels_csv="hotels_uncleaned_production_copy.csv",
     )
     await bookings_scraper.run()
 
