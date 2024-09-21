@@ -4,6 +4,7 @@ from app.chat.domain.models import Chat_Logs
 from app.session.domain.repository import SessionRepository
 from app.accounts.domain.models import Accounts
 from app.tools.domain.base_repository import JoinExpression
+from typing import Optional
 
 
 class ChatRepository(SessionRepository):
@@ -14,7 +15,11 @@ class ChatRepository(SessionRepository):
         order_by: ChatsAttributes,
         limit: int,
         offset: int,
+        session_id: Optional[str] = None,
     ):
+        filters = [Accounts.id == account_id]
+        if session_id is not None:
+            filters.append(Chat_Logs.session_id == session_id)
         chat_logs = await self._get_all(
             model=Chat_Logs,
             order_by=getattr(Chat_Logs, order_by.value),
@@ -22,27 +27,7 @@ class ChatRepository(SessionRepository):
             offset=offset,
             limit=limit,
             joins=[JoinExpression(model=Chat_Logs.account)],
-            filters=[Accounts.id == account_id],
-        )
-        return chat_logs
-
-    async def get_account_chat_logs_by_session_id(
-        self,
-        account_id: int,
-        order: DatabaseQueryOrder,
-        order_by: ChatsAttributes,
-        session_id: str,
-        limit: int,
-        offset: int,
-    ):
-        chat_logs = await self._get_all(
-            model=Chat_Logs,
-            order_by=getattr(Chat_Logs, order_by.value),
-            order=order,
-            limit=limit,
-            offset=offset,
-            joins=[JoinExpression(model=Chat_Logs.account)],
-            filters=[Accounts.id == account_id, Chat_Logs.session_id == session_id],
+            filters=filters,
         )
         return chat_logs
 

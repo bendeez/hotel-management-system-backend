@@ -250,9 +250,15 @@ async def create_chat_log(chat_service):
 
 
 @pytest.fixture(scope="session")
-async def hotels(db):
+def cities():
+    return ["Detroit", "New York City"]
+
+
+@pytest.fixture(scope="session")
+async def hotels(db, cities):
     hotels = []
     for i in range(5):
+        city = cities[i % 2]
         """
             missing values on purpose to test the robustness of the hotels response model
         """
@@ -262,7 +268,7 @@ async def hotels(db):
             amenities=[str(uuid4()), str(uuid4())],
             image_link=str(uuid4()),
             hotel_rooms=[Hotel_Rooms(room_type=[str(uuid4())], price=[str(uuid4())])],
-            hotel_location=Hotel_Location(city=str(uuid4())),
+            hotel_location=Hotel_Location(city=city),
             hotel_guest_reviews=[
                 Hotel_Guest_Reviews(
                     date=str(uuid4()),
@@ -276,7 +282,18 @@ async def hotels(db):
         db.add(hotel)
         hotels.append(hotel)
     await db.commit()
-    [await db.refresh(hotel) for hotel in hotels]
+    [
+        await db.refresh(
+            hotel,
+            attribute_names=[
+                "hotel_review",
+                "hotel_location",
+                "hotel_rooms",
+                "hotel_guest_reviews",
+            ],
+        )
+        for hotel in hotels
+    ]
     return hotels
 
 

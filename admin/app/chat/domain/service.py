@@ -1,3 +1,5 @@
+from typing import Optional
+
 from app.chat.domain.repository import ChatRepository
 from app.chat.domain.constants import ChatsAttributes
 from app.tools.domain.constants import DatabaseQueryOrder
@@ -24,6 +26,7 @@ class ChatService:
         order_by: ChatsAttributes,
         limit: int,
         offset: int,
+        session_id: Optional[str] = None,
     ):
         chat_logs = await self._repository.get_all_account_chat_logs(
             order_by=order_by,
@@ -31,24 +34,6 @@ class ChatService:
             offset=offset,
             limit=limit,
             account_id=account.id,
-        )
-        return chat_logs
-
-    async def get_account_chat_logs_by_session_id(
-        self,
-        session_id: str,
-        account: Accounts,
-        order: DatabaseQueryOrder,
-        order_by: ChatsAttributes,
-        limit: int,
-        offset: int,
-    ):
-        chat_logs = await self._repository.get_account_chat_logs_by_session_id(
-            account_id=account.id,
-            order_by=order_by,
-            order=order,
-            limit=limit,
-            offset=offset,
             session_id=session_id,
         )
         return chat_logs

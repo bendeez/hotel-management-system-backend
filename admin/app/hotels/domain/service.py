@@ -1,6 +1,7 @@
 from app.hotels.domain.repository import HotelsRepository
 from app.tools.domain.constants import DatabaseQueryOrder
 from app.hotels.domain.constants import HotelsAttributes
+from typing import Optional
 
 
 class HotelsService:
@@ -13,8 +14,9 @@ class HotelsService:
         offset: int,
         order: DatabaseQueryOrder,
         order_by: HotelsAttributes,
+        city: Optional[str] = None,
     ):
         hotels = await self.repository.get_all_hotels(
-            limit=limit, offset=offset, order=order, order_by=order_by
+            limit=limit, offset=offset, order=order, order_by=order_by, city=city
         )
         return hotels

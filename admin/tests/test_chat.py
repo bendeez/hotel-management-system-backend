@@ -134,9 +134,10 @@ async def test_get_account_chat_logs_by_session_id(
         "offset": 0,
         "order": DatabaseQueryOrder.DESC.value,
         "order_by": ChatsAttributes.DATE.value,
+        "session_id": session.id,
     }
     response = await http_request(
-        path=f"/chat-logs/{session.id}",
+        path=f"/chat-logs",
         params=params,
         method=RequestMethod.GET,
         token=tokens.access_token,
@@ -163,7 +164,7 @@ async def test_delete_chat_log(
         token=tokens.access_token,
     )
     assert response.status_code == 204
-    chat_logs = await chat_service.get_account_chat_logs_by_session_id(
+    chat_logs = await chat_service.get_all_account_chat_logs(
         session_id=session.id,
         account=account,
         order_by=ChatsAttributes.DATE,
