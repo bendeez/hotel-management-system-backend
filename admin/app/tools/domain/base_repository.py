@@ -38,12 +38,12 @@ class BaseRepository:
         model,
         polymorphic: bool = False,
         filters: Optional[list[BinaryExpression]] = None,
-        relationships: Optional[list[InstrumentedAttribute]] = None,
+        load_relationships: Optional[list[InstrumentedAttribute]] = None,
         eager_load_relationships: Optional[list[InstrumentedAttribute]] = None,
         joins: Optional[list[JoinExpression]] = None,
     ):
         filters = filters or []
-        relationships = relationships or []
+        load_relationships = load_relationships or []
         eager_load_relationships = eager_load_relationships or []
         if polymorphic:
             model = with_polymorphic(model, "*")
@@ -51,7 +51,7 @@ class BaseRepository:
             select(model)
             .where(*filters)
             .options(
-                *[selectinload(relationship) for relationship in relationships],
+                *[selectinload(relationship) for relationship in load_relationships],
                 *[
                     contains_eager(relationship)
                     for relationship in eager_load_relationships
@@ -73,7 +73,7 @@ class BaseRepository:
         model,
         polymorphic: bool = False,
         filters: Optional[list[BinaryExpression]] = None,
-        relationships: Optional[list[InstrumentedAttribute]] = None,
+        load_relationships: Optional[list[InstrumentedAttribute]] = None,
         eager_load_relationships: Optional[list[InstrumentedAttribute]] = None,
         order_by: Optional[InstrumentedAttribute] = None,
         order: Optional[DatabaseQueryOrder] = None,
@@ -86,7 +86,7 @@ class BaseRepository:
             model=model,
             polymorphic=polymorphic,
             filters=filters,
-            relationships=relationships,
+            load_relationships=load_relationships,
             eager_load_relationships=eager_load_relationships,
             joins=joins,
         )
@@ -99,7 +99,7 @@ class BaseRepository:
         model,
         polymorphic: bool = False,
         filters: Optional[list[BinaryExpression]] = None,
-        relationships: Optional[list[InstrumentedAttribute]] = None,
+        load_relationships: Optional[list[InstrumentedAttribute]] = None,
         eager_load_relationships: Optional[list[InstrumentedAttribute]] = None,
         joins: Optional[list[JoinExpression]] = None,
     ):
@@ -107,7 +107,7 @@ class BaseRepository:
             model=model,
             polymorphic=polymorphic,
             filters=filters,
-            relationships=relationships,
+            load_relationships=load_relationships,
             eager_load_relationships=eager_load_relationships,
             joins=joins,
         )

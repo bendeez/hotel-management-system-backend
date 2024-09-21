@@ -20,7 +20,7 @@ class HotelsRepository(BaseRepository):
                 JoinExpression(model=relationship, join_from=Hotels, outer=True)
                 for relationship in join_relationships
             ],
-            relationships=[
+            load_relationships=[
                 Hotels.hotel_rooms,
                 Hotels.hotel_house_rules,
                 Hotels.hotel_guest_reviews,
