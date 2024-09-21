@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status, Request, Query
 from app.chat.domain.service import ChatService
 from app.chat.domain.constants import ChatsAttributes
 from app.tools.domain.constants import DatabaseQueryOrder
@@ -6,7 +6,7 @@ from app.chat.domain.schemas import ChatLogsOut, ChatLogsCreate
 from app.chat.application.dependencies import get_chat_service
 from app.accounts.domain.models import Accounts
 from app.auth.application.dependencies import get_account
-from typing import List
+from typing import List, Union
 from app.tools.application.rate_limiter import limiter, limit
 
 chat_router = APIRouter()
@@ -16,7 +16,7 @@ chat_router = APIRouter()
 @limiter.limit(limit)
 async def get_all_account_chat_logs(
     request: Request,
-    limit: int = 100,
+    limit: Union[int, None] = Query(default=None, le=100),
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
     order_by: ChatsAttributes = ChatsAttributes.DATE,
@@ -34,14 +34,14 @@ async def get_all_account_chat_logs(
 async def get_account_chat_logs_by_session_id(
     request: Request,
     session_id: str,
-    limit: int = 100,
+    limit: Union[int, None] = Query(default=None, le=100),
     offset: int = 0,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
     order_by: ChatsAttributes = ChatsAttributes.DATE,
     chat_service: ChatService = Depends(get_chat_service),
     account: Accounts = Depends(get_account),
 ):
-    chat_logs = await chat_service.get_chat_logs_by_session_id(
+    chat_logs = await chat_service.get_account_chat_logs_by_session_id(
         order=order,
         order_by=order_by,
         limit=limit,

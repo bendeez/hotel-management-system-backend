@@ -2,6 +2,8 @@ from tests.utils import RequestMethod
 import pytest
 from pytest_lazy_fixtures import lf
 from app.session.domain.schemas import SessionsOut
+from app.tools.domain.constants import DatabaseQueryOrder
+from app.session.domain.constants import SessionAttributes
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
@@ -25,7 +27,12 @@ async def test_create_chat_session(account, http_request, sessions, user_request
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 async def test_get_account_chat_logs(account, http_request, chat_logs):
     tokens, account = account
-    params = {"limit": 2, "offset": 0, "order": "desc", "order_by": "end_time"}
+    params = {
+        "limit": 2,
+        "offset": 0,
+        "order": DatabaseQueryOrder.DESC.value,
+        "order_by": SessionAttributes.END_TIME.value,
+    }
     response = await http_request(
         path="/sessions",
         params=params,

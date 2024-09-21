@@ -12,8 +12,8 @@ class ChatRepository(SessionRepository):
         account_id: int,
         order: DatabaseQueryOrder,
         order_by: ChatsAttributes,
-        limit: int = 100,
-        offset: int = 0,
+        limit: int,
+        offset: int,
     ):
         chat_logs = await self._get_all(
             model=Chat_Logs,
@@ -32,8 +32,8 @@ class ChatRepository(SessionRepository):
         order: DatabaseQueryOrder,
         order_by: ChatsAttributes,
         session_id: str,
-        limit: int = 100,
-        offset: int = 0,
+        limit: int,
+        offset: int,
     ):
         chat_logs = await self._get_all(
             model=Chat_Logs,

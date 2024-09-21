@@ -10,8 +10,8 @@ class SessionRepository(BaseRepository):
         account_id: int,
         order: DatabaseQueryOrder,
         order_by: SessionAttributes,
-        limit: int = 100,
-        offset: int = 0,
+        limit: int,
+        offset: int,
     ):
         chat_sessions = await self._get_all(
             model=Chat_Sessions,

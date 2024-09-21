@@ -20,10 +20,10 @@ class ChatService:
     async def get_all_account_chat_logs(
         self,
         account: Accounts,
-        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        order_by: ChatsAttributes = ChatsAttributes.DATE,
-        limit: int = 100,
-        offset: int = 0,
+        order: DatabaseQueryOrder,
+        order_by: ChatsAttributes,
+        limit: int,
+        offset: int,
     ):
         chat_logs = await self._repository.get_all_account_chat_logs(
             order_by=order_by,
@@ -34,14 +34,14 @@ class ChatService:
         )
         return chat_logs
 
-    async def get_chat_logs_by_session_id(
+    async def get_account_chat_logs_by_session_id(
         self,
         session_id: str,
         account: Accounts,
-        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        order_by: ChatsAttributes = ChatsAttributes.DATE,
-        limit: int = 100,
-        offset: int = 0,
+        order: DatabaseQueryOrder,
+        order_by: ChatsAttributes,
+        limit: int,
+        offset: int,
     ):
         chat_logs = await self._repository.get_account_chat_logs_by_session_id(
             account_id=account.id,

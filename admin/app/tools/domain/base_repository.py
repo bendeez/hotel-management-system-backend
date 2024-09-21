@@ -1,8 +1,8 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
-from sqlalchemy.orm import selectinload, with_polymorphic
+from sqlalchemy.orm import selectinload, with_polymorphic, contains_eager
 from app.tools.domain.constants import DatabaseQueryOrder
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc, desc, inspect
+from sqlalchemy import select, asc, desc
 from typing import Optional
 from sqlalchemy.sql.expression import BinaryExpression
 from typing import Any
@@ -13,6 +13,8 @@ from dataclasses import dataclass
 class JoinExpression:
     model: Any
     condition: Optional[BinaryExpression] = None
+    outer: Optional[bool] = False
+    join_from: Optional[Any] = None
 
 
 class BaseRepository:
@@ -37,22 +39,33 @@ class BaseRepository:
         polymorphic: bool = False,
         filters: Optional[list[BinaryExpression]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
+        eager_load_relationships: Optional[list[InstrumentedAttribute]] = None,
         joins: Optional[list[JoinExpression]] = None,
     ):
         filters = filters or []
         relationships = relationships or []
+        eager_load_relationships = eager_load_relationships or []
         if polymorphic:
             model = with_polymorphic(model, "*")
         stmt = (
             select(model)
             .where(*filters)
             .options(
-                *[selectinload(relationship) for relationship in relationships]
+                *[selectinload(relationship) for relationship in relationships],
+                *[
+                    contains_eager(relationship)
+                    for relationship in eager_load_relationships
+                ],
             )  # no chaining
         )
         if joins:
             for j in joins:
-                stmt = stmt.join(j.model, j.condition)
+                if j.join_from:
+                    stmt = stmt.join_from(
+                        j.join_from, j.model, j.condition, isouter=j.outer
+                    )
+                else:
+                    stmt = stmt.join(j.model, j.condition, isouter=j.outer)
         return stmt
 
     async def _get_all(
@@ -61,24 +74,25 @@ class BaseRepository:
         polymorphic: bool = False,
         filters: Optional[list[BinaryExpression]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
+        eager_load_relationships: Optional[list[InstrumentedAttribute]] = None,
         order_by: Optional[InstrumentedAttribute] = None,
-        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        limit: int = 100,
-        offset: int = 0,
+        order: Optional[DatabaseQueryOrder] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
         joins: Optional[list[JoinExpression]] = None,
     ):
-        order_by = order_by or inspect(model).primary_key[0]
         order_by = desc(order_by) if order == DatabaseQueryOrder.DESC else asc(order_by)
         stmt = self.__build_query(
             model=model,
             polymorphic=polymorphic,
             filters=filters,
             relationships=relationships,
+            eager_load_relationships=eager_load_relationships,
             joins=joins,
         )
         stmt = stmt.order_by(order_by).limit(limit).offset(offset)
         model_instances = await self.__db.execute(stmt)
-        return model_instances.scalars().all()
+        return model_instances.unique().scalars().all()
 
     async def _get_one(
         self,
@@ -86,6 +100,7 @@ class BaseRepository:
         polymorphic: bool = False,
         filters: Optional[list[BinaryExpression]] = None,
         relationships: Optional[list[InstrumentedAttribute]] = None,
+        eager_load_relationships: Optional[list[InstrumentedAttribute]] = None,
         joins: Optional[list[JoinExpression]] = None,
     ):
         stmt = self.__build_query(
@@ -93,6 +108,7 @@ class BaseRepository:
             polymorphic=polymorphic,
             filters=filters,
             relationships=relationships,
+            eager_load_relationships=eager_load_relationships,
             joins=joins,
         )
         model_instance = await self.__db.execute(stmt)

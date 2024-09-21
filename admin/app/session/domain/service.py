@@ -16,10 +16,10 @@ class SessionService:
     async def get_account_chat_sessions(
         self,
         account: Accounts,
-        order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-        order_by: SessionAttributes = SessionAttributes.END_TIME,
-        limit: int = 100,
-        offset: int = 0,
+        order: DatabaseQueryOrder,
+        order_by: SessionAttributes,
+        limit: int,
+        offset: int,
     ):
         chat_sessions = await self._repository.get_account_chat_sessions(
             account_id=account.id,

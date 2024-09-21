@@ -2,6 +2,8 @@ from tests.utils import RequestMethod
 from app.chat.domain.schemas import ChatLogsCreate, ChatLogsOut
 import pytest
 from pytest_lazy_fixtures import lf
+from app.chat.domain.constants import ChatsAttributes
+from app.tools.domain.constants import DatabaseQueryOrder
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
@@ -91,7 +93,12 @@ async def test_invalid_create_chat_log_with_expired_session(
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
 async def test_get_account_chat_logs(account, http_request, chat_logs, sessions):
     tokens, account = account
-    params = {"limit": 2, "offset": 0, "order": "desc", "order_by": "date"}
+    params = {
+        "limit": 2,
+        "offset": 0,
+        "order": DatabaseQueryOrder.DESC.value,
+        "order_by": ChatsAttributes.DATE.value,
+    }
     response = await http_request(
         path="/chat-logs",
         params=params,
@@ -122,7 +129,12 @@ async def test_get_account_chat_logs_by_session_id(
 ):
     tokens, account = account
     session = next(filter(lambda session: session.account_id == account.id, sessions))
-    params = {"limit": 2, "offset": 0, "order": "desc", "order_by": "date"}
+    params = {
+        "limit": 2,
+        "offset": 0,
+        "order": DatabaseQueryOrder.DESC.value,
+        "order_by": ChatsAttributes.DATE.value,
+    }
     response = await http_request(
         path=f"/chat-logs/{session.id}",
         params=params,
@@ -151,8 +163,13 @@ async def test_delete_chat_log(
         token=tokens.access_token,
     )
     assert response.status_code == 204
-    chat_logs = await chat_service.get_chat_logs_by_session_id(
-        session_id=session.id, account=account
+    chat_logs = await chat_service.get_account_chat_logs_by_session_id(
+        session_id=session.id,
+        account=account,
+        order_by=ChatsAttributes.DATE,
+        order=DatabaseQueryOrder.DESC,
+        limit=100,
+        offset=0,
     )
     assert all(chat_log.id != _chat_log.id for _chat_log in chat_logs)
 

@@ -252,7 +252,7 @@ async def create_chat_log(chat_service):
 @pytest.fixture(scope="session")
 async def hotels(db):
     hotels = []
-    for i in range(2):
+    for i in range(5):
         """
             missing values on purpose to test the robustness of the hotels response model
         """

@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request, status, Query
 from app.session.domain.schemas import SessionsOut
 from app.session.domain.constants import SessionAttributes
 from app.tools.domain.constants import DatabaseQueryOrder
 from app.session.domain.service import SessionService
 from app.session.application.dependencies import get_session_service
-from typing import List
+from typing import List, Union
 from app.accounts.domain.models import Accounts
 from app.auth.application.dependencies import get_account
 from app.tools.application.rate_limiter import limiter, limit
@@ -16,7 +16,7 @@ session_router = APIRouter()
 @limiter.limit(limit)
 async def get_chat_sessions(
     request: Request,
-    limit: int = 100,
+    limit: Union[int, None] = Query(default=None, le=100),
     offset: int = 0,
     order_by: SessionAttributes = SessionAttributes.END_TIME,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
