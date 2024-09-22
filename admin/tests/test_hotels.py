@@ -73,6 +73,11 @@ async def test_get_hotels_by_city(http_request, hotels, cities):
         else:
             return value
 
+    """
+        HotelsOut serializes the json returned by the response
+        and the sqlalchemy models so they can be compared 
+        (also the response model)
+    """
     assert (
         [HotelsOut(**d) for d in data]
         == list(

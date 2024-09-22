@@ -21,6 +21,9 @@ async def sync_hotel_data_to_database(df):
                         room_type=room.get("room_type"),
                         price=room.get("price"),
                         guest_count=room.get("guest_count"),
+                        guest_count_numeric=room.get("guest_count_numeric"),
+                        price_numeric=room.get("price_numeric"),
+                        tax_and_fee_numeric=room.get("tax_and_fee_numeric"),
                     )
                     for room in rooms_to_price
                     if isinstance(room, dict)

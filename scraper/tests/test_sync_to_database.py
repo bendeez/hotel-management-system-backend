@@ -37,9 +37,16 @@ async def test_sync_hotel_data_to_database(hotel_cleaned_df, sort_guest_reviews)
             },
             "rooms_to_price": [
                 {
-                    "room_type": room.room_type,
-                    "guest_count": room.guest_count,
-                    "price": room.price,
+                    key: value
+                    for key, value in {
+                        "room_type": room.room_type,
+                        "guest_count": room.guest_count,
+                        "price": room.price,
+                        "guest_count_numeric": room.guest_count_numeric,
+                        "price_numeric": room.price_numeric,
+                        "tax_and_fee_numeric": room.tax_and_fee_numeric,
+                    }.items()
+                    if value is not None
                 }
                 for room in h.hotel_rooms
             ],

@@ -25,6 +25,9 @@ class HotelRoomsOut(HotelEntity):
     room_type: Optional[List[str]] = []
     guest_count: Optional[List[str]] = []
     price: Optional[List[str]] = []
+    guest_count_numeric: Optional[int]
+    price_numeric: Optional[float]
+    tax_and_fee_numeric: Optional[float]
     hotel_id: int
 
 

@@ -48,6 +48,9 @@ class Hotel_Rooms(BaseMixin):
     room_type: Mapped[Optional[JSON]] = mapped_column(JSON)
     guest_count: Mapped[Optional[JSON]] = mapped_column(JSON)
     price: Mapped[Optional[JSON]] = mapped_column(JSON)
+    guest_count_numeric: Mapped[Optional[int]] = mapped_column()
+    price_numeric: Mapped[Optional[float]] = mapped_column()
+    tax_and_fee_numeric: Mapped[Optional[float]] = mapped_column()
     hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
 
 

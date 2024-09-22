@@ -260,14 +260,26 @@ async def hotels(db, cities):
     for i in range(5):
         city = cities[i % 2]
         """
-            missing values on purpose to test the robustness of the hotels response model
+            not all row values have to be filled in 
         """
         hotel = Hotels(
             title=str(uuid4()),
             description=str(uuid4()),
             amenities=[str(uuid4()), str(uuid4())],
             image_link=str(uuid4()),
-            hotel_rooms=[Hotel_Rooms(room_type=[str(uuid4())], price=[str(uuid4())])],
+            hotel_rooms=[
+                Hotel_Rooms(
+                    room_type=[str(uuid4())],
+                    price=[str(uuid4())],
+                    guest_count=[str(uuid4())],
+                    guest_count_numeric=1,
+                    price_numeric=100.0,
+                    tax_and_fee_numeric=15.0,
+                )
+            ],
+            hotel_house_rules=Hotel_House_Rules(
+                check_in=str(uuid4()), check_out=str(uuid4())
+            ),
             hotel_location=Hotel_Location(city=city),
             hotel_guest_reviews=[
                 Hotel_Guest_Reviews(
