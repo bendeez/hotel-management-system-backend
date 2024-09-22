@@ -77,13 +77,17 @@ class HotelCleanDataTool:
         :return:
         """
         try:
-            return [
+            modified_rooms = [
                 {
                     key: [v.strip() for v in value.split("|") if v not in [" ", ""]]
                     for key, value in self.safe_literal_eval(repr(room)).items()
                 }
                 for room in rooms
             ]
+            rooms_with_num_columns = [
+                self.add_columns_to_room(room=room) for room in modified_rooms
+            ]
+            return rooms_with_num_columns
         except Exception as e:
             print(e)
             return None
@@ -92,6 +96,43 @@ class HotelCleanDataTool:
         if isinstance(value, list):
             return list(set(value))
         else:
+            return None
+
+    def add_new_guest_count_columns(self, room: dict):
+        guest_count = " ".join(room["guest_count"])
+        guest_count = re.findall(r"Max. people: \d+", guest_count)
+        if guest_count:
+            guest_count = guest_count[0]
+            guest_count = int(guest_count.strip().split(" ")[-1])
+            room["num_guest_count"] = guest_count
+        return room
+
+    def add_new_price_columns(self, room: dict):
+        price = " ".join(room["price"])
+        price = re.findall(r"(?i)price.*\$\d+", price)
+        if price:
+            price_and_fee = price[0].split("+")
+            if price_and_fee:
+                price_wo_fee = float(
+                    price_and_fee[0]
+                    .strip()
+                    .split(" ")[-1]
+                    .replace("$", "")
+                    .replace(",", "")
+                )
+                if len(price_and_fee) == 2:
+                    tax_and_fee = float(price_and_fee[1].strip().replace("$", ""))
+                    room["num_tax_and_fee"] = tax_and_fee
+                room["num_price"] = price_wo_fee
+        return room
+
+    def add_columns_to_room(self, room: dict):
+        try:
+            room = self.add_new_guest_count_columns(room=room)
+            room = self.add_new_price_columns(room=room)
+            return room
+        except Exception as e:
+            print(e)
             return None
 
 

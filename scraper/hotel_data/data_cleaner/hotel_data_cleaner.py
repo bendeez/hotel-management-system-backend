@@ -1,4 +1,16 @@
 from hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
+import numpy as np
+
+
+def serialize_df(df):
+    float_columns = df.select_dtypes(include="float64").columns
+    df = df.replace({np.nan: None})
+    df[float_columns] = df[float_columns].astype("float64")
+    df["amenities"] = df["amenities"].apply(ht.safe_literal_eval)
+    df["house_rules"] = df["house_rules"].apply(ht.safe_literal_eval)
+    df["guest_reviews"] = df["guest_reviews"].apply(ht.safe_literal_eval)
+    df["rooms_to_price"] = df["rooms_to_price"].apply(ht.safe_literal_eval)
+    return df
 
 
 def clean_hotel_data(df):

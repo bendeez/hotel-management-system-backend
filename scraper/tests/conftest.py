@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
+from hotel_data.data_cleaner.hotel_data_cleaner import serialize_df
 from hotel_data.database import SessionLocal
 from hotel_data.hotel_data_deleter import delete_hotel_data
 from tests.utils import TestHotelCsvFiles
@@ -45,19 +45,14 @@ def sort_guest_reviews():
 @pytest.fixture()
 def hotel_cleaned_df(create_df, sort_guest_reviews):
     df = create_df(csv_filename=TestHotelCsvFiles.CLEANED.value)
-    df["amenities"] = df["amenities"].apply(ht.safe_literal_eval).apply(sorted)
-    df["house_rules"] = (
-        df["house_rules"]
-        .apply(ht.safe_literal_eval)
-        .apply(lambda v: dict(sorted(v.items())))
-    )
+    df = serialize_df(df=df)
+    df["amenities"] = df["amenities"].apply(sorted)
+    df["house_rules"] = df["house_rules"].apply(lambda v: dict(sorted(v.items())))
     df["guest_reviews"] = (
         df["guest_reviews"]
-        .apply(ht.safe_literal_eval)
         .apply(lambda values: [dict(sorted(v.items())) for v in values])
         .apply(sort_guest_reviews)
     )
-    df["rooms_to_price"] = df["rooms_to_price"].apply(ht.safe_literal_eval)
     return df
 
 
