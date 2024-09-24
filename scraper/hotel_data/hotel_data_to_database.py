@@ -12,7 +12,11 @@ import numpy as np
 from sqlalchemy import insert, select, func
 from typing import Any
 
-
+"""
+    SET GLOBAL FOREIGN_KEY_CHECKS=0
+    to get rid of parent table locks
+    and overhead 
+"""
 async def get_max_hotel_id():
     async with SessionLocal() as db:
         max_hotel_id = await db.execute(func.max(Hotels.id))
