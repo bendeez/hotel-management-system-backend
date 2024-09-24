@@ -12,6 +12,9 @@ pandas = "^2.2.2"
 pydantic = "^2.9.1"
 pydantic-settings = "^2.5.2"
 alembic = "^1.13.2"
+scikit-learn = "^1.5.2"
+playwright = "^1.47.0"
+matplotlib = "^3.9.2"
 
 
 [build-system]

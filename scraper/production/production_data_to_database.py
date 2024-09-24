@@ -7,4 +7,5 @@ from hotel_data.data_cleaner.hotel_data_cleaner import serialize_df
 
 df = pd.read_csv(HotelCsvFiles.PRODUCTION_CLEANED.value)
 df = serialize_df(df=df)
+
 asyncio.run(sync_hotel_data_to_database(df=df))

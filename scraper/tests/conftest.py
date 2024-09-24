@@ -43,16 +43,50 @@ def sort_guest_reviews():
 
 
 @pytest.fixture()
-def hotel_cleaned_df(create_df, sort_guest_reviews):
+def sort_rooms():
+    def _sort_rooms(rooms):
+        return sorted(
+            rooms,
+            key=lambda v: (
+                v["room_type"] or "",
+                v["guest_count"] or "",
+                v["price"] or "",
+                v.get("guest_count_numeric") or "",
+                v.get("price_numeric") or "",
+                v.get("tax_and_fee_numeric") or "",
+            ),
+        )
+
+    return _sort_rooms
+
+
+@pytest.fixture()
+def modify_row_and_columns_for_consistent_ordering(sort_guest_reviews, sort_rooms):
+    def _modify_row_and_columns(df):
+        df.sort_values(by=["title"], inplace=True)
+        df["amenities"] = df["amenities"].apply(sorted)
+        df["house_rules"] = df["house_rules"].apply(lambda v: dict(sorted(v.items())))
+        df["guest_reviews"] = (
+            df["guest_reviews"]
+            .apply(lambda values: [dict(sorted(v.items())) for v in values])
+            .apply(sort_guest_reviews)
+        )
+        df["rooms_to_price"] = (
+            df["rooms_to_price"]
+            .apply(lambda values: [dict(sorted(v.items())) for v in values])
+            .apply(sort_rooms)
+        )
+        df.reset_index(drop=True, inplace=True)
+        return df
+
+    return _modify_row_and_columns
+
+
+@pytest.fixture()
+def hotel_cleaned_df(create_df, modify_row_and_columns_for_consistent_ordering):
     df = create_df(csv_filename=TestHotelCsvFiles.CLEANED.value)
     df = serialize_df(df=df)
-    df["amenities"] = df["amenities"].apply(sorted)
-    df["house_rules"] = df["house_rules"].apply(lambda v: dict(sorted(v.items())))
-    df["guest_reviews"] = (
-        df["guest_reviews"]
-        .apply(lambda values: [dict(sorted(v.items())) for v in values])
-        .apply(sort_guest_reviews)
-    )
+    df = modify_row_and_columns_for_consistent_ordering(df=df)
     return df
 
 

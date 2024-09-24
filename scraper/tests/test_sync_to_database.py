@@ -4,7 +4,9 @@ from hotel_data.hotel_data_deleter import delete_hotel_data
 import pandas as pd
 
 
-async def test_sync_hotel_data_to_database(hotel_cleaned_df, sort_guest_reviews):
+async def test_sync_hotel_data_to_database(
+    hotel_cleaned_df, modify_row_and_columns_for_consistent_ordering
+):
     await sync_hotel_data_to_database(df=hotel_cleaned_df)
     hotel_data_from_db = await get_hotel_data()
     assert len(hotel_data_from_db) == len(hotel_cleaned_df)
@@ -70,13 +72,8 @@ async def test_sync_hotel_data_to_database(hotel_cleaned_df, sort_guest_reviews)
         for h in hotel_data_from_db
     ]
     hotel_data_list_to_df = pd.DataFrame(hotel_data_to_list)
-    hotel_data_list_to_df["house_rules"] = hotel_data_list_to_df["house_rules"].apply(
-        lambda v: dict(sorted(v.items()))
-    )
-    hotel_data_list_to_df["guest_reviews"] = (
-        hotel_data_list_to_df["guest_reviews"]
-        .apply(lambda values: [dict(sorted(v.items())) for v in values])
-        .apply(sort_guest_reviews)
+    hotel_data_list_to_df = modify_row_and_columns_for_consistent_ordering(
+        df=hotel_data_list_to_df
     )
     pd.testing.assert_frame_equal(
         hotel_cleaned_df, hotel_data_list_to_df[hotel_cleaned_df.columns]

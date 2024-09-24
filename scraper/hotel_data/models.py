@@ -41,7 +41,7 @@ class Hotel_Review(BaseMixin):
     free_wifi_rating_out_of_10: Mapped[Optional[float]]
     num_of_reviews: Mapped[Optional[int]]
     subjective_rating: Mapped[Optional[str]] = mapped_column(Text)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE"))
 
 
 class Hotel_Rooms(BaseMixin):
@@ -51,7 +51,7 @@ class Hotel_Rooms(BaseMixin):
     guest_count_numeric: Mapped[Optional[int]] = mapped_column()
     price_numeric: Mapped[Optional[float]] = mapped_column()
     tax_and_fee_numeric: Mapped[Optional[float]] = mapped_column()
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE"))
 
 
 class Hotel_House_Rules(BaseMixin):
@@ -65,13 +65,13 @@ class Hotel_House_Rules(BaseMixin):
     refundable_damage_deposit: Mapped[Optional[str]] = mapped_column(Text)
     smoking: Mapped[Optional[str]] = mapped_column(Text)
     cards_accepted: Mapped[Optional[str]] = mapped_column(Text)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE"))
 
 
 class Hotel_Location(BaseMixin):
     city: Mapped[Optional[str]] = mapped_column(Text)
     address: Mapped[Optional[str]] = mapped_column(Text)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE"))
 
 
 class Hotel_Guest_Reviews(BaseMixin):
@@ -79,4 +79,4 @@ class Hotel_Guest_Reviews(BaseMixin):
     title: Mapped[Optional[str]] = mapped_column(Text)
     positive: Mapped[Optional[str]] = mapped_column(Text)
     negative: Mapped[Optional[str]] = mapped_column(Text)
-    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id"))
+    hotel_id: Mapped[int] = mapped_column(ForeignKey("hotels.id", ondelete="CASCADE"))
