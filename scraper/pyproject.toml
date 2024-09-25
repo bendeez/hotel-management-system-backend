@@ -15,6 +15,9 @@ alembic = "^1.13.2"
 scikit-learn = "^1.5.2"
 playwright = "^1.47.0"
 matplotlib = "^3.9.2"
+pytest = "^8.3.3"
+aiomysql = "^0.2.0"
+anyio = "^4.6.0"
 
 
 [build-system]

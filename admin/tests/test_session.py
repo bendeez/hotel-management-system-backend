@@ -7,7 +7,7 @@ from app.session.domain.constants import SessionAttributes
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])
-async def test_create_chat_session(account, http_request, sessions, user_request):
+async def test_create_chat_session(account, http_request):
     tokens, account = account
     response = await http_request(
         path="/session", method=RequestMethod.POST, token=tokens.access_token
