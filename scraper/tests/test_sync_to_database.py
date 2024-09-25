@@ -1,13 +1,12 @@
-from hotel_data.hotel_data_to_database import sync_hotel_data_to_database
 from hotel_data.hotel_data_getter import get_hotel_data
 from hotel_data.hotel_data_deleter import delete_hotel_data
 import pandas as pd
 
 
 async def test_sync_hotel_data_to_database(
-    hotel_cleaned_df, modify_row_and_columns_for_consistent_ordering
+    hotel_cleaned_df, modify_row_and_columns_for_consistent_ordering, hotel_data_syncer
 ):
-    await sync_hotel_data_to_database(df=hotel_cleaned_df)
+    await hotel_data_syncer.sync_hotel_data_to_database(df=hotel_cleaned_df)
     hotel_data_from_db = await get_hotel_data()
     assert len(hotel_data_from_db) == len(hotel_cleaned_df)
     hotel_data_to_list = [
