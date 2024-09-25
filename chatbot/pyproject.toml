@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "chatbot"
+version = "0.1.0"
+description = ""
+authors = ["bendeez"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+chromadb = "^0.5.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

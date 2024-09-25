@@ -9,7 +9,7 @@ from hotel_data.models import (
     Hotel_House_Rules,
 )
 import numpy as np
-from sqlalchemy import insert, select, func
+from sqlalchemy import insert, select, func, text
 from typing import Any
 
 
@@ -24,6 +24,7 @@ class HotelDataSyncer:
 
     async def insert_partitioned_entities(self, entities: list[dict], model: Any):
         async with SessionLocal() as db:
+            await db.execute(text("SET FOREIGN_KEY_CHECKS=0"))
             await db.execute(insert(model), entities)
             await db.commit()
 
