@@ -3,9 +3,11 @@ import pytest
 from bot.client import HotelSuggestionBot
 from tests.utils import fetch_hotel_data
 
+
 @pytest.fixture()
 def bot_client_username():
     return "bot"
+
 
 @pytest.fixture()
 def bot_client(bot_client_username):
@@ -13,11 +15,15 @@ def bot_client(bot_client_username):
     client.user = bot_client_username
     return client
 
+
 @pytest.fixture()
 def hotel_suggestion_bot(bot_client):
-    bot = HotelSuggestionBot(client=bot_client, token="token", server="http://mock:8000")
+    bot = HotelSuggestionBot(
+        client=bot_client, token="token", server="http://mock:8000"
+    )
     bot.fetch_hotel_data = fetch_hotel_data
     return bot
+
 
 @pytest.fixture()
 def create_message():
@@ -26,6 +32,7 @@ def create_message():
         message.author = author
         message.content = content
         return message
+
     return _create_message
 
 

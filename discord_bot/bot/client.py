@@ -3,8 +3,8 @@ import discord
 from bot.config import settings
 from bot.hotel_info_sender import HotelInfoSender
 
-class HotelSuggestionBot:
 
+class HotelSuggestionBot:
     def __init__(self, client: discord.Client, token: str, server: str):
         self.client = client
         self.token = token
@@ -17,7 +17,7 @@ class HotelSuggestionBot:
             return hotel_data
 
     async def on_ready(self):
-        print(f'We have logged in as {self.client.user}')
+        print(f"We have logged in as {self.client.user}")
 
     async def send_hotel(self, message, hotel):
         hotel_info_sender = HotelInfoSender(message=message, hotel=hotel)
@@ -31,7 +31,7 @@ class HotelSuggestionBot:
     async def on_message(self, message):
         if message.author == self.client.user:
             return
-        if message.content.startswith('/show hotels'):
+        if message.content.startswith("/show hotels"):
             hotels = await self.fetch_hotel_data()
             for hotel in hotels[:1]:
                 await self.send_hotel(hotel=hotel, message=message)
@@ -41,11 +41,12 @@ class HotelSuggestionBot:
         self.client.event(self.on_message)
         self.client.run(self.token)
 
+
 if __name__ == "__main__":
     intents = discord.Intents.default()
     intents.message_content = True
     client = discord.Client(intents=intents)
-    hotel_suggestion_bot = HotelSuggestionBot(client=client, token=settings.TOKEN, server="http://127.0.0.1:8000")
+    hotel_suggestion_bot = HotelSuggestionBot(
+        client=client, token=settings.TOKEN, server="http://127.0.0.1:8000"
+    )
     hotel_suggestion_bot.run()
-
-
