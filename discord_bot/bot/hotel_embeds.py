@@ -1,9 +1,19 @@
 import discord
+from dataclasses import dataclass
 
 
-class HotelInfoSender:
-    def __init__(self, message, hotel):
-        self.message = message
+@dataclass
+class HotelEmbeds:
+    hotel_main_info: discord.Embed
+    hotel_review: discord.Embed
+    hotel_amenities: discord.Embed
+    hotel_house_rules: discord.Embed
+    hotel_room_info: list[discord.Embed]
+    hotel_guest_reviews: list[discord.Embed]
+
+
+class HotelEmbedCreator:
+    def __init__(self, hotel):
         self.hotel_title = hotel["title"]
         self.hotel = hotel
 
@@ -16,7 +26,7 @@ class HotelInfoSender:
                 field = field.replace("_", " ").replace("numeric", "")
                 embed.add_field(name=field, value=description, inline=False)
 
-    async def send_main_hotel_info(self) -> discord.Embed:
+    def create_main_hotel_info(self) -> discord.Embed:
         main_hotel_info_embed = discord.Embed(
             colour=discord.Colour.dark_teal(),
             description=self.hotel["description"],
@@ -28,10 +38,9 @@ class HotelInfoSender:
             hotel_data=self.hotel["hotel_location"],
             filters=["id", "hotel_id"],
         )
-        await self.message.channel.send(embed=main_hotel_info_embed)
         return main_hotel_info_embed
 
-    async def send_hotel_review(self) -> discord.Embed:
+    def create_hotel_review(self) -> discord.Embed:
         hotel_review_embed = discord.Embed(
             colour=discord.Colour.dark_teal(),
             title=f"{self.hotel_title} - overall review",
@@ -41,20 +50,18 @@ class HotelInfoSender:
             hotel_data=self.hotel["hotel_review"],
             filters=["id", "hotel_id"],
         )
-        await self.message.channel.send(embed=hotel_review_embed)
         return hotel_review_embed
 
-    async def send_hotel_amenities(self) -> discord.Embed:
+    def create_hotel_amenities(self) -> discord.Embed:
         hotel_amenities = ", ".join(self.hotel["amenities"])
         amenities_embed = discord.Embed(
             colour=discord.Colour.dark_teal(),
             description=hotel_amenities,
             title=f"{self.hotel_title} - Amenities",
         )
-        await self.message.channel.send(embed=amenities_embed)
         return amenities_embed
 
-    async def send_hotel_house_rules(self) -> discord.Embed:
+    def create_hotel_house_rules(self) -> discord.Embed:
         house_rules_embed = discord.Embed(
             colour=discord.Colour.dark_teal(), title=f"{self.hotel_title} - House Rules"
         )
@@ -63,19 +70,18 @@ class HotelInfoSender:
             hotel_data=self.hotel["hotel_house_rules"],
             filters=["id", "hotel_id"],
         )
-        await self.message.channel.send(embed=house_rules_embed)
         return house_rules_embed
 
-    async def send_all_hotel_room_info(self) -> list[discord.Embed]:
+    def create_all_hotel_room_info(self) -> list[discord.Embed]:
         hotel_room_embeds = []
         for room_number, room in enumerate(self.hotel["hotel_rooms"]):
-            hotel_room_embed = await self.send_hotel_room_info(
+            hotel_room_embed = self.create_hotel_room_info(
                 room_number=room_number, room=room
             )
             hotel_room_embeds.append(hotel_room_embed)
         return hotel_room_embeds
 
-    async def send_hotel_room_info(self, room, room_number) -> discord.Embed:
+    def create_hotel_room_info(self, room, room_number) -> discord.Embed:
         hotel_room_description = " - ".join(room["room_type"])
         hotel_room_embed = discord.Embed(
             colour=discord.Colour.dark_teal(),
@@ -87,19 +93,18 @@ class HotelInfoSender:
             hotel_data=room,
             filters=["id", "hotel_id", "guest_count", "price", "room_type"],
         )
-        await self.message.channel.send(embed=hotel_room_embed)
         return hotel_room_embed
 
-    async def send_all_hotel_guest_reviews(self) -> list[discord.Embed]:
+    def create_all_hotel_guest_reviews(self) -> list[discord.Embed]:
         guest_review_embeds = []
         for review_number, review in enumerate(self.hotel["hotel_guest_reviews"]):
-            guest_review_embed = await self.send_hotel_guest_review(
+            guest_review_embed = self.create_hotel_guest_review(
                 review_number=review_number, review=review
             )
             guest_review_embeds.append(guest_review_embed)
         return guest_review_embeds
 
-    async def send_hotel_guest_review(self, review, review_number) -> discord.Embed:
+    def create_hotel_guest_review(self, review, review_number) -> discord.Embed:
         guest_review_embed = discord.Embed(
             colour=discord.Colour.dark_teal(),
             title=f"{self.hotel_title} - Guest Review {review_number + 1}",
@@ -107,5 +112,21 @@ class HotelInfoSender:
         self.add_to_embed_with_dict(
             embed=guest_review_embed, hotel_data=review, filters=["id", "hotel_id"]
         )
-        await self.message.channel.send(embed=guest_review_embed)
         return guest_review_embed
+
+    def create_hotel_embeds(self, hotel):
+        hotel_embed_creator = HotelEmbedCreator(hotel=hotel)
+        hotel_main_info = hotel_embed_creator.create_main_hotel_info()
+        hotel_review = hotel_embed_creator.create_hotel_review()
+        hotel_amenities = hotel_embed_creator.create_hotel_amenities()
+        hotel_house_rules = hotel_embed_creator.create_hotel_house_rules()
+        hotel_room_info = hotel_embed_creator.create_all_hotel_room_info()
+        hotel_guest_reviews = hotel_embed_creator.create_all_hotel_guest_reviews()
+        return HotelEmbeds(
+            hotel_main_info=hotel_main_info,
+            hotel_review=hotel_review,
+            hotel_amenities=hotel_amenities,
+            hotel_house_rules=hotel_house_rules,
+            hotel_room_info=hotel_room_info,
+            hotel_guest_reviews=hotel_guest_reviews,
+        )

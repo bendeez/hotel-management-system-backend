@@ -1,7 +1,7 @@
 import httpx
 import discord
 from bot.config import settings
-from bot.hotel_info_sender import HotelInfoSender
+from bot.hotel_embeds import HotelEmbedCreator, HotelEmbeds
 
 
 class HotelSuggestionBot:
@@ -19,22 +19,23 @@ class HotelSuggestionBot:
     async def on_ready(self):
         print(f"We have logged in as {self.client.user}")
 
-    async def send_hotel(self, message, hotel):
-        hotel_info_sender = HotelInfoSender(message=message, hotel=hotel)
-        hotel_main_info = await hotel_info_sender.send_main_hotel_info()
-        hotel_review = await hotel_info_sender.send_hotel_review()
-        hotel_amenities = await hotel_info_sender.send_hotel_amenities()
-        hotel_house_rules = await hotel_info_sender.send_hotel_house_rules()
-        hotel_room_info = await hotel_info_sender.send_all_hotel_room_info()
-        hotel_guest_reviews = await hotel_info_sender.send_all_hotel_guest_reviews()
+    def create_all_hotels_embeds(self, hotels):
+        hotel_embeds = []
+        for hotel in hotels:
+            hotel_embed = self.create_hotel_embeds(hotel=hotel)
+            hotel_embeds.append(hotel_embed)
+
+        return hotel_embeds
+
+    async def send_hotel_embeds(self, hotel_embeds):
+        pass
 
     async def on_message(self, message):
         if message.author == self.client.user:
             return
         if message.content.startswith("/show hotels"):
             hotels = await self.fetch_hotel_data()
-            for hotel in hotels[:1]:
-                await self.send_hotel(hotel=hotel, message=message)
+            hotel_embeds = self.create_all_hotels_embeds(hotels)
 
     def run(self):
         self.client.event(self.on_ready)
