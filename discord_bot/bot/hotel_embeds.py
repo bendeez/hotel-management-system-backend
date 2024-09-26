@@ -114,14 +114,13 @@ class HotelEmbedCreator:
         )
         return guest_review_embed
 
-    def create_hotel_embeds(self, hotel):
-        hotel_embed_creator = HotelEmbedCreator(hotel=hotel)
-        hotel_main_info = hotel_embed_creator.create_main_hotel_info()
-        hotel_review = hotel_embed_creator.create_hotel_review()
-        hotel_amenities = hotel_embed_creator.create_hotel_amenities()
-        hotel_house_rules = hotel_embed_creator.create_hotel_house_rules()
-        hotel_room_info = hotel_embed_creator.create_all_hotel_room_info()
-        hotel_guest_reviews = hotel_embed_creator.create_all_hotel_guest_reviews()
+    def create_hotel_embeds(self) -> HotelEmbeds:
+        hotel_main_info = self.create_main_hotel_info()
+        hotel_review = self.create_hotel_review()
+        hotel_amenities = self.create_hotel_amenities()
+        hotel_house_rules = self.create_hotel_house_rules()
+        hotel_room_info = self.create_all_hotel_room_info()
+        hotel_guest_reviews = self.create_all_hotel_guest_reviews()
         return HotelEmbeds(
             hotel_main_info=hotel_main_info,
             hotel_review=hotel_review,

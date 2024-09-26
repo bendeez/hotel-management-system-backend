@@ -1,7 +1,8 @@
 import httpx
 import discord
 from bot.config import settings
-from bot.hotel_embeds import HotelEmbedCreator, HotelEmbeds
+from bot.hotel_embeds import HotelEmbedCreator
+from dataclasses import asdict
 
 
 class HotelSuggestionBot:
@@ -19,23 +20,23 @@ class HotelSuggestionBot:
     async def on_ready(self):
         print(f"We have logged in as {self.client.user}")
 
-    def create_all_hotels_embeds(self, hotels):
-        hotel_embeds = []
-        for hotel in hotels:
-            hotel_embed = self.create_hotel_embeds(hotel=hotel)
-            hotel_embeds.append(hotel_embed)
-
-        return hotel_embeds
-
-    async def send_hotel_embeds(self, hotel_embeds):
-        pass
+    async def send_hotel_embeds(self, hotels, message):
+        for hotel in hotels[:1]:
+            hotel_embed_creator = HotelEmbedCreator(hotel=hotel)
+            hotel_embeds = hotel_embed_creator.create_hotel_embeds()
+            for embed in list(asdict(hotel_embeds).values()):
+                if isinstance(embed, list):
+                    for e in embed:
+                        await message.channel.send(embed=e)
+                else:
+                    await message.channel.send(embed=embed)
 
     async def on_message(self, message):
         if message.author == self.client.user:
             return
         if message.content.startswith("/show hotels"):
             hotels = await self.fetch_hotel_data()
-            hotel_embeds = self.create_all_hotels_embeds(hotels)
+            await self.send_hotel_embeds(hotels=hotels, message=message)
 
     def run(self):
         self.client.event(self.on_ready)

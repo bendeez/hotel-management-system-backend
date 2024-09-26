@@ -8,6 +8,7 @@ async def test_sync_hotel_data_to_database(
 ):
     await hotel_data_syncer.sync_hotel_data_to_database(df=hotel_cleaned_df)
     hotel_data_from_db = await get_hotel_data()
+    await delete_hotel_data()
     assert len(hotel_data_from_db) == len(hotel_cleaned_df)
     hotel_data_to_list = [
         {
@@ -77,4 +78,3 @@ async def test_sync_hotel_data_to_database(
     pd.testing.assert_frame_equal(
         hotel_cleaned_df, hotel_data_list_to_df[hotel_cleaned_df.columns]
     )
-    await delete_hotel_data()
