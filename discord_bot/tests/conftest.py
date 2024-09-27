@@ -3,6 +3,7 @@ import pytest
 from bot.client import HotelSuggestionBot
 from bot.discord_embeds import DiscordEmbeds
 from tests.utils import fetch_hotel_data
+import re
 
 
 @pytest.fixture()
@@ -33,28 +34,57 @@ def hotel_suggestion_bot(bot_client):
 
 
 @pytest.fixture()
-def find_embeds_per_dict():
-    def _find_embeds_per_dict(hotel_data: list, discord_embeds: DiscordEmbeds):
-        embeds_per_dict = []
-        for hotel in hotel_data:
-            embeds = discord_embeds.create_hotel_embeds(hotel=hotel)
-            for embed in embeds:
-                if isinstance(embed, list):
-                    for e in embed:
-                        embeds_per_dict.append(e)
-                else:
-                    embeds_per_dict.append(embed)
-        return embeds_per_dict
+def separate_embeds_by_hotels_and_format(hotel_data):
+    def find_starting_index_of_categorical_embeds(hotel_embeds, match):
+        for index, h in enumerate(hotel_embeds):
+            if re.search(match, h.title):
+                return index
 
-    return _find_embeds_per_dict
+    def insert_categorical_embeds(hotel_embeds, match):
+        """
+        hotel embeds couldve already had an inserted categorical list inside of it
+        """
+        hotel_categorical_embeds = [
+            h for h in hotel_embeds if isinstance(h, str) and re.search(match, h.title)
+        ]
+        for h in hotel_categorical_embeds:
+            hotel_embeds.remove(h)
+        hotel_embeds[-1] = hotel_categorical_embeds
 
+    def _separate_embeds_by_hotels_and_format(embeds_sent):
+        hotel_starting_points = [
+            index
+            for index, e in enumerate(embeds_sent)
+            if e.title in [hotel["title"] for hotel in hotel_data]
+        ]
+        embeds_separated_by_hotels = []
+        for i, starting_point in enumerate(hotel_starting_points):
+            if (i + 1) == len(hotel_starting_points):
+                """
+                    makes sure that it doesnt access an index
+                    outside of the starting point list range
+                """
+                next_hotel_reference = None
+            else:
+                next_hotel_reference = hotel_starting_points[i + 1]
+            hotel_embeds = embeds_sent[starting_point:next_hotel_reference]
+            room_match = "Room"
+            guest_review_match = "Guest Review Match"
+            room_starting_index = find_starting_index_of_categorical_embeds(
+                hotel_embeds=hotel_embeds, match=room_match
+            )
+            guest_review_starting_index = find_starting_index_of_categorical_embeds(
+                hotel_embeds=hotel_embeds, match=guest_review_match
+            )
+            assert guest_review_starting_index > room_starting_index
+            insert_categorical_embeds(hotel_embeds=hotel_embeds, match=room_match)
+            insert_categorical_embeds(
+                hotel_embeds=hotel_embeds, match=guest_review_match
+            )
+            embeds_separated_by_hotels.append(hotel_embeds)
+        return embeds_separated_by_hotels
 
-@pytest.fixture()
-def sort_embeds_by_title():
-    def _sort_embeds_by_title(embeds_list: list):
-        return list(sorted(embeds_list, key=lambda e: e.title))
-
-    return _sort_embeds_by_title
+    return _separate_embeds_by_hotels_and_format
 
 
 @pytest.fixture()
