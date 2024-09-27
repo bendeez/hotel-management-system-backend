@@ -121,6 +121,9 @@ class HotelEmbedCreator:
         hotel_house_rules = self.create_hotel_house_rules()
         hotel_room_info = self.create_all_hotel_room_info()
         hotel_guest_reviews = self.create_all_hotel_guest_reviews()
+        """
+            order of embeds matter
+        """
         return HotelEmbeds(
             hotel_main_info=hotel_main_info,
             hotel_review=hotel_review,
