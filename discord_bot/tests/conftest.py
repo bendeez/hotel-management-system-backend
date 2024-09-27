@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock
 import pytest
 from bot.client import HotelSuggestionBot
-from bot.discord_embeds import DiscordEmbeds
 from tests.utils import fetch_hotel_data
 import re
+import discord
 
 
 @pytest.fixture()
@@ -35,21 +35,27 @@ def hotel_suggestion_bot(bot_client):
 
 @pytest.fixture()
 def separate_embeds_by_hotels_and_format(hotel_data):
+    """
+    make it comparable with the hotel data json
+    """
+
     def find_starting_index_of_categorical_embeds(hotel_embeds, match):
         for index, h in enumerate(hotel_embeds):
             if re.search(match, h.title):
                 return index
 
-    def insert_categorical_embeds(hotel_embeds, match):
+    def insert_categorical_embeds_as_list(hotel_embeds, match):
         """
         hotel embeds couldve already had an inserted categorical list inside of it
         """
         hotel_categorical_embeds = [
-            h for h in hotel_embeds if isinstance(h, str) and re.search(match, h.title)
+            h
+            for h in hotel_embeds
+            if isinstance(h, discord.Embed) and re.search(match, h.title)
         ]
         for h in hotel_categorical_embeds:
             hotel_embeds.remove(h)
-        hotel_embeds[-1] = hotel_categorical_embeds
+        hotel_embeds.append(hotel_categorical_embeds)
 
     def _separate_embeds_by_hotels_and_format(embeds_sent):
         hotel_starting_points = [
@@ -59,6 +65,10 @@ def separate_embeds_by_hotels_and_format(hotel_data):
         ]
         embeds_separated_by_hotels = []
         for i, starting_point in enumerate(hotel_starting_points):
+            """
+                hotels sent should be in the same order
+                as the hotel data retrieved from the API
+            """
             if (i + 1) == len(hotel_starting_points):
                 """
                     makes sure that it doesnt access an index
@@ -69,16 +79,21 @@ def separate_embeds_by_hotels_and_format(hotel_data):
                 next_hotel_reference = hotel_starting_points[i + 1]
             hotel_embeds = embeds_sent[starting_point:next_hotel_reference]
             room_match = "Room"
-            guest_review_match = "Guest Review Match"
+            guest_review_match = "Guest Review"
             room_starting_index = find_starting_index_of_categorical_embeds(
                 hotel_embeds=hotel_embeds, match=room_match
             )
             guest_review_starting_index = find_starting_index_of_categorical_embeds(
                 hotel_embeds=hotel_embeds, match=guest_review_match
             )
+            """
+                rooms list should be before guest reviews list in the list
+            """
             assert guest_review_starting_index > room_starting_index
-            insert_categorical_embeds(hotel_embeds=hotel_embeds, match=room_match)
-            insert_categorical_embeds(
+            insert_categorical_embeds_as_list(
+                hotel_embeds=hotel_embeds, match=room_match
+            )
+            insert_categorical_embeds_as_list(
                 hotel_embeds=hotel_embeds, match=guest_review_match
             )
             embeds_separated_by_hotels.append(hotel_embeds)
