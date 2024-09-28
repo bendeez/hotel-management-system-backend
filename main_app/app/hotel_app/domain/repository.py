@@ -1,7 +1,10 @@
 from app.tools.domain.base_repository import BaseRepository, JoinExpression
-from app.hotels.domain.models import Hotels, Hotel_Location
+from app.hotel_app.domain.models import Hotels, Hotel_Location
 from app.tools.domain.constants import DatabaseQueryOrder
-from app.hotels.domain.constants import HotelsAttributes, hotel_attributes_table_mapping
+from app.hotel_app.domain.constants import (
+    HotelsAttributes,
+    hotel_attributes_table_mapping,
+)
 from typing import Optional
 
 

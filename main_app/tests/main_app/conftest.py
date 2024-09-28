@@ -2,8 +2,6 @@ import httpx
 import pytest
 from app.app import app
 from app.facility.domain.models import Facility
-from app.tools.domain.database import SessionLocal, engine
-from app.tools.domain.base_models import BaseMixin
 from tests.utils import RequestMethod, http_request, Request, Client
 from app.auth.domain.service import AuthService
 from app.utils.domain.service import HashService
@@ -34,20 +32,6 @@ from datetime import datetime, timedelta
 from app.accounts.domain.models import Accounts
 from uuid import uuid4
 from app.tools.application.dependencies import get_db
-from app.hotels.domain.models import (
-    Hotels,
-    Hotel_Rooms,
-    Hotel_Location,
-    Hotel_Review,
-    Hotel_Guest_Reviews,
-    Hotel_House_Rules,
-)
-
-
-@pytest.fixture(name="db", scope="session", autouse=True)
-async def create_db_session():
-    async with SessionLocal() as db:
-        yield db
 
 
 @pytest.fixture(autouse=True)
@@ -56,13 +40,6 @@ async def override_dependencies(db):
         return db
 
     app.dependency_overrides[get_db] = get_test_db
-
-
-@pytest.fixture(scope="session", autouse=True)
-async def create_tables(db):
-    async with engine.begin() as conn:
-        await conn.run_sync(BaseMixin.metadata.drop_all)
-        await conn.run_sync(BaseMixin.metadata.create_all)
 
 
 @pytest.fixture(scope="session")
@@ -247,66 +224,6 @@ async def create_chat_log(chat_service):
         return chat_log
 
     return _create_chat_log
-
-
-@pytest.fixture(scope="session")
-def cities():
-    return ["Detroit", "New York City"]
-
-
-@pytest.fixture(scope="session")
-async def hotels(db, cities):
-    hotels = []
-    for i in range(5):
-        city = cities[i % 2]
-        """
-            not all row values have to be filled in 
-        """
-        hotel = Hotels(
-            title=str(uuid4()),
-            description=str(uuid4()),
-            amenities=[str(uuid4()), str(uuid4())],
-            image_link=str(uuid4()),
-            hotel_rooms=[
-                Hotel_Rooms(
-                    room_type=[str(uuid4())],
-                    price=[str(uuid4())],
-                    guest_count=[str(uuid4())],
-                    guest_count_numeric=1,
-                    price_numeric=100.0,
-                    tax_and_fee_numeric=15.0,
-                )
-            ],
-            hotel_house_rules=Hotel_House_Rules(
-                check_in=str(uuid4()), check_out=str(uuid4())
-            ),
-            hotel_location=Hotel_Location(city=city),
-            hotel_guest_reviews=[
-                Hotel_Guest_Reviews(
-                    date=str(uuid4()),
-                    title=str(uuid4()),
-                    positive=str(uuid4()),
-                    negative=str(uuid4()),
-                )
-                for _ in range(2)
-            ],
-        )
-        db.add(hotel)
-        hotels.append(hotel)
-    await db.commit()
-    [
-        await db.refresh(
-            hotel,
-            attribute_names=[
-                "hotel_review",
-                "hotel_location",
-                "hotel_rooms",
-                "hotel_guest_reviews",
-            ],
-        )
-        for hotel in hotels
-    ]
-    return hotels
 
 
 @pytest.fixture(scope="session")

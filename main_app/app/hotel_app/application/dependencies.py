@@ -1,6 +1,6 @@
 from fastapi import Depends
-from app.hotels.domain.repository import HotelsRepository
-from app.hotels.domain.service import HotelsService
+from app.hotel_app.domain.repository import HotelsRepository
+from app.hotel_app.domain.service import HotelsService
 from app.tools.application.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 

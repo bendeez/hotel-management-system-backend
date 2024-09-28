@@ -43,7 +43,7 @@ class HotelEmbedCreator:
     def create_hotel_review(self) -> discord.Embed:
         hotel_review_embed = discord.Embed(
             colour=discord.Colour.dark_teal(),
-            title=f"{self.hotel_title} - overall review",
+            title=f"{self.hotel_title} - Overall Review",
         )
         self.add_to_embed_with_dict(
             embed=hotel_review_embed,

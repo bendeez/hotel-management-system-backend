@@ -1,6 +1,6 @@
-from app.hotels.domain.repository import HotelsRepository
+from app.hotel_app.domain.repository import HotelsRepository
 from app.tools.domain.constants import DatabaseQueryOrder
-from app.hotels.domain.constants import HotelsAttributes
+from app.hotel_app.domain.constants import HotelsAttributes
 from typing import Optional
 
 
