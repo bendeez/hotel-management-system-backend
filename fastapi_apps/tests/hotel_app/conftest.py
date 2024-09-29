@@ -1,12 +1,12 @@
 import httpx
 import pytest
-from app.hotel_app.application.endpoints import hotel_app
+from app.hotel_app.app import hotel_app
 from tests.utils import RequestMethod, http_request, Request, Client
 from typing import Optional
 from datetime import datetime, timedelta
 from uuid import uuid4
 from app.tools.application.dependencies import get_db
-from app.hotel_app.domain.models import (
+from app.hotel_app.hotels.domain.models import (
     Hotels,
     Hotel_Rooms,
     Hotel_Location,

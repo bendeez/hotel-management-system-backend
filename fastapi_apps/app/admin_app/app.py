@@ -11,21 +11,21 @@ from app.admin_app.exception_handlers import add_exception_handlers
 from app.tools.application.rate_limiter import limiter
 
 
-app = FastAPI()
-app.add_middleware(
+admin_app = FastAPI()
+admin_app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.state.limiter = limiter
+admin_app.state.limiter = limiter
 
-add_exception_handlers(app=app)
-app.include_router(facility_router)
-app.include_router(chat_router)
-app.include_router(auth_router)
-app.include_router(user_router)
-app.include_router(business_router)
-app.include_router(business_user_router)
-app.include_router(session_router)
+add_exception_handlers(app=admin_app)
+admin_app.include_router(facility_router)
+admin_app.include_router(chat_router)
+admin_app.include_router(auth_router)
+admin_app.include_router(user_router)
+admin_app.include_router(business_router)
+admin_app.include_router(business_user_router)
+admin_app.include_router(session_router)

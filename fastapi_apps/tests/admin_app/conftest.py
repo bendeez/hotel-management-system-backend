@@ -1,6 +1,6 @@
 import httpx
 import pytest
-from app.admin_app.app import app
+from app.admin_app.app import admin_app
 from app.admin_app.facility.domain.models import Facility
 from tests.utils import RequestMethod, http_request, Request, Client
 from app.admin_app.auth.domain.service import AuthService
@@ -39,7 +39,7 @@ async def override_dependencies(db):
     def get_test_db():
         return db
 
-    app.dependency_overrides[get_db] = get_test_db
+    admin_app.dependency_overrides[get_db] = get_test_db
 
 
 @pytest.fixture(scope="session")
@@ -277,7 +277,7 @@ async def facilities(create_facility, user, business, business_user) -> list[Fac
 
 @pytest.fixture(scope="session", name="client", autouse=True)
 async def create_http_client():
-    transport = httpx.ASGITransport(app=app)
+    transport = httpx.ASGITransport(app=admin_app)
     async with httpx.AsyncClient(
         transport=transport, base_url="http://127.0.0.1:8000"
     ) as client:

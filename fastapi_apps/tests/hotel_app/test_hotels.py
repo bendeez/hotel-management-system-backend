@@ -1,8 +1,12 @@
-from app.hotel_app.domain.models import Hotels
+from app.hotel_app.hotels.domain.models import Hotels
 from tests.utils import RequestMethod
-from app.hotel_app.domain.schemas import HotelsOut, HotelRoomsOut, HotelGuestReviewsOut
+from app.hotel_app.hotels.domain.schemas import (
+    HotelsOut,
+    HotelRoomsOut,
+    HotelGuestReviewsOut,
+)
 from sqlalchemy import inspect
-from app.hotel_app.domain.constants import HotelsAttributes
+from app.hotel_app.hotels.domain.constants import HotelsAttributes
 from app.tools.domain.constants import DatabaseQueryOrder
 
 

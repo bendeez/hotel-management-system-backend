@@ -1,5 +1,5 @@
 from enum import Enum
-from app.hotel_app.domain.models import Hotels, Hotel_Review, Hotel_Location
+from app.hotel_app.hotels.domain.models import Hotels, Hotel_Review, Hotel_Location
 
 
 class HotelsAttributes(Enum):
