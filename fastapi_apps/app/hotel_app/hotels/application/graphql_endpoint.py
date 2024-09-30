@@ -2,7 +2,7 @@ import strawberry
 from strawberry.fastapi import GraphQLRouter
 from app.hotel_app.hotels.domain.schemas import HotelsOut
 from app.hotel_app.hotels.application.dependencies import get_hotels_service
-from fastapi import Query, Depends
+from fastapi import Depends
 from app.hotel_app.hotels.domain.service import HotelsService
 from app.hotel_app.hotels.domain.schemas import (
     HotelReviewOut,
@@ -13,66 +13,97 @@ from app.hotel_app.hotels.domain.schemas import (
     HotelsOut,
 )
 from app.hotel_app.hotels.domain.constants import HotelsAttributes
+from app.hotel_app.hotels.domain.models import Hotels
 from app.tools.domain.constants import DatabaseQueryOrder
 from typing import List, Optional
 
-StrawberryDatabaseQueryOrder = strawberry.enum(DatabaseQueryOrder)
-StrawberryHotelsAttributes = strawberry.enum(HotelsAttributes)
+DatabaseQueryOrderGQL = strawberry.enum(DatabaseQueryOrder)
+HotelsAttributesGQL = strawberry.enum(HotelsAttributes)
 
 
 @strawberry.experimental.pydantic.type(model=HotelReviewOut, all_fields=True)
-class HotelReview:
+class HotelReviewGQL:
     pass
 
 
 @strawberry.experimental.pydantic.type(model=HotelRoomsOut, all_fields=True)
-class HotelRooms:
+class HotelRoomsGQL:
     pass
 
 
 @strawberry.experimental.pydantic.type(model=HotelHouseRulesOut, all_fields=True)
-class HotelHouseRules:
+class HotelHouseRulesGQL:
     pass
 
 
 @strawberry.experimental.pydantic.type(model=HotelLocationOut, all_fields=True)
-class HotelLocation:
+class HotelLocationGQL:
     pass
 
 
 @strawberry.experimental.pydantic.type(model=HotelGuestReviewsOut, all_fields=True)
-class HotelGuestReviews:
+class HotelGuestReviewsGQL:
     pass
 
 
 @strawberry.experimental.pydantic.type(model=HotelsOut, all_fields=True)
-class Hotels:
-    id: int
-    title: Optional[str] = None
-    image_link: Optional[str] = None
-    description: Optional[str] = None
-    amenities: List[str] = strawberry.field(default_factory=list)
-    hotel_review: Optional[HotelReview] = None
-    hotel_rooms: List[HotelRooms] = strawberry.field(default_factory=list)
-    hotel_house_rules: Optional[HotelHouseRules] = None
-    hotel_location: Optional[HotelLocation] = None
-    hotel_guest_reviews: List[HotelGuestReviews] = strawberry.field(default_factory=list)
+class HotelsGQL:
+    pass
 
 
 async def get_context(hotels_service: HotelsService = Depends(get_hotels_service)):
     return {"hotels_service": hotels_service}
 
 
+def transform_hotel_models_to_gql(hotels: List[Hotels]) -> List[HotelsGQL]:
+    hotels_to_pydantic = [HotelsOut.model_validate(hotel) for hotel in hotels]
+    hotels_to_gql = [
+        HotelsGQL(
+            **hotel.model_dump(
+                exclude={
+                    "hotel_review",
+                    "hotel_rooms",
+                    "hotel_house_rules",
+                    "hotel_location",
+                    "hotel_guest_reviews",
+                }
+            ),
+            hotel_review=HotelReviewGQL(**hotel.hotel_review.model_dump())
+            if hotel.hotel_review
+            else None,
+            hotel_rooms=[
+                HotelRoomsGQL(**room.model_dump()) for room in hotel.hotel_rooms
+            ]
+            if hotel.hotel_rooms
+            else [],
+            hotel_house_rules=HotelHouseRulesGQL(**hotel.hotel_house_rules.model_dump())
+            if hotel.hotel_house_rules
+            else None,
+            hotel_location=HotelLocationGQL(**hotel.hotel_location.model_dump())
+            if hotel.hotel_location
+            else None,
+            hotel_guest_reviews=[
+                HotelGuestReviewsGQL(**guest_review.model_dump())
+                for guest_review in hotel.hotel_guest_reviews
+            ]
+            if hotel.hotel_guest_reviews
+            else [],
+        )
+        for hotel in hotels_to_pydantic
+    ]
+    return hotels_to_gql
+
+
 async def get_all_hotels(
     info: strawberry.Info,
     city: Optional[str] = None,
-    limit: int = Query(default=100, le=100),
+    limit: Optional[int] = None,
     offset: int = 0,
-    order_by: StrawberryHotelsAttributes = StrawberryHotelsAttributes.ID,
-    order: StrawberryDatabaseQueryOrder = StrawberryDatabaseQueryOrder.DESC,
-    rating_gt: float = Query(default=None, le=10),
-    rating_lt: float = Query(default=None, ge=0),
-) -> List[Hotels]:
+    order_by: HotelsAttributesGQL = HotelsAttributesGQL.ID,
+    order: DatabaseQueryOrderGQL = DatabaseQueryOrderGQL.DESC,
+    rating_gt: Optional[float] = None,
+    rating_lt: Optional[float] = None,
+) -> List[HotelsGQL]:
     hotels_service = info.context["hotels_service"]
     hotels = await hotels_service.get_all_hotels(
         limit=limit,
@@ -83,12 +114,13 @@ async def get_all_hotels(
         rating_gt=rating_gt,
         rating_lt=rating_lt,
     )
-    return hotels
+    hotels_gql = transform_hotel_models_to_gql(hotels=hotels)
+    return hotels_gql
 
 
 @strawberry.type
 class Query:
-    hotels: List[Hotels] = strawberry.field(resolver=get_all_hotels)
+    hotels: List[HotelsGQL] = strawberry.field(resolver=get_all_hotels)
 
 
 schema = strawberry.Schema(Query)

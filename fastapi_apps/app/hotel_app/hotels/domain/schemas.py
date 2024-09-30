@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field
-from typing import Optional
-from typing import List
+from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional, List
 
 
 class HotelEntity(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
 
 
