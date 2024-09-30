@@ -15,7 +15,6 @@ from app.hotel_app.hotels.domain.schemas import (
 from app.hotel_app.hotels.domain.constants import HotelsAttributes
 from app.tools.domain.constants import DatabaseQueryOrder
 from typing import List, Optional
-from pydantic import Field
 
 StrawberryDatabaseQueryOrder = strawberry.enum(DatabaseQueryOrder)
 StrawberryHotelsAttributes = strawberry.enum(HotelsAttributes)
@@ -46,18 +45,18 @@ class HotelGuestReviews:
     pass
 
 
-@strawberry.experimental.pydantic.type(model=HotelsOut)
+@strawberry.experimental.pydantic.type(model=HotelsOut, all_fields=True)
 class Hotels:
     id: int
     title: Optional[str] = None
     image_link: Optional[str] = None
     description: Optional[str] = None
-    amenities: List[str] = Field(default_factory=list)
+    amenities: List[str] = strawberry.field(default_factory=list)
     hotel_review: Optional[HotelReview] = None
-    hotel_rooms: List[HotelRooms] = Field(default_factory=list)
+    hotel_rooms: List[HotelRooms] = strawberry.field(default_factory=list)
     hotel_house_rules: Optional[HotelHouseRules] = None
     hotel_location: Optional[HotelLocation] = None
-    hotel_guest_reviews: List[HotelGuestReviews] = Field(default_factory=list)
+    hotel_guest_reviews: List[HotelGuestReviews] = strawberry.field(default_factory=list)
 
 
 async def get_context(hotels_service: HotelsService = Depends(get_hotels_service)):
