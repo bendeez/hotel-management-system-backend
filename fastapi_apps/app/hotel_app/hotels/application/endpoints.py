@@ -16,8 +16,8 @@ async def get_all_hotels(
     offset: int = 0,
     order_by: HotelsAttributes = HotelsAttributes.ID,
     order: DatabaseQueryOrder = DatabaseQueryOrder.DESC,
-    rating_gt: float = Query(default=10, le=10),
-    rating_lt: float = Query(default=0, ge=0),
+    rating_gt: float = Query(default=None, le=10),
+    rating_lt: float = Query(default=None, ge=0),
     hotels_service: HotelsService = Depends(get_hotels_service),
 ):
     hotels = await hotels_service.get_all_hotels(
@@ -30,3 +30,4 @@ async def get_all_hotels(
         rating_lt=rating_lt,
     )
     return hotels
+

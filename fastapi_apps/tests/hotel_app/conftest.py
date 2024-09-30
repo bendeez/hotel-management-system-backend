@@ -4,6 +4,11 @@ from app.hotel_app.app import hotel_app
 from tests.utils import RequestMethod, http_request, Request, Client
 from typing import Optional
 from datetime import datetime, timedelta
+from app.hotel_app.hotels.domain.schemas import (
+    HotelsOut,
+    HotelRoomsOut,
+    HotelGuestReviewsOut,
+)
 from uuid import uuid4
 from app.tools.application.dependencies import get_db
 from app.hotel_app.hotels.domain.models import (
@@ -14,6 +19,7 @@ from app.hotel_app.hotels.domain.models import (
     Hotel_Guest_Reviews,
     Hotel_House_Rules,
 )
+from sqlalchemy import inspect
 
 
 @pytest.fixture(autouse=True)
@@ -36,14 +42,44 @@ def cities():
     return ["Detroit", "New York City"]
 
 
+@pytest.fixture()
+def serialize_hotel_model_value():
+    def _serialize_hotel_model_value(key, value):
+        hotel_relationships = inspect(Hotels).relationships
+        if key in hotel_relationships and isinstance(value, list):
+            return [v.__dict__ for v in value]
+        elif key in hotel_relationships and value is not None:
+            return value.__dict__
+        else:
+            return value
+
+    return _serialize_hotel_model_value
+
+
+@pytest.fixture()
+def serialized_and_formatted_hotel_models(serialize_hotel_model_value, hotels):
+    return list(
+        sorted(
+            [
+                HotelsOut(
+                    **{
+                        key: serialize_hotel_model_value(key, value)
+                        for key, value in hotel.__dict__.items()
+                    }
+                )
+                for hotel in hotels
+            ],
+            key=lambda h: h.id,
+            reverse=True,  # order by id descending
+        )
+    )
+
+
 @pytest.fixture(scope="session")
 async def hotels(db, cities):
     hotels = []
     for i in range(5):
         city = cities[i % 2]
-        """
-            not all row values have to be filled in 
-        """
         hotel = Hotels(
             title=str(uuid4()),
             description=str(uuid4()),
@@ -59,6 +95,9 @@ async def hotels(db, cities):
                     tax_and_fee_numeric=15.0,
                 )
             ],
+            hotel_review=Hotel_Review(
+                rating_out_of_10=(i * 2), num_of_reviews=(i * 20)
+            ),
             hotel_house_rules=Hotel_House_Rules(
                 check_in=str(uuid4()), check_out=str(uuid4())
             ),

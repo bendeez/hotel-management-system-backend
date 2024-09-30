@@ -14,8 +14,8 @@ class HotelsService:
         offset: int,
         order: DatabaseQueryOrder,
         order_by: HotelsAttributes,
-        rating_lt: float,
-        rating_gt: float,
+        rating_lt: Optional[float] = None,
+        rating_gt: Optional[float] = None,
         city: Optional[str] = None,
     ):
         hotels = await self.repository.get_all_hotels(

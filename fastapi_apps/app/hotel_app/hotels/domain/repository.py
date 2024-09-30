@@ -15,8 +15,8 @@ class HotelsRepository(BaseRepository):
         offset: int,
         order: DatabaseQueryOrder,
         order_by: HotelsAttributes,
-        rating_lt: float,
-        rating_gt: float,
+        rating_lt: Optional[float] = None,
+        rating_gt: Optional[float] = None,
         city: Optional[str] = None,
     ) -> list[Hotels]:
         join_relationships = [Hotels.hotel_review, Hotels.hotel_location]
@@ -25,11 +25,15 @@ class HotelsRepository(BaseRepository):
             for relationship in join_relationships
         ]
         filters = [
-            Hotel_Review.rating_out_of_10 >= rating_gt,
-            Hotel_Review.rating_out_of_10 <= rating_lt,
+            Hotel_Review.rating_out_of_10 >= rating_gt
+            if rating_gt is not None
+            else None,
+            Hotel_Review.rating_out_of_10 <= rating_lt
+            if rating_lt is not None
+            else None,
+            Hotel_Location.city == city if city is not None else None,
         ]
-        if city is not None:
-            filters.append(Hotel_Location.city == city)
+        filters = [f for f in filters if f is not None]
         order_by_model = hotel_attributes_table_mapping[order_by.value]
         hotels = await self._get_all(
             model=Hotels,

@@ -5,12 +5,11 @@ from app.hotel_app.hotels.domain.schemas import (
     HotelRoomsOut,
     HotelGuestReviewsOut,
 )
-from sqlalchemy import inspect
 from app.hotel_app.hotels.domain.constants import HotelsAttributes
 from app.tools.domain.constants import DatabaseQueryOrder
 
 
-async def test_get_hotels(http_request, hotels):
+async def test_get_hotels(http_request, serialized_and_formatted_hotel_models):
     params = {
         "limit": 3,
         "offset": 0,
@@ -23,37 +22,16 @@ async def test_get_hotels(http_request, hotels):
     assert response.status_code == 200
     data = response.json()
     assert len(data) == params["limit"]
-    hotel_relationships = inspect(Hotels).relationships
-
-    def serialize_value(key, value):
-        if key in hotel_relationships and isinstance(value, list):
-            return [v.__dict__ for v in value]
-        elif key in hotel_relationships and value is not None:
-            return value.__dict__
-        else:
-            return value
-
+    serialized_hotel_data = [HotelsOut(**d) for d in data]
     assert (
-        [HotelsOut(**d) for d in data]
-        == list(
-            sorted(
-                [
-                    HotelsOut(
-                        **{
-                            key: serialize_value(key, value)
-                            for key, value in hotel.__dict__.items()
-                        }
-                    )
-                    for hotel in hotels
-                ],
-                key=lambda h: h.id,
-                reverse=True,  # order by id descending
-            )
-        )[: params["limit"]]
+        serialized_hotel_data
+        == serialized_and_formatted_hotel_models[: params["limit"]]
     )
 
 
-async def test_get_hotels_by_city(http_request, hotels, cities):
+async def test_get_hotels_by_city(
+    http_request, cities, serialized_and_formatted_hotel_models
+):
     params = {
         "limit": 2,
         "offset": 0,
@@ -67,40 +45,45 @@ async def test_get_hotels_by_city(http_request, hotels, cities):
     assert response.status_code == 200
     data = response.json()
     assert len(data) == params["limit"]
-    hotel_relationships = inspect(Hotels).relationships
-
-    def serialize_value(key, value):
-        if key in hotel_relationships and isinstance(value, list):
-            return [v.__dict__ for v in value]
-        elif key in hotel_relationships and value is not None:
-            return value.__dict__
-        else:
-            return value
-
-    """
-        HotelsOut serializes the json returned by the response
-        and the sqlalchemy models so they can be compared 
-        (also the response model)
-    """
+    serialized_hotel_data = [HotelsOut(**d) for d in data]
     assert (
-        [HotelsOut(**d) for d in data]
+        serialized_hotel_data
         == list(
-            sorted(
-                filter(
-                    lambda h: h.hotel_location.city
-                    == params["city"],  # filter by param city
-                    [
-                        HotelsOut(
-                            **{
-                                key: serialize_value(key, value)
-                                for key, value in hotel.__dict__.items()
-                            }
-                        )
-                        for hotel in hotels
-                    ],
-                ),
-                key=lambda h: h.id,
-                reverse=True,  # order by id descending
+            filter(
+                lambda h: h.hotel_location.city
+                == params["city"],  # filter by param city
+                serialized_and_formatted_hotel_models,
+            )
+        )[: params["limit"]]
+    )
+
+
+async def test_get_hotels_by_rating(
+    http_request, serialized_and_formatted_hotel_models
+):
+    params = {
+        "limit": 2,
+        "offset": 0,
+        "order": DatabaseQueryOrder.DESC.value,
+        "order_by": HotelsAttributes.ID.value,
+        "rating_lt": 6,
+        "rating_gt": 3,
+    }
+    response = await http_request(
+        path="/hotels", method=RequestMethod.GET, params=params
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == params["limit"]
+    serialized_hotel_data = [HotelsOut(**d) for d in data]
+    assert (
+        serialized_hotel_data
+        == list(
+            filter(
+                lambda h: params["rating_gt"]
+                <= h.hotel_review.rating_out_of_10
+                <= params["rating_lt"],  # filter by ratings
+                serialized_and_formatted_hotel_models,
             )
         )[: params["limit"]]
     )

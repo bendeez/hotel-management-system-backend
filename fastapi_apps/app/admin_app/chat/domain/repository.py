@@ -16,7 +16,7 @@ class ChatRepository(SessionRepository):
         limit: int,
         offset: int,
         session_id: Optional[str] = None,
-    ):
+    ) -> list[Chat_Logs]:
         filters = [Accounts.id == account_id]
         if session_id is not None:
             filters.append(Chat_Logs.session_id == session_id)
