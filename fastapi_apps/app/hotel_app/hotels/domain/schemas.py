@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from typing import List
 
@@ -22,9 +22,9 @@ class HotelReviewOut(HotelEntity):
 
 
 class HotelRoomsOut(HotelEntity):
-    room_type: Optional[List[str]] = []
-    guest_count: Optional[List[str]] = []
-    price: Optional[List[str]] = []
+    room_type: Optional[List[str]] = Field(default_factory=list)
+    guest_count: Optional[List[str]] = Field(default_factory=list)
+    price: Optional[List[str]] = Field(default_factory=list)
     guest_count_numeric: Optional[int]
     price_numeric: Optional[float]
     tax_and_fee_numeric: Optional[float]
@@ -63,9 +63,9 @@ class HotelsOut(HotelEntity):
     title: Optional[str] = None
     image_link: Optional[str] = None
     description: Optional[str] = None
-    amenities: List[str] = []
+    amenities: List[str] = Field(default_factory=list)
     hotel_review: Optional[HotelReviewOut] = None
-    hotel_rooms: List[HotelRoomsOut] = []
+    hotel_rooms: List[HotelRoomsOut] = Field(default_factory=list)
     hotel_house_rules: Optional[HotelHouseRulesOut] = None
     hotel_location: Optional[HotelLocationOut] = None
-    hotel_guest_reviews: List[HotelGuestReviewsOut] = []
+    hotel_guest_reviews: List[HotelGuestReviewsOut] = Field(default_factory=list)

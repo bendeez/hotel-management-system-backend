@@ -30,4 +30,3 @@ async def get_all_hotels(
         rating_lt=rating_lt,
     )
     return hotels
-
