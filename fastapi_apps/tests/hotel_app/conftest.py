@@ -45,7 +45,14 @@ def cities() -> list:
 
 
 def camel_to_snake(camel_str):
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", camel_str).lower()
+    snake_case = re.sub(r"(?<!^)(?=[A-Z])", "_", camel_str).lower()
+    first_digit = re.search(r"\d", snake_case)
+    if first_digit:
+        index = first_digit.start()
+        snake_case_with_digit = snake_case[:index] + "_" + snake_case[index:]
+        return snake_case_with_digit
+    else:
+        return snake_case
 
 
 def convert_camel_keys_to_snake_case(data):
