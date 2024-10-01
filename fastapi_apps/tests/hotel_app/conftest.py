@@ -2,7 +2,8 @@ import httpx
 import pytest
 from app.hotel_app.app import hotel_app
 from tests.utils import RequestMethod, http_request, Request, Client
-from typing import Optional
+
+from typing import Optional, Union
 from datetime import datetime, timedelta
 from app.hotel_app.hotels.domain.schemas import (
     HotelsOut,
@@ -19,6 +20,7 @@ from app.hotel_app.hotels.domain.models import (
     Hotel_Guest_Reviews,
     Hotel_House_Rules,
 )
+import re
 from sqlalchemy import inspect
 
 
@@ -38,12 +40,40 @@ def user_request():
 
 
 @pytest.fixture(scope="session")
-def cities():
+def cities() -> list:
     return ["Detroit", "New York City"]
 
 
+def camel_to_snake(camel_str):
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", camel_str).lower()
+
+
+def convert_camel_keys_to_snake_case(data):
+    if isinstance(data, dict):
+        new_dict = {}
+        for key, value in data.items():
+            new_key = camel_to_snake(key)
+            new_dict[new_key] = convert_camel_keys_to_snake_case(value)
+        return new_dict
+    elif isinstance(data, list):
+        return [convert_camel_keys_to_snake_case(item) for item in data]
+    else:
+        return data
+
+
 @pytest.fixture()
-def serialize_hotel_model_value():
+def transformed_hotels_pydantic_response() -> list[HotelsOut]:
+    def _transformed_hotel_pydantic_response(hotel_data: dict):
+        hotel_data_with_snake_str_keys = convert_camel_keys_to_snake_case(
+            data=hotel_data
+        )
+        return [HotelsOut(**d) for d in hotel_data_with_snake_str_keys]
+
+    return _transformed_hotel_pydantic_response
+
+
+@pytest.fixture()
+def serialize_hotel_model_value() -> Union[dict, str, None]:
     def _serialize_hotel_model_value(key, value):
         hotel_relationships = inspect(Hotels).relationships
         if key in hotel_relationships and isinstance(value, list):
@@ -57,7 +87,9 @@ def serialize_hotel_model_value():
 
 
 @pytest.fixture()
-def serialized_and_formatted_hotel_models(serialize_hotel_model_value, hotels):
+def transformed_and_formatted_hotel_database_models(
+    serialize_hotel_model_value, hotels
+) -> list[HotelsOut]:
     return list(
         sorted(
             [
@@ -76,7 +108,7 @@ def serialized_and_formatted_hotel_models(serialize_hotel_model_value, hotels):
 
 
 @pytest.fixture(scope="session")
-async def hotels(db, cities):
+async def hotels(db, cities) -> list[Hotels]:
     hotels = []
     for i in range(5):
         city = cities[i % 2]
