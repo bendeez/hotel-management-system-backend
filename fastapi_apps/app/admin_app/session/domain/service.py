@@ -3,12 +3,14 @@ from app.tools.domain.constants import DatabaseQueryOrder
 from app.admin_app.session.domain.constants import SessionAttributes
 from app.admin_app.accounts.domain.models import Accounts
 from app.admin_app.session.domain.models import Chat_Sessions
+from app.admin_app.session.domain.exceptions import SessionsOverflow
+from app.tools.domain.base_service import BaseService
 from app.config import settings
 from uuid import uuid4
 from fastapi import Request
 
 
-class SessionService:
+class SessionService(BaseService):
     def __init__(self, repository: SessionRepository):
         self._repository = repository
         self.session_duration = settings.SESSION_DURATION
@@ -21,6 +23,8 @@ class SessionService:
         limit: int,
         offset: int,
     ):
+        if limit > 500:
+            raise SessionsOverflow()
         chat_sessions = await self._repository.get_account_chat_sessions(
             account_id=account.id,
             order=order,

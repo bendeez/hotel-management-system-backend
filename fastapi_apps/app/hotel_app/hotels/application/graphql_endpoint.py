@@ -103,6 +103,8 @@ async def get_all_hotels(
     order: DatabaseQueryOrderGQL = DatabaseQueryOrderGQL.DESC,
     rating_gt: Optional[float] = None,
     rating_lt: Optional[float] = None,
+    num_of_reviews_gt: Optional[float] = None,
+    num_of_reviews_lt: Optional[float] = None,
 ) -> List[HotelsGQL]:
     hotels_service = info.context["hotels_service"]
     hotels = await hotels_service.get_all_hotels(
@@ -113,6 +115,8 @@ async def get_all_hotels(
         city=city,
         rating_gt=rating_gt,
         rating_lt=rating_lt,
+        num_of_reviews_gt=num_of_reviews_gt,
+        num_of_reviews_lt=num_of_reviews_lt,
     )
     hotels_gql = transform_hotel_models_to_gql(hotels=hotels)
     return hotels_gql

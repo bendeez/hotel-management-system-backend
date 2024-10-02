@@ -9,13 +9,14 @@ from app.admin_app.session.domain.exceptions import (
     SessionForbidden,
     SessionExpired,
 )
-from app.admin_app.chat.domain.exceptions import ChatLogNotFound
+from app.admin_app.chat.domain.exceptions import ChatLogNotFound, ChatLogsOverflow
 from app.admin_app.chat.domain.models import Chat_Logs
 from app.admin_app.accounts.domain.models import Accounts
+from app.tools.domain.base_service import BaseService
 from datetime import datetime
 
 
-class ChatService:
+class ChatService(BaseService):
     def __init__(self, repository: ChatRepository):
         self._repository = repository
 
@@ -28,13 +29,18 @@ class ChatService:
         offset: int,
         session_id: Optional[str] = None,
     ):
+        if limit > 500:
+            raise ChatLogsOverflow()
+        extra_filters = self._filter_out_null_comparisons(
+            [Chat_Logs.session_id == session_id]
+        )
         chat_logs = await self._repository.get_all_account_chat_logs(
             order_by=order_by,
             order=order,
             offset=offset,
             limit=limit,
             account_id=account.id,
-            session_id=session_id,
+            extra_filters=extra_filters,
         )
         return chat_logs
 

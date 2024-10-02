@@ -2,6 +2,8 @@ from app.tools.domain.constants import DatabaseQueryOrder
 from app.admin_app.session.domain.constants import SessionAttributes
 from app.admin_app.session.domain.models import Chat_Sessions
 from app.tools.domain.base_repository import BaseRepository
+from app.admin_app.accounts.domain.models import Accounts
+from sqlalchemy.sql.elements import BinaryExpression
 
 
 class SessionRepository(BaseRepository):

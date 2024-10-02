@@ -4,22 +4,20 @@ from app.admin_app.chat.domain.models import Chat_Logs
 from app.admin_app.session.domain.repository import SessionRepository
 from app.admin_app.accounts.domain.models import Accounts
 from app.tools.domain.base_repository import JoinExpression
-from typing import Optional
+from sqlalchemy.sql.elements import BinaryExpression
 
 
 class ChatRepository(SessionRepository):
     async def get_all_account_chat_logs(
         self,
-        account_id: int,
         order: DatabaseQueryOrder,
         order_by: ChatsAttributes,
         limit: int,
         offset: int,
-        session_id: Optional[str] = None,
+        account_id: int,
+        extra_filters: list[BinaryExpression],
     ) -> list[Chat_Logs]:
-        filters = [Accounts.id == account_id]
-        if session_id is not None:
-            filters.append(Chat_Logs.session_id == session_id)
+        filters = [Accounts.id == account_id] + extra_filters
         chat_logs = await self._get_all(
             model=Chat_Logs,
             order_by=getattr(Chat_Logs, order_by.value),
