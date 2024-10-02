@@ -25,12 +25,14 @@ class HotelsService(BaseService):
     ):
         if limit > 500:
             raise HotelsOverflow()
-        if num_of_reviews_gt and num_of_reviews_lt:
-            if num_of_reviews_gt > num_of_reviews_lt:
-                raise InvalidComparision()
-        if rating_gt and rating_lt:
-            if rating_gt > rating_lt:
-                raise InvalidComparision()
+        if (
+            num_of_reviews_gt
+            and num_of_reviews_lt
+            and (num_of_reviews_gt > num_of_reviews_lt)
+        ):
+            raise InvalidComparision()
+        if rating_gt and rating_lt and (rating_gt > rating_lt):
+            raise InvalidComparision()
         filters = self._filter_out_null_comparisons(
             [
                 Hotel_Review.rating_out_of_10 >= rating_gt
