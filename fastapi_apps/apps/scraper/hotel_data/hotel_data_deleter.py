@@ -1,4 +1,4 @@
-from hotel_data.database import SessionLocal
+from apps.scraper.hotel_data.database import SessionLocal
 from sqlalchemy import text
 import asyncio
 

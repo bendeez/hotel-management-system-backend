@@ -1,10 +1,10 @@
 import pytest
 import pandas as pd
-from hotel_data.data_cleaner.hotel_data_cleaner import serialize_df
-from hotel_data.database import SessionLocal
-from hotel_data.hotel_data_deleter import delete_hotel_data
-from hotel_data.hotel_data_to_database import HotelDataSyncer
-from tests.utils import TestHotelCsvFiles
+from apps.scraper.hotel_data.data_cleaner.hotel_data_cleaner import serialize_df
+from apps.scraper.hotel_data.database import SessionLocal
+from apps.scraper.hotel_data.hotel_data_deleter import delete_hotel_data
+from apps.scraper.hotel_data.hotel_data_to_database import HotelDataSyncer
+from tests.scraper.utils import TestHotelCsvFiles
 
 
 @pytest.fixture(scope="session")

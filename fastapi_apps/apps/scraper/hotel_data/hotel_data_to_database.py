@@ -1,6 +1,6 @@
 import asyncio
-from hotel_data.database import SessionLocal
-from hotel_data.models import (
+from apps.scraper.hotel_data.database import SessionLocal
+from apps.scraper.hotel_data.models import (
     Hotels,
     Hotel_Rooms,
     Hotel_Location,

@@ -1,4 +1,4 @@
-from hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
+from apps.scraper.hotel_data.data_cleaner.hotel_data_cleaner_tool import ht
 import numpy as np
 
 

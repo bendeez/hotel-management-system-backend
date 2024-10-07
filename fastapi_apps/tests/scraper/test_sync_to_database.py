@@ -1,5 +1,5 @@
-from hotel_data.hotel_data_getter import get_hotel_data
-from hotel_data.hotel_data_deleter import delete_hotel_data
+from apps.scraper.hotel_data.hotel_data_getter import get_hotel_data
+from apps.scraper.hotel_data.hotel_data_deleter import delete_hotel_data
 import pandas as pd
 
 

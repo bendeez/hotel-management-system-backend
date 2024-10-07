@@ -1,5 +1,5 @@
-from hotel_data.models import Hotels
-from hotel_data.database import SessionLocal
+from apps.scraper.hotel_data.models import Hotels
+from apps.scraper.hotel_data.database import SessionLocal
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 import asyncio

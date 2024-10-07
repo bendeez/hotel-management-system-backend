@@ -1,4 +1,4 @@
-from hotel_data.data_cleaner.hotel_data_cleaner import clean_hotel_data
+from apps.scraper.hotel_data.data_cleaner.hotel_data_cleaner import clean_hotel_data
 import pandas as pd
 from constants import HotelCsvFiles
 
