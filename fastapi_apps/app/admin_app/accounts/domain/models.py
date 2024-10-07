@@ -1,4 +1,4 @@
-from app.tools.domain.base_models import BaseMixin
+from tools.domain.base_models import BaseMixin
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
 

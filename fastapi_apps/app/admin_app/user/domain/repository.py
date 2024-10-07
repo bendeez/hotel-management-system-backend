@@ -1,4 +1,4 @@
-from app.tools.domain.base_repository import BaseRepository
+from tools.domain.base_repository import BaseRepository
 from app.admin_app.user.domain.models import Users
 
 

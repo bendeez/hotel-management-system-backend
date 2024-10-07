@@ -1,5 +1,5 @@
 from app.admin_app.accounts.domain.models import Accounts
-from app.tools.domain.base_repository import BaseRepository
+from tools.domain.base_repository import BaseRepository
 from app.admin_app.user.domain.models import Users
 from app.admin_app.business.domain.models import Business
 from app.admin_app.business_user.domain.models import Business_Users

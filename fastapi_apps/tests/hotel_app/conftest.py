@@ -11,7 +11,7 @@ from app.hotel_app.hotels.domain.schemas import (
     HotelGuestReviewsOut,
 )
 from uuid import uuid4
-from app.tools.application.dependencies import get_db
+from tools.application.dependencies import get_db
 from app.hotel_app.hotels.domain.models import (
     Hotels,
     Hotel_Rooms,

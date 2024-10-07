@@ -5,7 +5,7 @@ from app.admin_app.facility.domain.service import FacilityService
 from app.admin_app.auth.application.dependencies import get_account
 from app.admin_app.accounts.domain.models import Accounts
 from app.admin_app.facility.application.dependencies import get_facility_service
-from app.tools.application.rate_limiter import limiter, limit
+from tools.application.rate_limiter import limiter, limit
 
 
 facility_router = APIRouter()

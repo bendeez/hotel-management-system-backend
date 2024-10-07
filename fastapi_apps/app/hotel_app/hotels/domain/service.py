@@ -1,7 +1,7 @@
 from app.hotel_app.hotels.domain.repository import HotelsRepository
-from app.tools.domain.constants import DatabaseQueryOrder
+from tools.domain.constants import DatabaseQueryOrder
 from app.hotel_app.hotels.domain.constants import HotelsAttributes
-from app.tools.domain.base_service import BaseService
+from tools.domain.base_service import BaseService
 from app.hotel_app.hotels.domain.models import Hotel_Location, Hotel_Review
 from app.hotel_app.hotels.domain.exceptions import HotelsOverflow, InvalidComparision
 from typing import Optional

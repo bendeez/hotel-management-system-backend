@@ -1,4 +1,4 @@
-from app.tools.domain.database import SessionLocal
+from tools.domain.database import SessionLocal
 
 
 async def get_db():

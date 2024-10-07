@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 from sqlalchemy import ForeignKey, Text, JSON
-from app.tools.domain.base_models import BaseMixin
+from tools.domain.base_models import BaseMixin
 
 
 class Hotels(BaseMixin):

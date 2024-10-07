@@ -1,6 +1,6 @@
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.orm import selectinload, with_polymorphic, contains_eager
-from app.tools.domain.constants import DatabaseQueryOrder
+from tools.domain.constants import DatabaseQueryOrder
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, asc, desc
 from typing import Optional

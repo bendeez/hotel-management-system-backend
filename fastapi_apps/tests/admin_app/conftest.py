@@ -31,7 +31,7 @@ from app.admin_app.auth.domain.schemas import TokenCreate
 from datetime import datetime, timedelta
 from app.admin_app.accounts.domain.models import Accounts
 from uuid import uuid4
-from app.tools.application.dependencies import get_db
+from tools.application.dependencies import get_db
 
 
 @pytest.fixture(autouse=True)

@@ -14,7 +14,7 @@ from app.hotel_app.hotels.domain.schemas import (
 )
 from app.hotel_app.hotels.domain.constants import HotelsAttributes
 from app.hotel_app.hotels.domain.models import Hotels
-from app.tools.domain.constants import DatabaseQueryOrder
+from tools.domain.constants import DatabaseQueryOrder
 from typing import List, Optional
 
 DatabaseQueryOrderGQL = strawberry.enum(DatabaseQueryOrder)

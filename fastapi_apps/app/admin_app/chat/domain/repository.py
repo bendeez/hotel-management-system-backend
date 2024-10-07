@@ -1,9 +1,9 @@
 from app.admin_app.chat.domain.constants import ChatsAttributes
-from app.tools.domain.constants import DatabaseQueryOrder
+from tools.domain.constants import DatabaseQueryOrder
 from app.admin_app.chat.domain.models import Chat_Logs
 from app.admin_app.session.domain.repository import SessionRepository
 from app.admin_app.accounts.domain.models import Accounts
-from app.tools.domain.base_repository import JoinExpression
+from tools.domain.base_repository import JoinExpression
 from sqlalchemy.sql.elements import BinaryExpression
 
 

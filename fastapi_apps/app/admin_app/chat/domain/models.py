@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, Text
 from datetime import datetime
-from app.tools.domain.base_models import BaseMixin
+from tools.domain.base_models import BaseMixin
 
 
 class Chat_Logs(BaseMixin):

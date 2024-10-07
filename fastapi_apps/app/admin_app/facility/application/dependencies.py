@@ -1,7 +1,7 @@
 from fastapi import Depends
 from app.admin_app.facility.domain.repository import FacilityRepository
 from app.admin_app.facility.domain.service import FacilityService
-from app.tools.application.dependencies import get_db
+from tools.application.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

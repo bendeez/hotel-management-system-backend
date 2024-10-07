@@ -1,5 +1,5 @@
 from app.admin_app.accounts.domain.models import Accounts
-from app.tools.domain.base_models import BaseMixin
+from tools.domain.base_models import BaseMixin
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, ForeignKey
 from datetime import datetime

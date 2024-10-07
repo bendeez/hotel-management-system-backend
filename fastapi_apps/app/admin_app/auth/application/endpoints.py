@@ -5,7 +5,7 @@ from app.admin_app.auth.application.dependencies import get_auth_service
 from app.admin_app.business.domain.schemas import BusinessAccountIn
 from app.admin_app.business_user.domain.schemas import BusinessUserAccountIn
 from app.admin_app.user.domain.schemas import UserAccountIn
-from app.tools.application.rate_limiter import limiter, limit
+from tools.application.rate_limiter import limiter, limit
 
 
 auth_router = APIRouter()

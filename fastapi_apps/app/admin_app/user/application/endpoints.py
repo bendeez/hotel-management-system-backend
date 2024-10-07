@@ -4,7 +4,7 @@ from app.admin_app.user.domain.service import UserService
 from app.admin_app.user.application.dependencies import get_user_service
 from app.admin_app.accounts.domain.models import Accounts
 from app.admin_app.auth.application.dependencies import get_account
-from app.tools.application.rate_limiter import limiter, limit
+from tools.application.rate_limiter import limiter, limit
 
 user_router = APIRouter()
 

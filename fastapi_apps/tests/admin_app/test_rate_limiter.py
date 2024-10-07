@@ -1,7 +1,7 @@
 import asyncio
 from tests.utils import RequestMethod
 from app.config import settings
-from app.tools.application.rate_limiter import limiter
+from tools.application.rate_limiter import limiter
 
 
 async def test_rate_limiter(http_request, business):

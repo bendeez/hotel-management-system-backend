@@ -1,7 +1,7 @@
 from fastapi import Depends
 from app.admin_app.business.domain.repository import BusinessRepository
 from app.admin_app.business.domain.service import BusinessService
-from app.tools.application.dependencies import get_db
+from tools.application.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

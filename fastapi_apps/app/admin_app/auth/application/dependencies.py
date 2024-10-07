@@ -2,7 +2,7 @@ from fastapi.security import OAuth2PasswordBearer
 from app.admin_app.auth.domain.service import AuthService
 from app.admin_app.auth.domain.repository import AuthRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.tools.application.dependencies import get_db
+from tools.application.dependencies import get_db
 from app.admin_app.auth.domain.constants import TokenType
 from fastapi import Depends
 

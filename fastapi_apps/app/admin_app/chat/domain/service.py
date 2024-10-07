@@ -2,7 +2,7 @@ from typing import Optional
 
 from app.admin_app.chat.domain.repository import ChatRepository
 from app.admin_app.chat.domain.constants import ChatsAttributes
-from app.tools.domain.constants import DatabaseQueryOrder
+from tools.domain.constants import DatabaseQueryOrder
 from app.admin_app.chat.domain.schemas import ChatLogsCreate
 from app.admin_app.session.domain.exceptions import (
     SessionNotExists,
@@ -12,7 +12,7 @@ from app.admin_app.session.domain.exceptions import (
 from app.admin_app.chat.domain.exceptions import ChatLogNotFound, ChatLogsOverflow
 from app.admin_app.chat.domain.models import Chat_Logs
 from app.admin_app.accounts.domain.models import Accounts
-from app.tools.domain.base_service import BaseService
+from tools.domain.base_service import BaseService
 from datetime import datetime
 
 

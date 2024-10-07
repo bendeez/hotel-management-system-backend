@@ -1,6 +1,6 @@
 import pytest
-from app.tools.domain.database import SessionLocal, engine
-from app.tools.domain.base_models import BaseMixin
+from tools.domain.database import SessionLocal, engine
+from tools.domain.base_models import BaseMixin
 
 
 @pytest.fixture(name="db", scope="session", autouse=True)

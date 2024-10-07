@@ -2,7 +2,7 @@ from tests.utils import RequestMethod
 import pytest
 from pytest_lazy_fixtures import lf
 from app.admin_app.session.domain.schemas import SessionsOut
-from app.tools.domain.constants import DatabaseQueryOrder
+from tools.domain.constants import DatabaseQueryOrder
 from app.admin_app.session.domain.constants import SessionAttributes
 
 

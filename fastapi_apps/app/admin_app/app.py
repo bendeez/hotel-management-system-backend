@@ -8,7 +8,7 @@ from app.admin_app.user.application.endpoints import user_router
 from app.admin_app.session.application.endpoints import session_router
 from app.admin_app.business_user.application.endpoints import business_user_router
 from app.admin_app.exception_handlers import add_exception_handlers
-from app.tools.application.rate_limiter import limiter
+from tools.application.rate_limiter import limiter
 
 
 admin_app = FastAPI()

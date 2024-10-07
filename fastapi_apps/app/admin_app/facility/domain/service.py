@@ -3,7 +3,7 @@ from app.admin_app.facility.domain.schemas import FacilityCreate
 from app.admin_app.facility.domain.repository import FacilityRepository
 from app.admin_app.accounts.domain.models import Accounts
 from app.admin_app.facility.domain.exceptions import FacilityNotFound
-from app.tools.domain.base_service import BaseService
+from tools.domain.base_service import BaseService
 
 
 class FacilityService(BaseService):

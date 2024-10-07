@@ -10,7 +10,7 @@ from app.admin_app.business_user.domain.schemas import (
 from app.admin_app.business.domain.service import BusinessService
 from app.admin_app.auth.application.dependencies import get_account
 from app.admin_app.accounts.domain.models import Accounts
-from app.tools.application.rate_limiter import limiter, limit
+from tools.application.rate_limiter import limiter, limit
 from app.admin_app.business.application.dependencies import get_business_service
 
 

@@ -1,7 +1,7 @@
 from fastapi import Depends
 from app.admin_app.chat.domain.repository import ChatRepository
 from app.admin_app.chat.domain.service import ChatService
-from app.tools.application.dependencies import get_db
+from tools.application.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
