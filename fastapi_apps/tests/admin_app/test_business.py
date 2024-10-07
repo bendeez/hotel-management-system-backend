@@ -1,10 +1,10 @@
 import pytest
-from app.admin_app.auth.domain.exceptions import AdminUnauthorized
-from app.admin_app.business.domain.schemas import (
+from apps.admin_app.auth.domain.exceptions import AdminUnauthorized
+from apps.admin_app.business.domain.schemas import (
     BusinessAccountCreate,
     BusinessAccountOut,
 )
-from app.admin_app.business_user.domain.schemas import (
+from apps.admin_app.business_user.domain.schemas import (
     BusinessUserAccountCreate,
     BusinessUserAccountOut,
 )

@@ -1,4 +1,4 @@
-put this in the admin/app/.env.**dev** file:
+put this in the admin/apps/.env.**dev** file:
 ```env
 DATABASE_HOST=localhost
 DATABASE_PORT=3306
@@ -26,7 +26,7 @@ docker-compose up
 ```
 to start fastapi server, run:
 ```sh
-uvicorn app.app:app --reload
+uvicorn apps.apps:apps --reload
 ```
 to test, run:
 ```sh

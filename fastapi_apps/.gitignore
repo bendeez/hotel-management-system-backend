@@ -1,4 +1,4 @@
-app/.env.dev
+apps/.env.dev
 
 .venv/
 

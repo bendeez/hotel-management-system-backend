@@ -70,17 +70,17 @@ def sort_rooms():
 def modify_row_and_columns_for_consistent_ordering(sort_guest_reviews, sort_rooms):
     def _modify_row_and_columns(df):
         df.sort_values(by=["title"], inplace=True)
-        df["amenities"] = df["amenities"].apply(sorted)
-        df["house_rules"] = df["house_rules"].apply(lambda v: dict(sorted(v.items())))
+        df["amenities"] = df["amenities"].appsly(sorted)
+        df["house_rules"] = df["house_rules"].appsly(lambda v: dict(sorted(v.items())))
         df["guest_reviews"] = (
             df["guest_reviews"]
-            .apply(lambda values: [dict(sorted(v.items())) for v in values])
-            .apply(sort_guest_reviews)
+            .appsly(lambda values: [dict(sorted(v.items())) for v in values])
+            .appsly(sort_guest_reviews)
         )
         df["rooms_to_price"] = (
             df["rooms_to_price"]
-            .apply(lambda values: [dict(sorted(v.items())) for v in values])
-            .apply(sort_rooms)
+            .appsly(lambda values: [dict(sorted(v.items())) for v in values])
+            .appsly(sort_rooms)
         )
         df.reset_index(drop=True, inplace=True)
         return df

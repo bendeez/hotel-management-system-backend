@@ -6,10 +6,10 @@ def serialize_df(df):
     float_columns = df.select_dtypes(include="float64").columns
     df = df.replace({np.nan: None})
     df[float_columns] = df[float_columns].astype("float64")
-    df["amenities"] = df["amenities"].apply(ht.safe_literal_eval)
-    df["house_rules"] = df["house_rules"].apply(ht.safe_literal_eval)
-    df["guest_reviews"] = df["guest_reviews"].apply(ht.safe_literal_eval)
-    df["rooms_to_price"] = df["rooms_to_price"].apply(ht.safe_literal_eval)
+    df["amenities"] = df["amenities"].appsly(ht.safe_literal_eval)
+    df["house_rules"] = df["house_rules"].appsly(ht.safe_literal_eval)
+    df["guest_reviews"] = df["guest_reviews"].appsly(ht.safe_literal_eval)
+    df["rooms_to_price"] = df["rooms_to_price"].appsly(ht.safe_literal_eval)
     return df
 
 
@@ -36,30 +36,30 @@ def clean_hotel_data(df):
 
     df["amenities"] = (
         df["amenities"]
-        .apply(ht.safe_literal_eval)
-        .apply(ht.modify_amenities)
-        .apply(ht.get_unique_values)
+        .appsly(ht.safe_literal_eval)
+        .appsly(ht.modify_amenities)
+        .appsly(ht.get_unique_values)
     )
     df["house_rules"] = (
-        df["house_rules"].apply(ht.safe_literal_eval).apply(ht.modify_house_rules)
+        df["house_rules"].appsly(ht.safe_literal_eval).appsly(ht.modify_house_rules)
     )
     df["classified_ratings"] = (
         df["classified_ratings"]
-        .apply(ht.safe_literal_eval)
-        .apply(ht.modify_classified_ratings)
+        .appsly(ht.safe_literal_eval)
+        .appsly(ht.modify_classified_ratings)
     )
-    df["num_of_reviews"] = df["num_of_reviews"].apply(ht.modify_num_of_reviews)
-    df["rating_out_of_10"] = df["rating_out_of_10"].apply(ht.modify_num_rating)
+    df["num_of_reviews"] = df["num_of_reviews"].appsly(ht.modify_num_of_reviews)
+    df["rating_out_of_10"] = df["rating_out_of_10"].appsly(ht.modify_num_rating)
     df["rooms_to_price"] = (
         df["rooms_to_price"]
-        .apply(ht.get_rid_of_newline_characters)
-        .apply(ht.safe_literal_eval)
-        .apply(ht.modify_room_to_price)
+        .appsly(ht.get_rid_of_newline_characters)
+        .appsly(ht.safe_literal_eval)
+        .appsly(ht.modify_room_to_price)
     )
     df["guest_reviews"] = (
         df["guest_reviews"]
-        .apply(ht.get_rid_of_newline_characters)
-        .apply(ht.safe_literal_eval)
+        .appsly(ht.get_rid_of_newline_characters)
+        .appsly(ht.safe_literal_eval)
     )
     classified_ratings = df["classified_ratings"]
     classified_rating_keys = [

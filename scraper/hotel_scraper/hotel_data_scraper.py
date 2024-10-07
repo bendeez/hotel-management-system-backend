@@ -116,7 +116,7 @@ class HotelsScraper:
                     }
                 )
         house_rules = {}
-        house_rule_containers = soup.find(attrs={"data-testid": "HouseRules-wrapper"})
+        house_rule_containers = soup.find(attrs={"data-testid": "HouseRules-wrappser"})
         if house_rule_containers is not None:
             house_rule_containers = house_rule_containers.find_all(class_="a26e4f0adb")
         else:

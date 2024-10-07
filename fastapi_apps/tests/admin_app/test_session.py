@@ -1,9 +1,9 @@
 from tests.utils import RequestMethod
 import pytest
 from pytest_lazy_fixtures import lf
-from app.admin_app.session.domain.schemas import SessionsOut
+from apps.admin_app.session.domain.schemas import SessionsOut
 from tools.domain.constants import DatabaseQueryOrder
-from app.admin_app.session.domain.constants import SessionAttributes
+from apps.admin_app.session.domain.constants import SessionAttributes
 
 
 @pytest.mark.parametrize("account", [lf("user"), lf("business"), lf("business_user")])

@@ -1,6 +1,6 @@
 import asyncio
 from tests.utils import RequestMethod
-from app.config import settings
+from apps.config import settings
 from tools.application.rate_limiter import limiter
 
 

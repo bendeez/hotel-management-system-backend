@@ -1,7 +1,7 @@
-from app.hotel_app.hotels.domain.models import Hotels
+from apps.hotel_app.hotels.domain.models import Hotels
 from tests.utils import RequestMethod
 from tests.hotel_app.utils import query_items
-from app.hotel_app.hotels.domain.schemas import (
+from apps.hotel_app.hotels.domain.schemas import (
     HotelsOut,
     HotelRoomsOut,
     HotelGuestReviewsOut,

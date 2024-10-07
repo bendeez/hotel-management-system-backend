@@ -1,9 +1,9 @@
-from app.admin_app.user.domain.schemas import UserAccountIn
-from app.admin_app.business.domain.schemas import BusinessAccountIn
-from app.admin_app.business_user.domain.schemas import BusinessUserAccountIn
+from apps.admin_app.user.domain.schemas import UserAccountIn
+from apps.admin_app.business.domain.schemas import BusinessAccountIn
+from apps.admin_app.business_user.domain.schemas import BusinessUserAccountIn
 from tests.utils import RequestMethod
-from app.admin_app.auth.domain.schemas import TokenCreate, TokenRequest, AccessToken
-from app.admin_app.auth.domain.constants import TokenType
+from apps.admin_app.auth.domain.schemas import TokenCreate, TokenRequest, AccessToken
+from apps.admin_app.auth.domain.constants import TokenType
 import pytest
 from pytest_lazy_fixtures import lf
 

@@ -1,8 +1,8 @@
 from tests.utils import RequestMethod
-from app.admin_app.chat.domain.schemas import ChatLogsCreate, ChatLogsOut
+from apps.admin_app.chat.domain.schemas import ChatLogsCreate, ChatLogsOut
 import pytest
 from pytest_lazy_fixtures import lf
-from app.admin_app.chat.domain.constants import ChatsAttributes
+from apps.admin_app.chat.domain.constants import ChatsAttributes
 from tools.domain.constants import DatabaseQueryOrder
 
 

@@ -317,7 +317,7 @@ test = ["objgraph", "psutil"]
 [[package]]
 name = "idna"
 version = "3.10"
-description = "Internationalized Domain Names in Applications (IDNA)"
+description = "Internationalized Domain Names in applications (IDNA)"
 optional = false
 python-versions = ">=3.6"
 files = [
