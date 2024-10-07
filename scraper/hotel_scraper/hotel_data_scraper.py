@@ -14,7 +14,6 @@ class ScrapeInfo:
     checkin_date: str
     checkout_date: str
 
-
 class HotelsScraper:
     def __init__(self, browsers: int, tabs: int, cities: list, hotels_csv: str):
         self.browsers = browsers
